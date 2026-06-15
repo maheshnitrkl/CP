@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>House Robber - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-10-dp.html" class="navbar__link">&#8592; Back to Module 10: DP</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-10-dp.html">Module 10: DP</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">House Robber</span></div>
+      <h1 class="problem-header__title">House Robber</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/house-robber/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night. Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128218;</span> Mathematical Foundation</h2>
+      <div class="math-block">
+        <p>Let <code>dp[i]</code> be the maximum amount of money you can rob from the first <code>i</code> houses.</p>
+        <p>At house <code>i</code>, you have two choices:</p>
+        <ul style="padding-left:1.5rem; margin-top:0.5rem; color:var(--text-secondary);">
+          <li><strong>Rob it:</strong> You get <code>nums[i]</code>, but you couldn't have robbed house <code>i-1</code>. So you add <code>dp[i-2]</code>.</li>
+          <li><strong>Skip it:</strong> You keep whatever maximum money you had at house <code>i-1</code>, which is <code>dp[i-1]</code>.</li>
+        </ul>
+        <div style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-sm); margin-top:1rem; text-align:center;">
+          <code>dp[i] = max(dp[i-1], nums[i] + dp[i-2])</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+      <div class="approach-card approach-card--brute">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Brute Force Recursion</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">At every house, explore both options (rob or skip). Returns the max of both branches.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> robFrom(i, nums):<br>&nbsp;&nbsp;<span class='keyword'>if</span> i &lt; 0: <span class='keyword'>return</span> 0<br>&nbsp;&nbsp;<span class='keyword'>return</span> max(robFrom(i-1, nums), nums[i] + robFrom(i-2, nums))</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(2<sup>n</sup>)</span>
+            <span class="cx-badge cx-badge--space">Space: O(n)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Pure translation of the recurrence</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Exponential time, TLE</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">We are solving the `robFrom(i)` problem multiple times. We can memoize the results!</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Top-Down Memoization</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Cache the maximum money we can get starting/ending at house <code>i</code>.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> robFrom(i, nums, memo):<br>&nbsp;&nbsp;<span class='keyword'>if</span> i &lt; 0: <span class='keyword'>return</span> 0<br>&nbsp;&nbsp;<span class='keyword'>if</span> memo[i] exists: <span class='keyword'>return</span> memo[i]<br>&nbsp;&nbsp;memo[i] = max(robFrom(i-1), nums[i] + robFrom(i-2))<br>&nbsp;&nbsp;<span class='keyword'>return</span> memo[i]</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(n)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Linear time</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Recursion uses call stack</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Avoid stack depth limits by converting to an iterative Tabulation approach.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 3</span></div>
+          <div class="approach-card__title">Bottom-Up Tabulation (1D DP)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Build a <code>dp</code> array of size <code>N</code> where <code>dp[i]</code> is the max money up to house <code>i</code>.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> rob(nums):<br>&nbsp;&nbsp;<span class='keyword'>if</span> nums.length == 0: <span class='keyword'>return</span> 0<br>&nbsp;&nbsp;<span class='keyword'>if</span> nums.length == 1: <span class='keyword'>return</span> nums[0]<br>&nbsp;&nbsp;dp = array of size N<br>&nbsp;&nbsp;dp[0] = nums[0]<br>&nbsp;&nbsp;dp[1] = max(nums[0], nums[1])<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 2 <span class='keyword'>to</span> N-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;dp[i] = max(dp[i-1], nums[i] + dp[i-2])<br>&nbsp;&nbsp;<span class='keyword'>return</span> dp[N-1]</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(n)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>No stack limit risk</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Allocates an entire array</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Since <code>dp[i]</code> only relies on <code>dp[i-1]</code> and <code>dp[i-2]</code>, we only need to store two variables instead of a whole array!</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 4</span></div>
+          <div class="approach-card__title">Space-Optimized DP (Two Variables)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Track only the max money for the previous two houses (<code>prev1</code> and <code>prev2</code>).</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> rob(nums):<br>&nbsp;&nbsp;prev1 = 0, prev2 = 0<br>&nbsp;&nbsp;<span class='keyword'>for</span> x <span class='keyword'>in</span> nums:<br>&nbsp;&nbsp;&nbsp;&nbsp;current = max(prev1, x + prev2)<br>&nbsp;&nbsp;&nbsp;&nbsp;prev2 = prev1<br>&nbsp;&nbsp;&nbsp;&nbsp;prev1 = current<br>&nbsp;&nbsp;<span class='keyword'>return</span> prev1</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(1)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Optimal time and space</li><li>Extremely concise</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>None</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr class="row--brute"><td>Recursion</td><td><code>O(2<sup>n</sup>)</code></td><td><code>O(n)</code></td><td>TLE</td></tr>
+          <tr class="row--better"><td>Memoization</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Better</td></tr>
+          <tr class="row--better"><td>1D Tabulation</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Better</td></tr>
+          <tr class="row--optimal"><td>Space Optimized</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">&#10024;</span> Interactive Visualization</h2>
+      <div class="visualizer" id="rob-viz">
+        <div class="visualizer__controls">
+          <input type="text" id="rob-input" value="2,7,9,3,1" style="padding:0.5rem; border-radius:var(--radius-sm); border:1px solid var(--border-primary); background:var(--bg-elevated); color:var(--text-primary); font-family:monospace; width: 200px; text-align: center;">
+          <button class="btn btn--primary" id="btn-step-rob">Next House</button>
+          <button class="btn btn--outline" id="btn-reset-rob">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; justify-content: center; margin: 3rem 0; flex-wrap: wrap;" id="rob-container">
+          <!-- Blocks generated by JS -->
+        </div>
+
+        <div class="visualizer__log" id="rob-log">
+          Click "Next House" to process <code>nums = [2, 7, 9, 3, 1]</code>.
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const container = document.getElementById("rob-container");
+          const log = document.getElementById("rob-log");
+          const btnStep = document.getElementById("btn-step-rob");
+          const btnReset = document.getElementById("btn-reset-rob");
+          const inputEl = document.getElementById("rob-input");
+
+          let nums = [];
+          let dp = [];
+          let currentStep = -1;
+
+          function init() {
+            nums = inputEl.value.split(",").map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+            if (nums.length === 0) nums = [2, 7, 9, 3, 1];
+            dp = Array(nums.length).fill(0);
+            currentStep = -1;
+            render();
+            log.innerHTML = `Array parsed: <code>[${nums.join(", ")}]</code>. We start with 0 money.`;
+            btnStep.disabled = false;
+          }
+
+          function render() {
+            container.innerHTML = "";
+            for (let i = 0; i < nums.length; i++) {
+              const cell = document.createElement("div");
+              cell.style.width = "70px";
+              cell.style.height = "100px";
+              cell.style.background = i <= currentStep ? "var(--bg-elevated)" : "transparent";
+              cell.style.border = i <= currentStep ? "2px solid var(--accent-orange)" : "2px dashed var(--border-primary)";
+              cell.style.display = "flex";
+              cell.style.flexDirection = "column";
+              cell.style.justifyContent = "center";
+              cell.style.alignItems = "center";
+              cell.style.borderRadius = "var(--radius-sm)";
+              cell.style.transition = "all 0.3s ease";
+              
+              if (i === currentStep) {
+                cell.style.boxShadow = "0 0 15px var(--accent-orange)";
+                cell.style.transform = "translateY(-5px)";
+              }
+
+              const label = document.createElement("div");
+              label.style.fontSize = "0.8rem";
+              label.style.color = "var(--text-secondary)";
+              label.innerHTML = `<span class="icon">&#127968;</span> ${nums[i]}`;
+              cell.appendChild(label);
+
+              const val = document.createElement("div");
+              val.style.fontWeight = "bold";
+              val.style.fontSize = "1.5rem";
+              val.style.marginTop = "10px";
+              val.style.color = "var(--accent-green)";
+              val.textContent = i <= currentStep ? `$${dp[i]}` : "?";
+              cell.appendChild(val);
+
+              container.appendChild(cell);
+            }
+          }
+
+          btnStep.addEventListener("click", () => {
+            currentStep++;
+            if (currentStep < nums.length) {
+              const i = currentStep;
+              let robCurrent = nums[i] + (i - 2 >= 0 ? dp[i-2] : 0);
+              let skipCurrent = i - 1 >= 0 ? dp[i-1] : 0;
+              
+              dp[i] = Math.max(robCurrent, skipCurrent);
+              render();
+              
+              log.innerHTML = `At house ${i} (Money: ${nums[i]}):<br>
+              - Option 1 (Rob): <code>nums[${i}] + dp[${i-2 >= 0 ? i-2 : '-'}]</code> = ${nums[i]} + ${i-2 >= 0 ? dp[i-2] : 0} = <strong>${robCurrent}</strong><br>
+              - Option 2 (Skip): <code>dp[${i-1 >= 0 ? i-1 : '-'}]</code> = <strong>${skipCurrent}</strong><br>
+              &rarr; Max money so far: <code>dp[${i}] = ${dp[i]}</code>`;
+            } else {
+              btnStep.disabled = true;
+              log.innerHTML = `<strong>Finished!</strong> Maximum money we can rob is $${dp[nums.length - 1]}.`;
+            }
+          });
+
+          btnReset.addEventListener("click", init);
+          inputEl.addEventListener("change", init);
+
+          init();
+        });
+      </script>
+    </section>
+
+    <!-- 5. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    int rob(vector&lt;int&gt;&amp; nums) {
+        int prev2 = 0; // dp[i-2]
+        int prev1 = 0; // dp[i-1]
+        
+        for (int x : nums) {
+            int current = max(prev1, x + prev2);
+            prev2 = prev1;
+            prev1 = current;
+        }
+        
+        return prev1;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def rob(self, nums: List[int]) -> int:
+        prev2, prev1 = 0, 0
+        
+        for x in nums:
+            # current max is max of (skipping, robbing)
+            current = max(prev1, x + prev2)
+            prev2 = prev1
+            prev1 = current
+            
+        return prev1</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <footer class="footer" style="margin-top: 4rem; padding: 2rem 0; text-align: center; color: var(--text-tertiary); border-top: 1px solid var(--border-primary);">
+    <p>CP-II Lab &copy; 2026. Built for learning.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

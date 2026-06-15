@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Longest Increasing Subsequence - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-10-dp.html" class="navbar__link">&#8592; Back to Module 10: DP</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-10-dp.html">Module 10: DP</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Longest Increasing Subsequence</span></div>
+      <h1 class="problem-header__title">Longest Increasing Subsequence</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/longest-increasing-subsequence/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given an integer array nums, return the length of the longest strictly increasing subsequence.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128218;</span> Mathematical Foundation</h2>
+      <div class="math-block">
+        <p>Let <code>dp[i]</code> be the length of the longest strictly increasing subsequence that <strong>ends exactly at index <code>i</code></strong>.</p>
+        <p>For any element <code>nums[i]</code>, we can extend an existing increasing subsequence that ends at some index <code>j &lt; i</code>, provided that <code>nums[j] &lt; nums[i]</code>.</p>
+        <div style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-sm); margin-top:1rem; text-align:center;">
+          <code>dp[i] = 1 + max(dp[j])</code> for all <code>0 &le; j &lt; i</code> where <code>nums[j] &lt; nums[i]</code>
+        </div>
+        <p style="margin-top:1rem;"><strong>Base case:</strong> Every element itself is an increasing subsequence of length 1, so <code>dp[i] = 1</code> initially.</p>
+        <p>The overall answer is the maximum value in the entire <code>dp</code> array.</p>
+      </div>
+    </section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+      <div class="approach-card approach-card--brute">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Brute Force Recursion</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">At each element, we can either include it (if it's greater than the previous included element) or exclude it. Find the max of both branches.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> LIS(i, prevIdx, nums):<br>&nbsp;&nbsp;<span class='keyword'>if</span> i == len(nums): <span class='keyword'>return</span> 0<br>&nbsp;&nbsp;take = 0<br>&nbsp;&nbsp;<span class='keyword'>if</span> prevIdx &lt; 0 or nums[i] &gt; nums[prevIdx]:<br>&nbsp;&nbsp;&nbsp;&nbsp;take = 1 + LIS(i+1, i, nums)<br>&nbsp;&nbsp;skip = LIS(i+1, prevIdx, nums)<br>&nbsp;&nbsp;<span class='keyword'>return</span> max(take, skip)</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(2<sup>n</sup>)</span>
+            <span class="cx-badge cx-badge--space">Space: O(n)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Explores all possibilities safely</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Exponential time, TLE</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Many subproblems <code>(index, prevIndex)</code> overlap. We can cache these!</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Top-Down Memoization</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Use a 2D array <code>memo[index][prevIndex+1]</code> to cache the recursion results.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> LIS(i, prevIdx, memo):<br>&nbsp;&nbsp;<span class='keyword'>if</span> i == n: <span class='keyword'>return</span> 0<br>&nbsp;&nbsp;<span class='keyword'>if</span> memo[i][prevIdx+1] exists: <span class='keyword'>return</span> memo[i][prevIdx+1]<br>&nbsp;&nbsp;... <span class='comment'>// same logic as recursion</span><br>&nbsp;&nbsp;memo[i][prevIdx+1] = max(take, skip)<br>&nbsp;&nbsp;<span class='keyword'>return</span> memo[i][prevIdx+1]</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n<sup>2</sup>)</span>
+            <span class="cx-badge cx-badge--space">Space: O(n<sup>2</sup>)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Fast pseudo-polynomial time</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>2D array wastes memory for this problem</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">We can do this bottom-up with a 1D DP array based on the mathematical formulation, reducing space to O(n).</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 3</span></div>
+          <div class="approach-card__title">1D DP Tabulation</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Build an array <code>dp</code> where <code>dp[i]</code> stores the LIS ending at index <code>i</code>. Compare <code>nums[i]</code> with all previous elements to update <code>dp[i]</code>.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> lengthOfLIS(nums):<br>&nbsp;&nbsp;dp = array of size N filled with 1s<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 1 <span class='keyword'>to</span> N-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> j = 0 <span class='keyword'>to</span> i-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> nums[i] &gt; nums[j]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dp[i] = max(dp[i], dp[j] + 1)<br>&nbsp;&nbsp;<span class='keyword'>return</span> max(dp)</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n<sup>2</sup>)</span>
+            <span class="cx-badge cx-badge--space">Space: O(n)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Clean, minimal space</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>O(n<sup>2</sup>) time is slow for large arrays</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Instead of a linear scan to find a subsequence to extend, we can maintain an active list of subsequence tails and use Binary Search!</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 4</span></div>
+          <div class="approach-card__title">Patience Sorting with Binary Search</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Maintain an array <code>tails</code> where <code>tails[i]</code> stores the smallest tail of all increasing subsequences of length <code>i+1</code>. Since <code>tails</code> is always sorted, we can use binary search.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> lengthOfLIS(nums):<br>&nbsp;&nbsp;tails = []<br>&nbsp;&nbsp;<span class='keyword'>for</span> x <span class='keyword'>in</span> nums:<br>&nbsp;&nbsp;&nbsp;&nbsp;idx = binarySearch(tails, x) <span class='comment'>// first element &ge; x</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> idx == len(tails): tails.push(x)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>else</span>: tails[idx] = x<br>&nbsp;&nbsp;<span class='keyword'>return</span> len(tails)</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n log n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(n)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Theoretically fastest possible</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Less intuitive than DP</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr class="row--brute"><td>Recursion</td><td><code>O(2<sup>n</sup>)</code></td><td><code>O(n)</code></td><td>TLE</td></tr>
+          <tr class="row--better"><td>2D Memoization</td><td><code>O(n<sup>2</sup>)</code></td><td><code>O(n<sup>2</sup>)</code></td><td>Okay</td></tr>
+          <tr class="row--better"><td>1D DP Tabulation</td><td><code>O(n<sup>2</sup>)</code></td><td><code>O(n)</code></td><td>Good</td></tr>
+          <tr class="row--optimal"><td>Patience / Binary Search</td><td><code>O(n log n)</code></td><td><code>O(n)</code></td><td>Optimal</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">&#10024;</span> Interactive Visualization (1D DP Array)</h2>
+      <div class="visualizer" id="lis-viz">
+        <div class="visualizer__controls">
+          <input type="text" id="lis-input" value="10, 9, 2, 5, 3, 7, 101, 18" style="padding:0.5rem; border-radius:var(--radius-sm); border:1px solid var(--border-primary); background:var(--bg-elevated); color:var(--text-primary); font-family:monospace; width: 300px; text-align: center;">
+          <button class="btn btn--primary" id="btn-step-lis">Next Step</button>
+          <button class="btn btn--outline" id="btn-reset-lis">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; justify-content: center; margin: 3rem 0; flex-wrap: wrap;" id="lis-container">
+          <!-- Blocks generated by JS -->
+        </div>
+
+        <div class="visualizer__log" id="lis-log">
+          Click "Next Step" to begin calculating LIS for <code>nums = [10, 9, 2, 5, 3, 7, 101, 18]</code>.
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const container = document.getElementById("lis-container");
+          const log = document.getElementById("lis-log");
+          const btnStep = document.getElementById("btn-step-lis");
+          const btnReset = document.getElementById("btn-reset-lis");
+          const inputEl = document.getElementById("lis-input");
+
+          let nums = [];
+          let dp = [];
+          let i = 1, j = 0;
+          let stage = 0; // 0: new i, 1: comparing j to i
+
+          function init() {
+            nums = inputEl.value.split(",").map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+            if (nums.length === 0) nums = [10, 9, 2, 5, 3, 7, 101, 18];
+            dp = Array(nums.length).fill(1);
+            i = 1; j = 0; stage = 0;
+            render();
+            log.innerHTML = `Array parsed. <code>dp</code> array initialized with 1s.`;
+            btnStep.disabled = false;
+            
+            if (nums.length <= 1) {
+              btnStep.disabled = true;
+              log.innerHTML = `Array too short. LIS is ${nums.length}.`;
+            }
+          }
+
+          function render() {
+            container.innerHTML = "";
+            for (let k = 0; k < nums.length; k++) {
+              const cell = document.createElement("div");
+              cell.style.width = "60px";
+              cell.style.height = "80px";
+              cell.style.display = "flex";
+              cell.style.flexDirection = "column";
+              cell.style.justifyContent = "center";
+              cell.style.alignItems = "center";
+              cell.style.borderRadius = "var(--radius-sm)";
+              cell.style.transition = "all 0.3s ease";
+              
+              if (k === i && stage === 1) {
+                cell.style.background = "var(--accent-orange-dim)";
+                cell.style.border = "2px solid var(--accent-orange)";
+                cell.style.boxShadow = "0 0 15px var(--accent-orange)";
+                cell.style.transform = "translateY(-5px)";
+              } else if (k === j && stage === 1) {
+                cell.style.background = "var(--accent-blue-dim)";
+                cell.style.border = "2px solid var(--accent-blue)";
+              } else {
+                cell.style.background = "var(--bg-elevated)";
+                cell.style.border = "1px solid var(--border-primary)";
+              }
+
+              const label = document.createElement("div");
+              label.style.fontSize = "0.8rem";
+              label.style.color = "var(--text-secondary)";
+              label.textContent = nums[k];
+              cell.appendChild(label);
+
+              const val = document.createElement("div");
+              val.style.fontWeight = "bold";
+              val.style.fontSize = "1.5rem";
+              val.style.marginTop = "10px";
+              val.style.color = "var(--accent-green)";
+              val.textContent = dp[k];
+              cell.appendChild(val);
+
+              container.appendChild(cell);
+            }
+          }
+
+          btnStep.addEventListener("click", () => {
+            if (i < nums.length) {
+              stage = 1;
+              render();
+              
+              if (nums[i] > nums[j]) {
+                if (dp[j] + 1 > dp[i]) {
+                  dp[i] = dp[j] + 1;
+                  log.innerHTML = `<code>nums[${j}] < nums[${i}]</code> (${nums[j]} < ${nums[i]}). Extended subsequence. Updated <code>dp[${i}] = ${dp[i]}</code>.`;
+                  render(); // Re-render to show updated dp
+                } else {
+                  log.innerHTML = `<code>nums[${j}] < nums[${i}]</code> (${nums[j]} < ${nums[i]}). But <code>dp[${j}]+1</code> is not greater than <code>dp[${i}]</code>. No update.`;
+                }
+              } else {
+                log.innerHTML = `<code>nums[${j}] &ge; nums[${i}]</code> (${nums[j]} &ge; ${nums[i]}). Cannot extend subsequence.`;
+              }
+              
+              j++;
+              if (j >= i) {
+                i++;
+                j = 0;
+                stage = 0;
+              }
+              
+              if (i >= nums.length) {
+                btnStep.disabled = true;
+                const maxLIS = Math.max(...dp);
+                log.innerHTML += `<br><br><strong>Finished!</strong> Maximum value in DP array is <strong>${maxLIS}</strong>.`;
+                stage = 0;
+                render();
+              }
+            }
+          });
+
+          btnReset.addEventListener("click", init);
+          inputEl.addEventListener("change", init);
+
+          init();
+        });
+      </script>
+    </section>
+
+    <!-- 5. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++ (O(n log n))</button><button class="code-block__tab" data-lang="python">Python (O(n log n))</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    int lengthOfLIS(vector&lt;int&gt;&amp; nums) {
+        vector&lt;int&gt; tails;
+        
+        for (int x : nums) {
+            // lower_bound does binary search to find the first element &ge; x
+            auto it = lower_bound(tails.begin(), tails.end(), x);
+            
+            if (it == tails.end()) {
+                // x is larger than all elements, append to extend LIS
+                tails.push_back(x);
+            } else {
+                // overwrite the element to maintain smaller tails
+                *it = x;
+            }
+        }
+        
+        return tails.size();
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">import bisect
+
+class Solution:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        tails = []
+        
+        for x in nums:
+            # bisect_left finds insertion point to maintain sorted order
+            idx = bisect.bisect_left(tails, x)
+            
+            if idx == len(tails):
+                # x is larger than all elements, append to extend LIS
+                tails.append(x)
+            else:
+                # overwrite the element to maintain smaller tails
+                tails[idx] = x
+                
+        return len(tails)</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <footer class="footer" style="margin-top: 4rem; padding: 2rem 0; text-align: center; color: var(--text-tertiary); border-top: 1px solid var(--border-primary);">
+    <p>CP-II Lab &copy; 2026. Built for learning.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

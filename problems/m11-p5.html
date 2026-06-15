@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diameter of Binary Tree - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-11-trees.html" class="navbar__link">&#8592; Back to Module 11: Trees</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-11-trees.html">Module 11: Trees</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Diameter of Binary Tree</span></div>
+      <h1 class="problem-header__title">Diameter of Binary Tree</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/diameter-of-binary-tree/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given the root of a binary tree, return the length of the diameter of the tree. The diameter of a binary tree is the length of the longest path between any two nodes in a tree. This path may or may not pass through the root.</p></div>
+    </section>
+
+    <!-- 2. Logic & Core Concept -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128218;</span> Logic & Core Concept</h2>
+      <div class="math-block">
+        <p>The <strong>diameter</strong> of a binary tree is the length of the longest path between any two nodes. The path <em>may or may not</em> pass through the root.</p>
+        <p>Length is defined by the number of edges. So a path with 3 nodes has a length of 2.</p>
+        <div style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-sm); margin-top:1rem; text-align:center;">
+          <code>Diameter at Node = Depth(node.left) + Depth(node.right)</code>
+        </div>
+        <p style="margin-top:1rem;">The overall diameter of the tree is the maximum diameter found at <em>any</em> node in the tree.</p>
+      </div>
+    </section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+      <div class="approach-card approach-card--brute">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Brute Force (Call Depth for Every Node)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">For every node, we calculate the depth of its left and right subtrees, sum them up as a potential diameter, and then recursively call <code>diameter()</code> on left and right children to find the absolute maximum.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> diameterOfBinaryTree(root):<br>&nbsp;&nbsp;<span class='keyword'>if</span> root is null: <span class='keyword'>return</span> 0<br>&nbsp;&nbsp;currentDiameter = depth(root.left) + depth(root.right)<br>&nbsp;&nbsp;leftDiameter = diameterOfBinaryTree(root.left)<br>&nbsp;&nbsp;rightDiameter = diameterOfBinaryTree(root.right)<br>&nbsp;&nbsp;<span class='keyword'>return</span> max(currentDiameter, max(leftDiameter, rightDiameter))</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n<sup>2</sup>)</span>
+            <span class="cx-badge cx-badge--space">Space: O(h)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Straightforward logic based directly on the definition</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Very slow. We recalculate depth repeatedly for the same nodes.</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">We can calculate the diameter <strong>while</strong> we are calculating the depth in a single bottom-up traversal!</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Optimized Bottom-Up DFS O(n)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">We maintain a global/reference variable <code>max_diameter</code>. We modify our standard <code>depth()</code> function: before a node returns its depth to its parent, it calculates <code>left_depth + right_depth</code> and updates <code>max_diameter</code> if it's larger.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> diameterOfBinaryTree(root):<br>&nbsp;&nbsp;max_d = 0<br>&nbsp;&nbsp;<span class='keyword'>function</span> depth(node):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> node is null: <span class='keyword'>return</span> 0<br>&nbsp;&nbsp;&nbsp;&nbsp;left = depth(node.left)<br>&nbsp;&nbsp;&nbsp;&nbsp;right = depth(node.right)<br>&nbsp;&nbsp;&nbsp;&nbsp;max_d = max(max_d, left + right)  <span class='comment'>// Update global max</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>return</span> 1 + max(left, right)       <span class='comment'>// Return depth</span><br>&nbsp;&nbsp;depth(root)<br>&nbsp;&nbsp;<span class='keyword'>return</span> max_d</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(h)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Visits each node exactly once</li><li>Elegant modification of a simple algorithm</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Requires a global/reference variable to carry state</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr class="row--brute"><td>Brute Force</td><td><code>O(n<sup>2</sup>)</code></td><td><code>O(h)</code></td><td>Too slow</td></tr>
+          <tr class="row--optimal"><td>Optimized Bottom-Up DFS</td><td><code>O(n)</code></td><td><code>O(h)</code></td><td>Optimal</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">&#10024;</span> Interactive Visualization (Optimized DFS)</h2>
+      <div class="visualizer" id="diam-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step-diam">Next Step</button>
+          <button class="btn btn--outline" id="btn-reset-diam">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; margin: 2rem 0; flex-wrap: wrap; justify-content: center; align-items:flex-start;">
+          <!-- Tree Display -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;" id="diam-tree-canvas">
+            <div>
+              <div class="t-node" id="dmn-1" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;position:relative;">
+                1
+                <div class="return-val" id="drv-1" style="position:absolute; top:-25px; color:var(--accent-green); font-size:12px; font-weight:bold; opacity:0; transition:all 0.3s; width:80px; text-align:center; left:-15px;">d:? | diam:?</div>
+              </div>
+            </div>
+            <div style="display:flex; gap: 60px;">
+              <div class="t-node" id="dmn-2" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;position:relative;">
+                2
+                <div class="return-val" id="drv-2" style="position:absolute; top:-25px; left:-30px; color:var(--accent-green); font-size:12px; font-weight:bold; opacity:0; transition:all 0.3s; width:80px; text-align:center;">d:? | diam:?</div>
+              </div>
+              <div class="t-node" id="dmn-3" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;position:relative;">
+                3
+                <div class="return-val" id="drv-3" style="position:absolute; top:-25px; right:-30px; color:var(--accent-green); font-size:12px; font-weight:bold; opacity:0; transition:all 0.3s; width:80px; text-align:center;">d:? | diam:?</div>
+              </div>
+            </div>
+            <div style="display:flex; gap: 20px; margin-right:110px;">
+              <div class="t-node" id="dmn-4" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;position:relative;">
+                4
+                <div class="return-val" id="drv-4" style="position:absolute; top:-25px; left:-30px; color:var(--accent-green); font-size:12px; font-weight:bold; opacity:0; transition:all 0.3s; width:80px; text-align:center;">d:? | diam:?</div>
+              </div>
+              <div class="t-node" id="dmn-5" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;position:relative;">
+                5
+                <div class="return-val" id="drv-5" style="position:absolute; top:-25px; right:-30px; color:var(--accent-green); font-size:12px; font-weight:bold; opacity:0; transition:all 0.3s; width:80px; text-align:center;">d:? | diam:?</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- State -->
+          <div style="display: flex; flex-direction: column; align-items: center; padding: 1.5rem; background: var(--bg-elevated); border: 1px solid var(--border-primary); border-radius: var(--radius-md);">
+            <h3 style="margin-bottom: 1rem;">Global State</h3>
+            <div style="font-size: 2rem; font-weight: bold; color: var(--accent-orange);" id="max-diam-val">max_diam = 0</div>
+          </div>
+        </div>
+
+        <div class="visualizer__log" id="diam-log">
+          Click "Next Step" to begin post-order traversal.
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const btnStep = document.getElementById("btn-step-diam");
+          const btnReset = document.getElementById("btn-reset-diam");
+          const log = document.getElementById("diam-log");
+          const maxDiamVal = document.getElementById("max-diam-val");
+          
+          // Steps: L, R, N traversal (postorder)
+          // node 4: L=0, R=0, diam=0, max=0, ret=1
+          // node 5: L=0, R=0, diam=0, max=0, ret=1
+          // node 2: L=1, R=1, diam=2, max=2, ret=2
+          // node 3: L=0, R=0, diam=0, max=2, ret=1
+          // node 1: L=2, R=1, diam=3, max=3, ret=3
+          const steps = [
+            { node: 4, l:0, r:0, diam:0, max:0, ret:1, msg:"Node 4 (leaf): left=0, right=0 &rarr; diam=0. Returns 1." },
+            { node: 5, l:0, r:0, diam:0, max:0, ret:1, msg:"Node 5 (leaf): left=0, right=0 &rarr; diam=0. Returns 1." },
+            { node: 2, l:1, r:1, diam:2, max:2, ret:2, msg:"Node 2: left=1, right=1 &rarr; diam=2. Update max_diam=2. Returns 2." },
+            { node: 3, l:0, r:0, diam:0, max:2, ret:1, msg:"Node 3 (leaf): left=0, right=0 &rarr; diam=0. Returns 1." },
+            { node: 1, l:2, r:1, diam:3, max:3, ret:3, msg:"Node 1 (root): left=2, right=1 &rarr; diam=3. Update max_diam=3. Returns 3." },
+          ];
+
+          let stepIdx = 0;
+
+          function resetViz() {
+            for(let i=1; i<=5; i++) {
+              const node = document.getElementById(`dmn-${i}`);
+              node.style.background = "var(--bg-elevated)";
+              node.style.borderColor = "var(--border-primary)";
+              
+              const rv = document.getElementById(`drv-${i}`);
+              rv.style.opacity = "0";
+              rv.innerHTML = "d:? | diam:?";
+            }
+            maxDiamVal.innerHTML = "max_diam = 0";
+          }
+
+          function init() {
+            stepIdx = 0;
+            resetViz();
+            log.innerHTML = "Click \"Next Step\" to begin post-order traversal.";
+            btnStep.disabled = false;
+          }
+
+          btnStep.addEventListener("click", () => {
+            if (stepIdx >= steps.length) return;
+            
+            const step = steps[stepIdx];
+            
+            document.getElementById(`dmn-${step.node}`).style.background = "var(--accent-purple-dim)";
+            document.getElementById(`dmn-${step.node}`).style.borderColor = "var(--accent-purple)";
+            
+            const rv = document.getElementById(`drv-${step.node}`);
+            rv.innerHTML = `d:${step.ret} | diam:${step.diam}`;
+            rv.style.opacity = "1";
+            
+            maxDiamVal.innerHTML = `max_diam = ${step.max}`;
+            log.innerHTML = step.msg;
+            
+            stepIdx++;
+            if (stepIdx >= steps.length) {
+              btnStep.disabled = true;
+              log.innerHTML += " <strong>Traversal complete!</strong>";
+            }
+          });
+
+          btnReset.addEventListener("click", init);
+        });
+      </script>
+    </section>
+
+    <!-- 5. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++ (O(n))</button><button class="code-block__tab" data-lang="python">Python (O(n))</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+    int max_diameter = 0;
+    
+    int depth(TreeNode* root) {
+        if (root == nullptr) return 0;
+        
+        int left_depth = depth(root-&gt;left);
+        int right_depth = depth(root-&gt;right);
+        
+        // Diameter passing through this node is sum of depths
+        max_diameter = max(max_diameter, left_depth + right_depth);
+        
+        // Return max depth from this node
+        return 1 + max(left_depth, right_depth);
+    }
+    
+public:
+    int diameterOfBinaryTree(TreeNode* root) {
+        max_diameter = 0; // reset for multiple test cases
+        depth(root);
+        return max_diameter;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+        self.max_diameter = 0
+        
+        def depth(node):
+            if not node:
+                return 0
+                
+            left_depth = depth(node.left)
+            right_depth = depth(node.right)
+            
+            # Diameter passing through this node is sum of depths
+            self.max_diameter = max(self.max_diameter, left_depth + right_depth)
+            
+            # Return max depth from this node
+            return 1 + max(left_depth, right_depth)
+            
+        depth(root)
+        return self.max_diameter</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <footer class="footer" style="margin-top: 4rem; padding: 2rem 0; text-align: center; color: var(--text-tertiary); border-top: 1px solid var(--border-primary);">
+    <p>CP-II Lab &copy; 2026. Built for learning.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

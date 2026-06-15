@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Power of 2 - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-02-bit-manipulation.html" class="navbar__link">&#8592; Back to Module 02: Bit Manipulation</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-02-bit-manipulation.html">Module 02: Bit Manipulation</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Power of 2</span></div>
+      <h1 class="problem-header__title">Power of 2</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/power-of-two/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given an integer <code>n</code>, return <code>true</code> if it is a power of two. Otherwise, return <code>false</code>.</p>
+<p><strong>Example:</strong> <code>n = 16</code> &rarr; <code>true</code> (16 = 2<sup>4</sup>). <code>n = 6</code> &rarr; <code>false</code>.</p>
+<p><strong>Constraints:</strong> <code>-2<sup>31</sup> &le; n &le; 2<sup>31</sup> - 1</code></p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class="math-block">
+  <div class="formula">A power of 2 has exactly ONE set bit in binary.</div>
+  <p style="font-size:0.9rem;margin-top:0.5rem;">2<sup>0</sup> = 1 (1), 2<sup>1</sup> = 2 (10), 2<sup>2</sup> = 4 (100), 2<sup>3</sup> = 8 (1000)...</p>
+  <p style="font-size:0.85rem;">If n has only 1 set bit, then <code>n &amp; (n-1) == 0</code>, because (n-1) flips all bits below that single set bit.</p>
+  <p style="font-size:0.85rem;">Example: n=8 (1000), n-1=7 (0111). 1000 &amp; 0111 = 0000. Power of 2!</p>
+</div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Repeated Division</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Keep dividing n by 2. If we reach 1, it's a power of 2. If at any point n is odd (and not 1), it's not.</p>
+        <div class="pseudocode-block"><span class="keyword">function</span> isPowerOfTwo(n):<br>
+&nbsp;&nbsp;<span class="keyword">if</span> n &le; 0: <span class="keyword">return</span> false<br>
+&nbsp;&nbsp;<span class="keyword">while</span> n > 1:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> n % 2 != 0: <span class="keyword">return</span> false<br>
+&nbsp;&nbsp;&nbsp;&nbsp;n = n / 2<br>
+&nbsp;&nbsp;<span class="keyword">return</span> true</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(log n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Very intuitive</li><li>Uses basic division</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Requires a loop</li><li>log(n) iterations for large numbers</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">Division is expensive compared to a single bitwise operation. Can we check in O(1)?</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Bit Trick: n & (n-1)</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">A power of 2 has exactly one set bit. <code>n &amp; (n-1)</code> removes the lowest set bit. If only one bit is set, the result is 0. This is an O(1) check!</p>
+        <div class="pseudocode-block"><span class="keyword">function</span> isPowerOfTwo(n):<br>
+&nbsp;&nbsp;<span class="keyword">return</span> n > 0 <span class="keyword">AND</span> (n &amp; (n - 1)) == 0</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(1)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Single operation</li><li>Constant time regardless of input size</li><li>Elegant and efficient</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Requires understanding of bitwise math</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Logic Flow Diagram -->
+    
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class="walkthrough-step">
+  <div class="walkthrough-step__desc">Trace: Is 16 a power of 2?</div>
+  <div class="math-block" style="text-align:left;font-size:0.9rem;">
+    n = 16 = <span class="highlight">10000</span><br>
+    n - 1 = 15 = 01111<br>
+    n &amp; (n-1) = 10000 &amp; 01111 = <span class="highlight">00000</span> = 0<br>
+    Since n > 0 and result is 0 &rarr; <span class="highlight">True! 16 is a power of 2.</span>
+  </div>
+</div>
+<div class="walkthrough-step">
+  <div class="walkthrough-step__desc">Trace: Is 6 a power of 2?</div>
+  <div class="math-block" style="text-align:left;font-size:0.9rem;">
+    n = 6 = <span class="highlight">110</span><br>
+    n - 1 = 5 = 101<br>
+    n &amp; (n-1) = 110 &amp; 101 = <span class="highlight">100</span> = 4 (not 0!)<br>
+    Since result is NOT 0 &rarr; <span class="highlight">False! 6 is not a power of 2.</span>
+  </div>
+</div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Repeated Division</td><td><code>O(log n)</code></td><td><code>O(1)</code></td><td>Intuitive but slow</td></tr>
+<tr class="row--optimal"><td>n &amp; (n-1) Trick</td><td><code>O(1)</code></td><td><code>O(1)</code></td><td>Optimal &mdash; single operation</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    bool isPowerOfTwo(int n) {
+        return n &gt; 0 &amp;&amp; (n &amp; (n - 1)) == 0;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def isPowerOfTwo(self, n: int) -&gt; bool:
+        return n &gt; 0 and (n &amp; (n - 1)) == 0</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

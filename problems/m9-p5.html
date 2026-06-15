@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Group Anagrams - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-09-hashing.html" class="navbar__link">&#8592; Back to Module 09: Hashing</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-09-hashing.html">Module 09: Hashing</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Group Anagrams</span></div>
+      <h1 class="problem-header__title">Group Anagrams</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/group-anagrams/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Group strings that are anagrams of each other.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Nested Loops Comparison</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Compare every string with every other string by sorting them. If they match, group them and mark them as visited.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> groupAnagrams(strs):<br>&nbsp;&nbsp;visited = set(), res = []<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> len(strs)-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> i <span class='keyword'>in</span> visited: <span class='keyword'>continue</span><br>&nbsp;&nbsp;&nbsp;&nbsp;group = [strs[i]]<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> j = i+1 <span class='keyword'>to</span> len(strs)-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> sort(strs[i]) == sort(strs[j]):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;group.append(strs[j])<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;visited.add(j)<br>&nbsp;&nbsp;&nbsp;&nbsp;res.append(group)<br>&nbsp;&nbsp;<span class='keyword'>return</span> res</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n<sup>2</sup> &times; k log k)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Straightforward logic</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Extremely slow (O(n&sup2;))</li><li>Lots of redundant sorting</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">We can avoid comparing every pair by using a Hash Map to group items that share the same sorted signature directly.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--better">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Hash Map with Sorted Key</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Sort each string. Anagrams will have the same sorted representation. Use it as a Hash Map key.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> groupAnagrams(strs):<br>&nbsp;&nbsp;map = HashMap()<br>&nbsp;&nbsp;<span class='keyword'>for</span> s <span class='keyword'>in</span> strs:<br>&nbsp;&nbsp;&nbsp;&nbsp;key = sort(s)<br>&nbsp;&nbsp;&nbsp;&nbsp;map[key].append(s)<br>&nbsp;&nbsp;<span class='keyword'>return</span> map.values()</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n &times; k log k)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n &times; k)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Elegant mapping</li><li>Very practical in most languages</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Sorting takes O(k log k) per string</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">If the string lengths are very large, the O(k log k) sorting dominates. We can create an anagram signature in O(k) time instead.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 3</span></div>
+        <div class="approach-card__title">Hash Map with Count Array Key</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Instead of sorting, count character frequencies (an array of size 26). Convert this array to a string or tuple and use it as the hash key.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> groupAnagrams(strs):<br>&nbsp;&nbsp;map = HashMap()<br>&nbsp;&nbsp;<span class='keyword'>for</span> s <span class='keyword'>in</span> strs:<br>&nbsp;&nbsp;&nbsp;&nbsp;count = [0] * 26<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> c <span class='keyword'>in</span> s: count[c - 'a'] += 1<br>&nbsp;&nbsp;&nbsp;&nbsp;key = tuple(count) <span class='comment'>// or string join</span><br>&nbsp;&nbsp;&nbsp;&nbsp;map[key].append(s)<br>&nbsp;&nbsp;<span class='keyword'>return</span> map.values()</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n &times; k)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n &times; k)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Optimal O(n &times; k) time</li><li>No sorting required</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Converting array to tuple/string adds minor overhead</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approach Comparison Table -->
+    <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time Complexity</th><th>Space Complexity</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr class="row--brute"><td>Nested Loops</td><td><code>O(n&sup2; &times; k log k)</code></td><td><code>O(n)</code></td><td>Naive</td></tr>
+        <tr class="row--better"><td>Sorted String Key</td><td><code>O(n &times; k log k)</code></td><td><code>O(n &times; k)</code></td><td>Better</td></tr>
+        <tr class="row--optimal"><td>Count Array Key</td><td><code>O(n &times; k)</code></td><td><code>O(n &times; k)</code></td><td>Optimal</td></tr>
+      </tbody>
+    </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="anagram-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step">Step Processing</button>
+          <button class="btn btn--outline" id="btn-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 4rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap;">
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 200px;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); text-align:center;">Input Strings</div>
+                <div id="strs-container" style="display: flex; flex-direction: column; gap: 0.25rem;"></div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1; min-width: 300px;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); text-align:center;">Anagram Map (Key &rarr; Group)</div>
+                <div id="map-container" style="display: flex; flex-direction: column; gap: 0.5rem; min-height: 100px; border: 2px dashed var(--border-primary); padding: 0.5rem; border-radius: 8px;"></div>
+            </div>
+        </div>
+
+        <div class="visualizer__log" id="viz-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6;">
+          Click 'Step Processing' to group strings.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const strs = ["eat", "tea", "tan", "ate", "nat", "bat"];
+          let mp = {};
+          let idx = 0;
+          let isDone = false;
+          
+          const strsCont = document.getElementById('strs-container');
+          const mapCont = document.getElementById('map-container');
+          const log = document.getElementById('viz-log');
+
+          function init() {
+              mp = {}; idx = 0; isDone = false;
+              render();
+              log.innerHTML = "Click 'Step Processing' to group strings.";
+          }
+
+          function createTag(val, hl) {
+              const el = document.createElement('div');
+              el.style.padding = '0.5rem'; el.style.border = '1px solid var(--border-primary)';
+              el.style.borderRadius = '4px'; el.textContent = val; el.style.fontFamily = 'var(--font-mono)';
+              el.style.textAlign = 'center';
+              if (hl === 'curr') { el.style.background = 'var(--accent-purple)'; el.style.color = 'black'; }
+              else if (hl === 'done') { el.style.background = 'var(--bg-secondary)'; el.style.opacity = '0.5'; }
+              return el;
+          }
+
+          function render() {
+              strsCont.innerHTML = '';
+              strs.forEach((s, i) => {
+                  let hl = '';
+                  if (i === idx && !isDone) hl = 'curr';
+                  if (i < idx) hl = 'done';
+                  strsCont.appendChild(createTag(s, hl));
+              });
+              
+              mapCont.innerHTML = '';
+              Object.keys(mp).forEach(key => {
+                  const row = document.createElement('div');
+                  row.style.display = 'flex'; row.style.gap = '1rem'; row.style.alignItems = 'center';
+                  row.style.background = 'var(--bg-secondary)'; row.style.padding = '0.5rem'; row.style.borderRadius = '4px';
+                  
+                  const keyEl = document.createElement('div');
+                  keyEl.style.fontFamily = 'var(--font-mono)'; keyEl.style.fontWeight = 'bold'; keyEl.style.color = 'var(--accent-orange)';
+                  keyEl.textContent = key;
+                  
+                  const valsEl = document.createElement('div');
+                  valsEl.style.fontFamily = 'var(--font-mono)';
+                  valsEl.textContent = `[ ${mp[key].map(s=>\`"\${s}"\`).join(', ')} ]`;
+                  
+                  row.appendChild(keyEl);
+                  row.appendChild(valsEl);
+                  mapCont.appendChild(row);
+              });
+          }
+
+          function step() {
+              if (isDone) return;
+              if (idx >= strs.length) {
+                  log.innerHTML = `🎉 <strong>Complete!</strong> All anagrams grouped.`;
+                  isDone = true;
+                  render();
+                  return;
+              }
+              
+              const s = strs[idx];
+              const key = s.split('').sort().join('');
+              if (!mp[key]) mp[key] = [];
+              mp[key].push(s);
+              
+              log.innerHTML = `Processing <code>"${s}"</code>.<br>Sorted key: <strong>"${key}"</strong>. Added to map.`;
+              
+              idx++;
+              render();
+          }
+
+          document.getElementById('btn-step').addEventListener('click', step);
+          document.getElementById('btn-reset').addEventListener('click', init);
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: ["eat", "tea", "tan", "ate", "nat", "bat"]</div><div class='math-block' style='text-align:left;font-size:0.9rem;'>
+<pre style="color:var(--text-secondary)">
+Init Map = {}
+
+1. "eat" &rarr; sort &rarr; "aet". Map["aet"] = ["eat"]
+2. "tea" &rarr; sort &rarr; "aet". Map["aet"] = ["eat", "tea"]
+3. "tan" &rarr; sort &rarr; "ant". Map["ant"] = ["tan"]
+4. "ate" &rarr; sort &rarr; "aet". Map["aet"] = ["eat", "tea", "ate"]
+5. "nat" &rarr; sort &rarr; "ant". Map["ant"] = ["tan", "nat"]
+6. "bat" &rarr; sort &rarr; "abt". Map["abt"] = ["bat"]
+
+<span class="highlight">Result: [["eat", "tea", "ate"], ["tan", "nat"], ["bat"]]</span>
+</pre></div></div></section>
+<!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    vector&lt;vector&lt;string&gt;&gt; groupAnagrams(vector&lt;string&gt;&amp; strs) {
+        unordered_map&lt;string, vector&lt;string&gt;&gt; mp;
+        for (string s : strs) {
+            string key = s;
+            sort(key.begin(), key.end());
+            mp[key].push_back(s);
+        }
+        vector&lt;vector&lt;string&gt;&gt; res;
+        for (auto&amp; pair : mp) res.push_back(pair.second);
+        return res;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">from collections import defaultdict
+class Solution:
+    def groupAnagrams(self, strs):
+        mp = defaultdict(list)
+        for s in strs:
+            mp[tuple(sorted(s))].append(s)
+        return list(mp.values())</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

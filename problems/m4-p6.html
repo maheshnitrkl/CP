@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Top K Frequent Elements - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-04-sorting.html" class="navbar__link">&#8592; Back to Module 04: Sorting</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-04-sorting.html">Module 04: Sorting</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Top K Frequent Elements</span></div>
+      <h1 class="problem-header__title">Top K Frequent Elements</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/top-k-frequent-elements/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given an integer array <code>nums</code> and integer <code>k</code>, return the k most frequent elements.</p><p><strong>Example:</strong> <code>[1,1,1,2,2,3], k=2</code> &rarr; <code>[1,2]</code></p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Bucket Sort by Frequency</div><p style='font-size:0.9rem;margin-top:0.5rem;'>Maximum possible frequency = n. Create n+1 buckets where bucket[i] holds elements with frequency i. Iterate buckets from high to low to get top-k.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Sort by Frequency</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Count frequencies, then sort elements by frequency in descending order. Take the first k.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> topKFrequent(nums, k):<br>&nbsp;&nbsp;freq = countFrequencies(nums)<br>&nbsp;&nbsp;sorted = sortByFrequency(freq, descending)<br>&nbsp;&nbsp;<span class='keyword'>return</span> sorted[:k]</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n log n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Straightforward</li><li>Easy to implement</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>O(n log n) due to sorting</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We don't need to fully sort. A heap of size k or bucket sort can be faster.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--better">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Min-Heap of Size k</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Count frequencies. Maintain a min-heap of size k based on frequency. The heap contains the top-k frequent elements.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> topKFrequent(nums, k):<br>&nbsp;&nbsp;freq = countFrequencies(nums)<br>&nbsp;&nbsp;minHeap = MinHeap() <span class='comment'>// by frequency</span><br>&nbsp;&nbsp;<span class='keyword'>for</span> (element, count) in freq:<br>&nbsp;&nbsp;&nbsp;&nbsp;minHeap.push(element, count)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> minHeap.size() > k: minHeap.pop()<br>&nbsp;&nbsp;<span class='keyword'>return</span> minHeap.elements()</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n log k)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(n log k) is better when k << n</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Still requires heap operations</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">Bucket sort can achieve O(n) by using frequency as index.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 3</span></div>
+        <div class="approach-card__title">Bucket Sort by Frequency</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Use an array of buckets where index = frequency. Iterate from highest frequency down, collecting elements until we have k.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> topKFrequent(nums, k):<br>&nbsp;&nbsp;freq = countFrequencies(nums)<br>&nbsp;&nbsp;buckets = array of (n+1) empty lists<br>&nbsp;&nbsp;<span class='keyword'>for</span> (element, count) in freq:<br>&nbsp;&nbsp;&nbsp;&nbsp;buckets[count].append(element)<br>&nbsp;&nbsp;result = []<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = n <span class='keyword'>downto</span> 0:<br>&nbsp;&nbsp;&nbsp;&nbsp;result.extend(buckets[i])<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> len(result) >= k: <span class='keyword'>break</span><br>&nbsp;&nbsp;<span class='keyword'>return</span> result[:k]</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(n) time</li><li>No sorting or heap needed</li><li>Leverages bounded frequency range</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Uses O(n) space for buckets</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Sort</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="text-align: center; font-family: var(--font-mono); margin: 1rem 0;">Frequency Map</div>
+        <div class="array-container" id="freq-map" style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; min-height: 40px; flex-wrap: wrap;">
+        </div>
+
+        <div style="text-align: center; font-family: var(--font-mono); margin: 1rem 0;">Buckets (Index = Frequency)</div>
+        <div class="array-container" id="buckets-array" style="display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 2rem; position: relative; min-height: 80px; align-items: flex-end;">
+        </div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6;">
+          Click 'Step Sort' to build the frequency map.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const arr = [1, 1, 1, 2, 2, 3];
+          const k = 2;
+          
+          let freq = {};
+          let buckets = [];
+          let result = [];
+          
+          let state = 0; // 0: map building, 1: bucket filling, 2: collecting
+          let arrIdx = 0;
+          let collectIdx = arr.length;
+          
+          const freqCont = document.getElementById('freq-map');
+          const buckCont = document.getElementById('buckets-array');
+          const log = document.getElementById('search-log');
+
+          function render() {
+              freqCont.innerHTML = '';
+              buckCont.innerHTML = '';
+              
+              // Render freq map
+              Object.entries(freq).forEach(([key, val]) => {
+                  const el = document.createElement('div');
+                  el.style.background = 'var(--bg-secondary)';
+                  el.style.border = '1px solid var(--border-primary)';
+                  el.style.padding = '0.5rem 1rem';
+                  el.style.borderRadius = '4px';
+                  el.innerHTML = `<span style="color:var(--text-secondary)">Num ${key}:</span> <strong>${val}</strong>`;
+                  freqCont.appendChild(el);
+              });
+              
+              // Render buckets if state >= 1
+              if (state >= 1) {
+                  for (let i = 0; i <= arr.length; i++) {
+                      const bCont = document.createElement('div');
+                      bCont.style.display = 'flex';
+                      bCont.style.flexDirection = 'column';
+                      bCont.style.alignItems = 'center';
+                      bCont.style.gap = '0.5rem';
+                      
+                      const box = document.createElement('div');
+                      box.style.width = '40px';
+                      box.style.minHeight = '40px';
+                      box.style.border = '2px dashed var(--border-primary)';
+                      box.style.borderRadius = '4px';
+                      box.style.display = 'flex';
+                      box.style.flexDirection = 'column';
+                      box.style.gap = '2px';
+                      box.style.padding = '2px';
+                      box.style.justifyContent = 'flex-end';
+                      if (state === 2 && i === collectIdx) box.style.borderColor = 'var(--accent-cyan)';
+                      
+                      if (buckets[i]) {
+                          buckets[i].forEach(num => {
+                              const item = document.createElement('div');
+                              item.style.background = result.includes(num) ? 'var(--accent-green)' : 'var(--accent-purple)';
+                              item.style.color = 'white';
+                              item.style.textAlign = 'center';
+                              item.style.fontSize = '12px';
+                              item.style.padding = '2px 0';
+                              item.style.borderRadius = '2px';
+                              item.textContent = num;
+                              box.appendChild(item);
+                          });
+                      }
+                      
+                      const idxLabel = document.createElement('div');
+                      idxLabel.textContent = i;
+                      idxLabel.style.fontSize = '10px';
+                      idxLabel.style.color = 'var(--text-secondary)';
+                      
+                      bCont.appendChild(box);
+                      bCont.appendChild(idxLabel);
+                      buckCont.appendChild(bCont);
+                  }
+              }
+          }
+
+          function step() {
+              if (state === 3) return;
+              
+              if (state === 0) {
+                  if (arrIdx < arr.length) {
+                      let num = arr[arrIdx];
+                      freq[num] = (freq[num] || 0) + 1;
+                      log.innerHTML = `Counting element <strong>${num}</strong>. Freq is now <strong>${freq[num]}</strong>.`;
+                      arrIdx++;
+                  } else {
+                      log.innerHTML = `Frequency map complete! Now, let's create buckets where index = frequency.`;
+                      for(let i=0; i<=arr.length; i++) buckets[i] = [];
+                      state = 1;
+                  }
+              } else if (state === 1) {
+                  Object.entries(freq).forEach(([num, count]) => {
+                      buckets[count].push(parseInt(num));
+                  });
+                  log.innerHTML = `Placed numbers into buckets based on their frequency. Now we collect top <strong>${k}</strong> from right to left.`;
+                  state = 2;
+                  collectIdx = arr.length;
+              } else if (state === 2) {
+                  if (result.length >= k || collectIdx < 0) {
+                      log.innerHTML = `🎉 Done! Top ${k} elements: <strong>[${result.join(', ')}]</strong>.`;
+                      state = 3;
+                      render();
+                      return;
+                  }
+                  
+                  if (buckets[collectIdx] && buckets[collectIdx].length > 0) {
+                      log.innerHTML = `Bucket at freq <strong>${collectIdx}</strong> has elements: [${buckets[collectIdx].join(', ')}]. Adding to result.`;
+                      buckets[collectIdx].forEach(num => {
+                          if (result.length < k) result.push(num);
+                      });
+                  } else {
+                      log.innerHTML = `Bucket at freq <strong>${collectIdx}</strong> is empty. Moving left.`;
+                  }
+                  collectIdx--;
+              }
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              freq = {};
+              buckets = [];
+              result = [];
+              state = 0;
+              arrIdx = 0;
+              collectIdx = arr.length;
+              log.innerHTML = "Click 'Step Sort' to build the frequency map.";
+              render();
+          });
+          render();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Sort by Freq</td><td><code>O(n log n)</code></td><td><code>O(n)</code></td><td>Simple but slow</td></tr>
+<tr><td>Min-Heap</td><td><code>O(n log k)</code></td><td><code>O(n)</code></td><td>Better for small k</td></tr>
+<tr class="row--optimal"><td>Bucket Sort</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    vector&lt;int&gt; topKFrequent(vector&lt;int&gt;&amp; nums, int k) {
+        unordered_map&lt;int, int&gt; freq;
+        for (int x : nums) freq[x]++;
+        vector&lt;vector&lt;int&gt;&gt; buckets(nums.size() + 1);
+        for (auto&amp; [num, count] : freq) buckets[count].push_back(num);
+        vector&lt;int&gt; result;
+        for (int i = buckets.size() - 1; i &gt;= 0 &amp;&amp; result.size() &lt; k; i--)
+            for (int num : buckets[i]) {
+                result.push_back(num);
+                if (result.size() == k) break;
+            }
+        return result;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">from collections import Counter
+class Solution:
+    def topKFrequent(self, nums, k):
+        freq = Counter(nums)
+        buckets = [[] for _ in range(len(nums) + 1)]
+        for num, count in freq.items():
+            buckets[count].append(num)
+        result = []
+        for i in range(len(buckets) - 1, -1, -1):
+            result.extend(buckets[i])
+            if len(result) &gt;= k:
+                return result[:k]
+        return result</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

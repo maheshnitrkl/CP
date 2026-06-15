@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Module 2: Bit Manipulation — Master bitwise operations, set bits, XOR tricks, and binary number problem solving.">
+  <title>Module 02: Bit Manipulation — CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/module.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">⚡</span><span>CP-II Lab</span></a><div class="navbar__nav" id="nav-menu"><a href="../index.html" class="navbar__link">📚 All Modules</a><a href="#theory" class="navbar__link">📖 Theory</a><a href="#visualization" class="navbar__link">🎨 Visualize</a><a href="#problems" class="navbar__link">💡 Problems</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button><button class="navbar__hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button></div></div></nav>
+
+  <div class="module-page">
+    <section class="module-hero">
+      <div class="module-hero__bg"><div class="module-hero__orb module-hero__orb--1" style="background: var(--accent-purple);"></div><div class="module-hero__orb module-hero__orb--2" style="background: var(--accent-cyan);"></div></div>
+      <div class="container"><div class="module-hero__content">
+        <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">›</span><span class="breadcrumb__current">Module 02</span></div>
+        <span class="module-hero__number">💻 Module 02</span>
+        <h1 class="module-hero__title">Bit <span class="text-gradient">Manipulation</span></h1>
+        <p class="module-hero__desc">Master bitwise operations — AND, OR, XOR, NOT, shifts. Learn to count set bits, find missing/non-repeating numbers, and solve problems at the binary level with optimal efficiency.</p>
+        <div class="module-hero__meta">
+          <span class="module-hero__meta-item"><span class="icon">📝</span> 6 Problems</span>
+          <span class="module-hero__meta-item"><span class="icon">⏱️</span> ~2.5 hours</span>
+          <span class="module-hero__meta-item"><span class="icon">📊</span> Easy to Medium</span>
+        </div>
+      </div></div>
+    </section>
+
+    <div class="module-layout">
+      <aside class="module-sidebar"><nav class="toc"><div class="toc__title">Contents</div><div class="toc__list">
+        <a href="#theory" class="toc__link active">📖 Theory</a>
+        <a href="#operators" class="toc__link toc__link--sub">Bitwise Operators</a>
+        <a href="#tricks" class="toc__link toc__link--sub">Common Tricks</a>
+        <a href="#visualization" class="toc__link">🎨 Visualization</a>
+        <a href="#problems" class="toc__link">💡 Problems</a>
+        <a href="#p1" class="toc__link toc__link--sub">Number of 1 Bits</a>
+        <a href="#p2" class="toc__link toc__link--sub">Bit Difference</a>
+        <a href="#p3" class="toc__link toc__link--sub">Power of 2</a>
+        <a href="#p4" class="toc__link toc__link--sub">Find Position of Set Bit</a>
+        <a href="#p5" class="toc__link toc__link--sub">Missing Number</a>
+        <a href="#p6" class="toc__link toc__link--sub">Non Repeating Numbers</a>
+      </div></nav></aside>
+
+      <main class="module-main">
+        <section class="module-section" id="theory">
+          <h2 class="module-section__title"><span class="icon">📖</span> Theory</h2>
+
+          <div class="theory-block" id="operators">
+            <h3 class="theory-block__title">⚙️ Bitwise Operators</h3>
+            <div class="theory-block__content">
+              <table class="complexity-table">
+                <thead><tr><th>Operator</th><th>Symbol</th><th>Description</th><th>Example (5=101, 3=011)</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>AND</strong></td><td><code>&</code></td><td>1 only if both bits are 1</td><td><code>5 & 3 = 1 (001)</code></td></tr>
+                  <tr><td><strong>OR</strong></td><td><code>|</code></td><td>1 if either bit is 1</td><td><code>5 | 3 = 7 (111)</code></td></tr>
+                  <tr><td><strong>XOR</strong></td><td><code>^</code></td><td>1 if bits differ</td><td><code>5 ^ 3 = 6 (110)</code></td></tr>
+                  <tr><td><strong>NOT</strong></td><td><code>~</code></td><td>Flips all bits</td><td><code>~5 = -6</code></td></tr>
+                  <tr><td><strong>Left Shift</strong></td><td><code>&lt;&lt;</code></td><td>Multiply by 2ⁿ</td><td><code>5 &lt;&lt; 1 = 10</code></td></tr>
+                  <tr><td><strong>Right Shift</strong></td><td><code>&gt;&gt;</code></td><td>Divide by 2ⁿ</td><td><code>5 &gt;&gt; 1 = 2</code></td></tr>
+                </tbody>
+              </table>
+
+              <div class="callout callout--tip">
+                <div class="callout__title">💡 XOR Properties (Most Important!)</div>
+                <div class="callout__body">
+                  <code>a ^ a = 0</code> (self-cancellation)<br>
+                  <code>a ^ 0 = a</code> (identity)<br>
+                  <code>a ^ b ^ a = b</code> (find the odd one out)<br>
+                  XOR is commutative and associative
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="theory-block" id="tricks">
+            <h3 class="theory-block__title">🎯 Common Bit Tricks</h3>
+            <div class="theory-block__content">
+              <table class="complexity-table">
+                <thead><tr><th>Operation</th><th>Expression</th><th>Example</th></tr></thead>
+                <tbody>
+                  <tr><td>Check if n is power of 2</td><td><code>n &amp; (n-1) == 0</code></td><td><code>8 &amp; 7 = 0 ✅</code></td></tr>
+                  <tr><td>Get i-th bit</td><td><code>(n &gt;&gt; i) &amp; 1</code></td><td>Get bit 2 of 5: <code>(101&gt;&gt;2)&amp;1 = 1</code></td></tr>
+                  <tr><td>Set i-th bit</td><td><code>n | (1 &lt;&lt; i)</code></td><td>Set bit 1 of 5: <code>101|010 = 111 = 7</code></td></tr>
+                  <tr><td>Clear i-th bit</td><td><code>n &amp; ~(1 &lt;&lt; i)</code></td><td>Clear bit 0 of 5: <code>101&amp;110 = 100 = 4</code></td></tr>
+                  <tr><td>Toggle i-th bit</td><td><code>n ^ (1 &lt;&lt; i)</code></td><td>Toggle bit 2 of 5: <code>101^100 = 001 = 1</code></td></tr>
+                  <tr><td>Count set bits</td><td><code>__builtin_popcount(n)</code></td><td>popcount(5) = 2</td></tr>
+                  <tr><td>Lowest set bit</td><td><code>n &amp; (-n)</code></td><td><code>12 &amp; -12 = 4</code></td></tr>
+                  <tr><td>Remove lowest set bit</td><td><code>n &amp; (n-1)</code></td><td><code>12 &amp; 11 = 8</code></td></tr>
+                </tbody>
+              </table>
+              
+              <h4>Brian Kernighan's Algorithm — Count Set Bits</h4>
+              <div class="code-block">
+                <div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div>
+                <div class="code-block__body">
+                  <div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">int countSetBits(int n) {
+    int count = 0;
+    while (n) {
+        n &= (n - 1); // Remove lowest set bit
+        count++;
+    }
+    return count;
+}
+// Or: __builtin_popcount(n) in C++</code></pre></div>
+                  <div class="code-block__content" data-lang="python"><pre><code class="language-python">def count_set_bits(n):
+    count = 0
+    while n:
+        n &= (n - 1)  # Remove lowest set bit
+        count += 1
+    return count
+# Or: bin(n).count('1') in Python</code></pre></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Visualization -->
+        <section class="module-section" id="visualization">
+          <h2 class="module-section__title"><span class="icon">🎨</span> Binary Visualizer</h2>
+          <div class="viz-container">
+            <div class="viz-container__header">
+              <span class="viz-container__title">💻 Binary Representation</span>
+              <div class="viz-container__controls">
+                <input type="number" class="viz-input" id="bit-input" value="42" min="0" max="255" style="width: 80px;">
+                <button class="viz-btn" id="bit-update" title="Update">🔄</button>
+              </div>
+            </div>
+            <div class="viz-container__canvas" id="bit-canvas" style="min-height: 180px; flex-direction: column; gap: var(--space-4);"></div>
+            <div class="viz-container__info" id="bit-info">Enter a number (0-255) to see its binary representation and bit operations.</div>
+          </div>
+        </section>
+
+        <!-- Problems -->
+        <section class="module-section" id="problems">
+          <h2 class="module-section__title"><span class="icon">💡</span> Practice Problems</h2>
+          <div class="problems-list">
+
+            <!-- Problem 1 -->
+            <a href="../problems/m2-p1.html" id="p1" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#1</span>
+                    <h3 class="problem-card__title">Number of 1 Bits</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 2 -->
+            <a href="../problems/m2-p2.html" id="p2" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#2</span>
+                    <h3 class="problem-card__title">Bit Difference</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 3 -->
+            <a href="../problems/m2-p3.html" id="p3" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#3</span>
+                    <h3 class="problem-card__title">Power of 2</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 4 -->
+            <a href="../problems/m2-p4.html" id="p4" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#4</span>
+                    <h3 class="problem-card__title">Find Position of Set Bit</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 5 -->
+            <a href="../problems/m2-p5.html" id="p5" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#5</span>
+                    <h3 class="problem-card__title">Missing Number</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 6 -->
+            <a href="../problems/m2-p6.html" id="p6" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#6</span>
+                    <h3 class="problem-card__title">Non Repeating Numbers</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            </div>
+        </section>
+
+        <div class="module-nav">
+          <a href="module-01-number-theory.html" class="module-nav__btn"><div><span class="module-nav__label">← Previous Module</span><span class="module-nav__title">Number Theory</span></div></a>
+          <a href="module-03-searching.html" class="module-nav__btn module-nav__btn--next"><div><span class="module-nav__label">Next Module →</span><span class="module-nav__title">Searching</span></div></a>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+  <script>
+  (function() {
+    const input = document.getElementById('bit-input');
+    const canvas = document.getElementById('bit-canvas');
+    const info = document.getElementById('bit-info');
+    const updateBtn = document.getElementById('bit-update');
+
+    function render(n) {
+      n = Math.max(0, Math.min(255, parseInt(n) || 0));
+      const bits = n.toString(2).padStart(8, '0');
+      const setBitCount = bits.split('').filter(b => b === '1').length;
+      
+      canvas.innerHTML = `
+        <div style="display:flex;align-items:center;gap:var(--space-4);flex-wrap:wrap;justify-content:center;">
+          <span style="font-family:var(--font-mono);font-size:var(--fs-lg);color:var(--text-secondary);min-width:50px;text-align:right;">${n} =</span>
+          <div style="display:flex;gap:6px;">
+            ${bits.split('').map((b, i) => `
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <span style="font-size:var(--fs-xs);color:var(--text-tertiary);">${7-i}</span>
+                <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-md);font-family:var(--font-mono);font-size:var(--fs-lg);font-weight:700;border:2px solid ${b==='1'?'var(--accent-cyan)':'var(--border-primary)'};background:${b==='1'?'var(--accent-cyan-dim)':'var(--bg-elevated)'};color:${b==='1'?'var(--accent-cyan)':'var(--text-tertiary)'};">${b}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div style="display:flex;gap:var(--space-6);justify-content:center;flex-wrap:wrap;font-size:var(--fs-sm);">
+          <div style="padding:var(--space-2) var(--space-4);background:var(--bg-elevated);border-radius:var(--radius-md);border:1px solid var(--border-primary);">
+            <span style="color:var(--text-tertiary);">Set bits:</span> <strong style="color:var(--accent-green);">${setBitCount}</strong>
+          </div>
+          <div style="padding:var(--space-2) var(--space-4);background:var(--bg-elevated);border-radius:var(--radius-md);border:1px solid var(--border-primary);">
+            <span style="color:var(--text-tertiary);">Power of 2?</span> <strong style="color:${(n>0&&(n&(n-1))===0)?'var(--accent-green)':'var(--accent-red)'};">${(n>0&&(n&(n-1))===0)?'Yes ✅':'No ❌'}</strong>
+          </div>
+          <div style="padding:var(--space-2) var(--space-4);background:var(--bg-elevated);border-radius:var(--radius-md);border:1px solid var(--border-primary);">
+            <span style="color:var(--text-tertiary);">n & (n-1):</span> <strong style="color:var(--accent-purple);">${n & (n-1)}</strong>
+          </div>
+          <div style="padding:var(--space-2) var(--space-4);background:var(--bg-elevated);border-radius:var(--radius-md);border:1px solid var(--border-primary);">
+            <span style="color:var(--text-tertiary);">n & (-n):</span> <strong style="color:var(--accent-orange);">${n>0? n & (-n) : 0}</strong>
+          </div>
+        </div>`;
+      info.innerHTML = `Decimal <strong>${n}</strong> = Binary <strong>${bits}</strong> (${setBitCount} set bits)`;
+    }
+
+    updateBtn.addEventListener('click', () => render(input.value));
+    input.addEventListener('keyup', (e) => { if(e.key==='Enter') render(input.value); });
+    render(42);
+  })();
+  </script>
+</body>
+</html>

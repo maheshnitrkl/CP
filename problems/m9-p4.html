@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sort Characters By Frequency - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-09-hashing.html" class="navbar__link">&#8592; Back to Module 09: Hashing</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-09-hashing.html">Module 09: Hashing</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Sort Characters By Frequency</span></div>
+      <h1 class="problem-header__title">Sort Characters By Frequency</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/sort-characters-by-frequency/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Sort a string in decreasing order based on the frequency of characters.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Hash Map + Max-Heap</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Count character frequencies using a Hash Map. Push each `(frequency, char)` into a Max-Heap. Then, pop from the heap to build the final string.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> frequencySort(s):<br>&nbsp;&nbsp;freq = Counter(s)<br>&nbsp;&nbsp;heap = MaxHeap()<br>&nbsp;&nbsp;<span class='keyword'>for</span> char, count <span class='keyword'>in</span> freq:<br>&nbsp;&nbsp;&nbsp;&nbsp;heap.push((count, char))<br>&nbsp;&nbsp;res = ""<br>&nbsp;&nbsp;<span class='keyword'>while</span> not heap.empty():<br>&nbsp;&nbsp;&nbsp;&nbsp;count, char = heap.pop()<br>&nbsp;&nbsp;&nbsp;&nbsp;res += char * count<br>&nbsp;&nbsp;<span class='keyword'>return</span> res</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n log k)</span>
+          <span class="cx-badge cx-badge--space">Space: O(k)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Naturally sorts dynamically</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Heap overhead</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Since all we need is a full sort of the keys, a simple array sort might be more straightforward.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--better">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Hash Map + Array Sort</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Count frequencies, put the keys in a list, sort the characters by their frequency descending, and rebuild the string.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> frequencySort(s):<br>&nbsp;&nbsp;freq = Counter(s)<br>&nbsp;&nbsp;chars = list(freq.keys())<br>&nbsp;&nbsp;chars.sort(key=lambda c: freq[c], reverse=True)<br>&nbsp;&nbsp;res = ""<br>&nbsp;&nbsp;<span class='keyword'>for</span> c <span class='keyword'>in</span> chars:<br>&nbsp;&nbsp;&nbsp;&nbsp;res += c * freq[c]<br>&nbsp;&nbsp;<span class='keyword'>return</span> res</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n log n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Simple pipeline</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Sorting is O(n log n) in worst case</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">The maximum possible frequency is the length of the string `n`. We can use Bucket Sort to achieve true O(n) time!</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 3</span></div>
+        <div class="approach-card__title">Hash Map + Bucket Sort</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Create an array of "buckets" where the index represents the frequency. Place each character in the bucket matching its frequency. Traverse the buckets backwards (highest frequency first) to build the result.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> frequencySort(s):<br>&nbsp;&nbsp;freq = Counter(s)<br>&nbsp;&nbsp;buckets = array of size len(s) + 1<br>&nbsp;&nbsp;<span class='keyword'>for</span> char, count <span class='keyword'>in</span> freq:<br>&nbsp;&nbsp;&nbsp;&nbsp;buckets[count].append(char)<br>&nbsp;&nbsp;res = ""<br>&nbsp;&nbsp;<span class='keyword'>for</span> count <span class='keyword'>from</span> len(s) <span class='keyword'>downTo</span> 1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> char <span class='keyword'>in</span> buckets[count]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res += char * count<br>&nbsp;&nbsp;<span class='keyword'>return</span> res</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>True linear time O(n)</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Uses slightly more space for the buckets array</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approach Comparison Table -->
+    <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time Complexity</th><th>Space Complexity</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr class="row--brute"><td>Max-Heap</td><td><code>O(n log k)</code></td><td><code>O(k)</code></td><td>Better</td></tr>
+        <tr class="row--better"><td>Array Sort</td><td><code>O(n log n)</code></td><td><code>O(n)</code></td><td>Better</td></tr>
+        <tr class="row--optimal"><td>Bucket Sort</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Optimal</td></tr>
+      </tbody>
+    </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="freq-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step">Step Processing</button>
+          <button class="btn btn--outline" id="btn-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 4rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap; align-items:flex-start;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary);">Input String</div>
+                <div id="str-container" style="display: flex; gap: 0.25rem;"></div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary);">Frequency Map</div>
+                <div id="map-container" style="display: flex; flex-direction: column; gap: 0.5rem; min-width: 150px; min-height: 50px; border: 2px dashed var(--border-primary); padding: 0.5rem; border-radius: 8px;"></div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary);">Result Builder</div>
+                <div id="res-container" style="display: flex; gap: 0.25rem; min-height:35px; min-width:100px; padding:0.5rem; border:2px solid var(--border-primary); border-radius:6px;"></div>
+            </div>
+        </div>
+
+        <div class="visualizer__log" id="viz-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6;">
+          Click 'Step Processing' to begin counting character frequencies.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const s = "tree";
+          let freq = {};
+          let sortedKeys = [];
+          let resStr = "";
+          let idx = 0;
+          let buildIdx = 0;
+          let state = 0; // 0: count, 1: sort, 2: build
+          
+          const strCont = document.getElementById('str-container');
+          const mapCont = document.getElementById('map-container');
+          const resCont = document.getElementById('res-container');
+          const log = document.getElementById('viz-log');
+
+          function init() {
+              freq = {}; sortedKeys = []; resStr = ""; idx = 0; buildIdx = 0; state = 0;
+              render();
+              log.innerHTML = "Click 'Step Processing' to begin counting character frequencies.";
+          }
+
+          function createBox(val, hlType) {
+              const el = document.createElement('div');
+              el.style.width = '35px'; el.style.height = '35px';
+              el.style.display = 'flex'; el.style.alignItems = 'center'; el.style.justifyContent = 'center';
+              el.style.border = '2px solid var(--border-primary)'; el.style.borderRadius = '6px';
+              el.textContent = val;
+              if (hlType === 'curr') {
+                  el.style.background = 'var(--accent-purple)'; el.style.color = 'black';
+              } else if (hlType === 'res') {
+                  el.style.background = 'var(--accent-green)'; el.style.color = 'black';
+              } else {
+                  el.style.background = 'var(--bg-secondary)';
+              }
+              return el;
+          }
+
+          function render() {
+              strCont.innerHTML = '';
+              s.split('').forEach((c, i) => {
+                  let hl = (state === 0 && i === idx) ? 'curr' : '';
+                  strCont.appendChild(createBox(c, hl));
+              });
+              
+              mapCont.innerHTML = '';
+              let displayKeys = state >= 1 ? sortedKeys : Object.keys(freq);
+              displayKeys.forEach(k => {
+                  const row = document.createElement('div');
+                  row.style.display = 'flex'; row.style.justifyContent = 'space-between';
+                  row.style.padding = '0.25rem 0.5rem'; row.style.background = 'var(--bg-elevated)';
+                  row.style.borderRadius = '4px'; row.style.fontFamily = 'var(--font-mono)';
+                  
+                  if (state === 2 && k === sortedKeys[buildIdx]) {
+                      row.style.background = 'var(--accent-purple)'; row.style.color = 'black';
+                  }
+                  row.innerHTML = `<span>'${k}'</span> <strong>${freq[k]}</strong>`;
+                  mapCont.appendChild(row);
+              });
+              
+              resCont.innerHTML = '';
+              resStr.split('').forEach(c => {
+                  resCont.appendChild(createBox(c, 'res'));
+              });
+          }
+
+          function step() {
+              if (state === 0) {
+                  if (idx < s.length) {
+                      const c = s[idx];
+                      freq[c] = (freq[c] || 0) + 1;
+                      log.innerHTML = `Counting character: <strong>'${c}'</strong>. Frequency becomes ${freq[c]}.`;
+                      idx++;
+                      if (idx === s.length) {
+                          state = 1;
+                          log.innerHTML += `<br>Finished counting. Next step: Sort map by frequency.`;
+                      }
+                      render();
+                  }
+              } else if (state === 1) {
+                  sortedKeys = Object.keys(freq).sort((a, b) => freq[b] - freq[a]);
+                  log.innerHTML = `Sorted keys by frequency descending: <code>[${sortedKeys.map(k=>`'${k}'`).join(', ')}]</code>.`;
+                  state = 2;
+                  render();
+              } else if (state === 2) {
+                  if (buildIdx < sortedKeys.length) {
+                      const k = sortedKeys[buildIdx];
+                      const count = freq[k];
+                      for (let j = 0; j < count; j++) resStr += k;
+                      log.innerHTML = `Appending character <strong>'${k}'</strong> ${count} times to result.`;
+                      buildIdx++;
+                      if (buildIdx === sortedKeys.length) {
+                          log.innerHTML += `<br>🎉 <strong>Complete!</strong> Result string is <code>"${resStr}"</code>.`;
+                      }
+                      render();
+                  }
+              }
+          }
+
+          document.getElementById('btn-step').addEventListener('click', step);
+          document.getElementById('btn-reset').addEventListener('click', init);
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: s = "tree"</div><div class='math-block' style='text-align:left;font-size:0.9rem;'>
+<pre style="color:var(--text-secondary)">
+1. Frequency Counting:
+   't' &rarr; { t: 1 }
+   'r' &rarr; { t: 1, r: 1 }
+   'e' &rarr; { t: 1, r: 1, e: 1 }
+   'e' &rarr; { t: 1, r: 1, e: 2 }
+
+2. Sorting by Frequency Descending:
+   'e': 2
+   't': 1
+   'r': 1
+
+3. Rebuild String:
+   Append 'e' 2 times &rarr; "ee"
+   Append 't' 1 time  &rarr; "eet"
+   Append 'r' 1 time  &rarr; "eetr"
+
+<span class="highlight">Result: "eetr"</span>
+</pre></div></div></section>
+<!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    string frequencySort(string s) {
+        unordered_map&lt;char, int&gt; freq;
+        for (char c : s) freq[c]++;
+        sort(s.begin(), s.end(), [&amp;](char a, char b) {
+            return freq[a] == freq[b] ? a &lt; b : freq[a] &gt; freq[b];
+        });
+        return s;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">from collections import Counter
+class Solution:
+    def frequencySort(self, s):
+        c = Counter(s)
+        return "".join(char * freq for char, freq in c.most_common())</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

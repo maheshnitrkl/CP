@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="Module 10: Dynamic Programming — CP-II Lab">
+  <title>Module 10: Dynamic Programming — CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/components.css"><link rel="stylesheet" href="../css/module.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">⚡</span><span>CP-II Lab</span></a><div class="navbar__nav" id="nav-menu"><a href="../index.html" class="navbar__link">📚 All Modules</a><a href="#theory" class="navbar__link">📖 Theory</a><a href="#problems" class="navbar__link">💡 Problems</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button><button class="navbar__hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button></div></div></nav>
+  <div class="module-page">
+    <section class="module-hero"><div class="module-hero__bg"><div class="module-hero__orb module-hero__orb--1" style="background:var(--accent-orange);"></div><div class="module-hero__orb module-hero__orb--2" style="background:var(--accent-red);"></div></div>
+      <div class="container"><div class="module-hero__content">
+        <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">›</span><span class="breadcrumb__current">Module 10</span></div>
+        <span class="module-hero__number">🧩 Module 10</span>
+        <h1 class="module-hero__title">Dynamic <span class="text-gradient">Programming</span></h1>
+        <p class="module-hero__desc">Master Linear DP, 2D DP, Grid DP, and Knapsack. Solve optimization problems by breaking them into overlapping subproblems.</p>
+        <div class="module-hero__meta"><span class="module-hero__meta-item"><span class="icon">📝</span> 7 Problems</span><span class="module-hero__meta-item"><span class="icon">⏱️</span> ~6 hours</span><span class="module-hero__meta-item"><span class="icon">📊</span> Easy to Hard</span></div>
+      </div></div></section>
+    <div class="module-layout">
+      <aside class="module-sidebar"><nav class="toc"><div class="toc__title">Contents</div><div class="toc__list"><a href="#theory" class="toc__link active">📖 Theory</a><a href="#problems" class="toc__link">💡 Problems</a><a href="#p1" class="toc__link toc__link--sub">Climbing Stairs</a><a href="#p2" class="toc__link toc__link--sub">Decode Ways</a><a href="#p3" class="toc__link toc__link--sub">House Robber</a><a href="#p4" class="toc__link toc__link--sub">Partition Equal Subset Sum</a><a href="#p5" class="toc__link toc__link--sub">Unique Paths</a><a href="#p6" class="toc__link toc__link--sub">Minimum Path Sum</a><a href="#p7" class="toc__link toc__link--sub">Longest Increasing Subsequence</a></div></nav></aside>
+      <main class="module-main">
+        <section class="module-section" id="theory"><h2 class="module-section__title"><span class="icon">📖</span> Theory</h2><div class="theory-block"><h3 class="theory-block__title">🧩 Dynamic Programming Fundamentals</h3><div class="theory-block__content"><p><strong>Dynamic Programming (DP)</strong> solves complex problems by breaking them into simpler overlapping subproblems and storing results to avoid recomputation.</p><p><strong>Two approaches:</strong></p><ul style="list-style:disc;padding-left:1.5rem;"><li><strong>Top-Down (Memoization):</strong> Recursive + cache. Start from the main problem, solve subproblems as needed.</li><li><strong>Bottom-Up (Tabulation):</strong> Iterative. Build solutions from smallest subproblems up to the main problem.</li></ul><div class="callout callout--important"><div class="callout__title">⚠️ DP Recipe</div><div class="callout__body"><strong>1.</strong> Define the state: What does dp[i] represent?<br><strong>2.</strong> Write the recurrence: How does dp[i] relate to smaller subproblems?<br><strong>3.</strong> Identify base cases: What are the initial values?<br><strong>4.</strong> Determine order: Fill table in the right order (bottom-up) or add memoization (top-down).</div></div><table class="complexity-table"><thead><tr><th>DP Type</th><th>State</th><th>Example</th></tr></thead><tbody><tr><td><strong>Linear DP</strong></td><td>dp[i]</td><td>Climbing Stairs, House Robber</td></tr><tr><td><strong>2D DP</strong></td><td>dp[i][j]</td><td>Knapsack, LCS</td></tr><tr><td><strong>Grid DP</strong></td><td>dp[r][c]</td><td>Unique Paths, Min Path Sum</td></tr><tr><td><strong>Subsequence DP</strong></td><td>dp[i]</td><td>LIS, Largest Divisible Subset</td></tr></tbody></table></div></div></section>
+        <section class="module-section" id="visualization">
+          <h2 class="module-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+
+<div class="visualizer" id="dp-viz">
+  <div class="visualizer__controls">
+    <button class="btn btn--primary" id="btn-dp-step">Step Tabulation</button>
+    <button class="btn btn--outline" id="btn-dp-reset">Reset</button>
+    <span style="color:var(--text-secondary); margin-left:1rem;">Problem: <strong>Unique Paths (3x3 Grid)</strong></span>
+  </div>
+  
+  <div id="dp-grid" style="display: grid; grid-template-columns: repeat(3, 80px); gap: 5px; justify-content: center; margin: 2rem 0;">
+    <!-- 9 cells -->
+  </div>
+  
+  <div class="visualizer__log" id="dp-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary);">
+    DP Tabulation. Base cases: Top row and Left column are 1 (only 1 way to go straight right/down).
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const grid = document.getElementById('dp-grid');
+    const log = document.getElementById('dp-log');
+    
+    // 3x3 DP table
+    // indices: 0 1 2
+    //          3 4 5
+    //          6 7 8
+    const steps = [
+        { cell: 0, val: 1, msg: "<code>dp[0][0] = 1</code> (Start)" },
+        { cell: 1, val: 1, msg: "<code>dp[0][1] = 1</code> (Top row base case)" },
+        { cell: 2, val: 1, msg: "<code>dp[0][2] = 1</code> (Top row base case)" },
+        { cell: 3, val: 1, msg: "<code>dp[1][0] = 1</code> (Left col base case)" },
+        { cell: 6, val: 1, msg: "<code>dp[2][0] = 1</code> (Left col base case)" },
+        
+        { cell: 4, val: 2, hl: [1, 3], msg: "<code>dp[1][1] = dp[0][1] + dp[1][0]</code><br>Ways to reach (1,1) = 1 + 1 = 2." },
+        { cell: 5, val: 3, hl: [2, 4], msg: "<code>dp[1][2] = dp[0][2] + dp[1][1]</code><br>Ways to reach (1,2) = 1 + 2 = 3." },
+        { cell: 7, val: 3, hl: [4, 6], msg: "<code>dp[2][1] = dp[1][1] + dp[2][0]</code><br>Ways to reach (2,1) = 2 + 1 = 3." },
+        { cell: 8, val: 6, hl: [5, 7], msg: "<code>dp[2][2] = dp[1][2] + dp[2][1]</code><br>Ways to reach (2,2) = 3 + 3 = 6. <strong>Finished!</strong>" }
+    ];
+    
+    let currentStep = 0;
+    let table = Array(9).fill('');
+
+    function render(hlCells = []) {
+        grid.innerHTML = '';
+        for(let i=0; i<9; i++) {
+            const cell = document.createElement('div');
+            cell.style.width = '80px'; cell.style.height = '80px';
+            cell.style.display = 'flex'; cell.style.alignItems = 'center'; cell.style.justifyContent = 'center';
+            cell.style.fontSize = '1.5rem';
+            cell.style.fontWeight = 'bold';
+            cell.style.border = '2px solid var(--border-primary)';
+            cell.style.background = 'var(--bg-elevated)';
+            cell.style.color = 'var(--text-primary)';
+            
+            if (hlCells.includes(i)) {
+                cell.style.border = '2px solid var(--accent-orange)';
+                cell.style.boxShadow = '0 0 10px var(--accent-orange)';
+            }
+            if (table[i] !== '') {
+                cell.style.background = 'rgba(100, 255, 100, 0.1)';
+            }
+            
+            cell.textContent = table[i];
+            grid.appendChild(cell);
+        }
+    }
+
+    document.getElementById('btn-dp-step').addEventListener('click', () => {
+        if (currentStep < steps.length) {
+            const s = steps[currentStep];
+            table[s.cell] = s.val;
+            render(s.hl || [s.cell]);
+            log.innerHTML = s.msg;
+            currentStep++;
+        }
+    });
+
+    document.getElementById('btn-dp-reset').addEventListener('click', () => {
+        currentStep = 0; table = Array(9).fill('');
+        log.innerHTML = "DP Tabulation. Base cases: Top row and Left column are 1.";
+        render();
+    });
+
+    render();
+});
+</script>
+
+        </section>
+        <section class="module-section" id="problems"><h2 class="module-section__title"><span class="icon">💡</span> Practice Problems</h2><div class="problems-list">
+
+            <!-- Problem 1 -->
+            <a href="../problems/m10-p1.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#1</span>
+                    <h3 class="problem-card__title">Climbing Stairs</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 2 -->
+            <a href="../problems/m10-p2.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#2</span>
+                    <h3 class="problem-card__title">Decode Ways</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 3 -->
+            <a href="../problems/m10-p3.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#3</span>
+                    <h3 class="problem-card__title">House Robber</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 4 -->
+            <a href="../problems/m10-p4.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#4</span>
+                    <h3 class="problem-card__title">Partition Equal Subset Sum</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 5 -->
+            <a href="../problems/m10-p5.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#5</span>
+                    <h3 class="problem-card__title">Unique Paths</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 6 -->
+            <a href="../problems/m10-p6.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#6</span>
+                    <h3 class="problem-card__title">Minimum Path Sum</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 7 -->
+            <a href="../problems/m10-p7.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#7</span>
+                    <h3 class="problem-card__title">Longest Increasing Subsequence</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            </div>
+        </section>
+        <div class="module-nav"><a href="module-09-hashing.html" class="module-nav__btn"><div><span class="module-nav__label">← Previous</span><span class="module-nav__title">Hashing</span></div></a><a href="module-11-trees.html" class="module-nav__btn module-nav__btn--next"><div><span class="module-nav__label">Next →</span><span class="module-nav__title">Trees</span></div></a></div>
+      </main>
+    </div>
+  </div>
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script><script src="../js/code-runner.js"></script>
+</body></html>

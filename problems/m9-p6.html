@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Isomorphic Strings - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-09-hashing.html" class="navbar__link">&#8592; Back to Module 09: Hashing</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-09-hashing.html">Module 09: Hashing</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Isomorphic Strings</span></div>
+      <h1 class="problem-header__title">Isomorphic Strings</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/isomorphic-strings/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Determine if string s can be replaced to get string t. No two characters may map to the same character.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">String Replacement Simulation</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Iterate through the string. For every character `s[i]`, replace all its occurrences in a temporary string with `t[i]`. At the end, check if the replaced string equals `t`.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> isIsomorphic(s, t):<br>&nbsp;&nbsp;<span class='keyword'>if</span> len(s) != len(t): <span class='keyword'>return</span> false<br>&nbsp;&nbsp;temp = list(s)<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> len(s)-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;c1 = s[i], c2 = t[i]<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> j = i <span class='keyword'>to</span> len(s)-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> temp[j] == c1: temp[j] = c2<br>&nbsp;&nbsp;<span class='keyword'>return</span> "".join(temp) == t</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n<sup>2</sup>)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Conceptually simple simulation</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>O(n&sup2;) time limit exceeded</li><li>Creates many temporary strings/arrays</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">We don't need to actually replace the string. We just need to ensure that every character `c1` in `s` maps strictly to `c2` in `t`, and vice versa. We can track this mapping in O(1) time per character using Hash Maps.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--better">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Two Hash Maps</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Maintain mapping from s to t, and t to s to ensure a 1-to-1 bijection. If any mapping conflicts, return false.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> isIsomorphic(s, t):<br>&nbsp;&nbsp;mapS, mapT = {}, {}<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;c1, c2 = s[i], t[i]<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> mapS[c1] != c2 OR mapT[c2] != c1: <span class='keyword'>return</span> false<br>&nbsp;&nbsp;<span class='keyword'>return</span> true</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1) (size of alphabet)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Ensures 1-to-1 mapping bidirectionally</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Need to manage 2 separate Hash Maps</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">We can do this with just one combined "last seen index" tracking logic.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 3</span></div>
+        <div class="approach-card__title">Single Map + Index Signature</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Two strings are isomorphic if the pattern of character appearances is exactly the same. We can convert both strings into a normalized "index signature" (e.g., "paper" &rarr; [0, 1, 0, 3, 4] and "title" &rarr; [0, 1, 0, 3, 4]). If the signatures match at every step, they are isomorphic.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> isIsomorphic(s, t):<br>&nbsp;&nbsp;lastSeenS = {}, lastSeenT = {}<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> lastSeenS[s[i]] != lastSeenT[t[i]]: <span class='keyword'>return</span> false<br>&nbsp;&nbsp;&nbsp;&nbsp;lastSeenS[s[i]] = i + 1<br>&nbsp;&nbsp;&nbsp;&nbsp;lastSeenT[t[i]] = i + 1<br>&nbsp;&nbsp;<span class='keyword'>return</span> true</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1) (size of alphabet)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Very clean logic</li><li>Avoids cross-mapping errors</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Slightly trickier to reason about initially</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approach Comparison Table -->
+    <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time Complexity</th><th>Space Complexity</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr class="row--brute"><td>String Replacement Simulation</td><td><code>O(n&sup2;)</code></td><td><code>O(n)</code></td><td>Naive</td></tr>
+        <tr class="row--better"><td>Two Hash Maps</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Better</td></tr>
+        <tr class="row--optimal"><td>Index Signature</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr>
+      </tbody>
+    </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="iso-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step">Step Check</button>
+          <button class="btn btn--outline" id="btn-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 4rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary);">s = "foo", t = "bar"</div>
+                <div style="display: flex; gap: 0.5rem; flex-direction: column;">
+                    <div id="s-container" style="display: flex; gap: 0.25rem;"></div>
+                    <div id="t-container" style="display: flex; gap: 0.25rem;"></div>
+                </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary);">Map Tracking (Last Seen Index)</div>
+                <div style="display: flex; gap: 1rem;">
+                    <div id="maps-container" style="display: flex; flex-direction: column; gap: 0.5rem; min-width: 100px; min-height: 50px; border: 2px dashed var(--border-primary); padding: 0.5rem; border-radius: 8px;">
+                        <div style="font-family: var(--font-mono); font-size:0.8rem; border-bottom:1px solid var(--border-primary); padding-bottom:4px;">mapS (s[i] &rarr; idx)</div>
+                    </div>
+                    <div id="mapt-container" style="display: flex; flex-direction: column; gap: 0.5rem; min-width: 100px; min-height: 50px; border: 2px dashed var(--border-primary); padding: 0.5rem; border-radius: 8px;">
+                        <div style="font-family: var(--font-mono); font-size:0.8rem; border-bottom:1px solid var(--border-primary); padding-bottom:4px;">mapT (t[i] &rarr; idx)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="visualizer__log" id="viz-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6;">
+          Click 'Step Check' to iterate through characters.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const s = "foo";
+          const t = "bar";
+          let mapS = {};
+          let mapT = {};
+          let idx = 0;
+          let isDone = false;
+          
+          const sCont = document.getElementById('s-container');
+          const tCont = document.getElementById('t-container');
+          const mapsCont = document.getElementById('maps-container');
+          const maptCont = document.getElementById('mapt-container');
+          const log = document.getElementById('viz-log');
+
+          function init() {
+              mapS = {}; mapT = {}; idx = 0; isDone = false;
+              render();
+              log.innerHTML = "Click 'Step Check' to iterate through characters.";
+          }
+
+          function createBox(val, hl) {
+              const el = document.createElement('div');
+              el.style.width = '35px'; el.style.height = '35px';
+              el.style.display = 'flex'; el.style.alignItems = 'center'; el.style.justifyContent = 'center';
+              el.style.border = '2px solid var(--border-primary)'; el.style.borderRadius = '6px';
+              el.textContent = val;
+              if (hl) { el.style.background = 'var(--accent-purple)'; el.style.color = 'black'; }
+              else { el.style.background = 'var(--bg-secondary)'; }
+              return el;
+          }
+
+          function renderMap(mapObj, container, title) {
+              container.innerHTML = `<div style="font-family: var(--font-mono); font-size:0.8rem; border-bottom:1px solid var(--border-primary); padding-bottom:4px;">\${title}</div>`;
+              Object.keys(mapObj).forEach(k => {
+                  const el = document.createElement('div');
+                  el.style.fontFamily = 'var(--font-mono)';
+                  el.innerHTML = `<span>'\${k}'</span> &rarr; <strong>\${mapObj[k]}</strong>`;
+                  container.appendChild(el);
+              });
+          }
+
+          function render() {
+              sCont.innerHTML = '';
+              tCont.innerHTML = '';
+              s.split('').forEach((c, i) => {
+                  sCont.appendChild(createBox(c, i === idx && !isDone));
+              });
+              t.split('').forEach((c, i) => {
+                  tCont.appendChild(createBox(c, i === idx && !isDone));
+              });
+              
+              renderMap(mapS, mapsCont, "mapS (s[i] &rarr; idx)");
+              renderMap(mapT, maptCont, "mapT (t[i] &rarr; idx)");
+          }
+
+          function step() {
+              if (isDone) return;
+              if (idx >= s.length) {
+                  log.innerHTML = `🎉 <strong>Complete!</strong> Strings are isomorphic. Return <strong>true</strong>.`;
+                  isDone = true;
+                  render();
+                  return;
+              }
+              
+              const c1 = s[idx], c2 = t[idx];
+              const seenS = mapS[c1] !== undefined ? mapS[c1] : -1;
+              const seenT = mapT[c2] !== undefined ? mapT[c2] : -1;
+              
+              if (seenS !== seenT) {
+                  log.innerHTML = `Mismatch at i=\${idx}! <code>s[\${idx}]</code>='\${c1}' was last seen at index \${seenS}, but <code>t[\${idx}]</code>='\${c2}' was last seen at index \${seenT}.<br>❌ Conflict! Return <strong>false</strong>.`;
+                  isDone = true;
+                  render();
+                  return;
+              }
+              
+              log.innerHTML = `Index i=\${idx}: <code>s[\${idx}]</code>='\${c1}', <code>t[\${idx}]</code>='\${c2}'.<br>Both were last seen at index <strong>\${seenS}</strong>. Match!<br>Updating mapS['\${c1}'] = \${idx} and mapT['\${c2}'] = \${idx}.`;
+              mapS[c1] = idx;
+              mapT[c2] = idx;
+              
+              idx++;
+              render();
+          }
+
+          document.getElementById('btn-step').addEventListener('click', step);
+          document.getElementById('btn-reset').addEventListener('click', init);
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: s = "foo", t = "bar"</div><div class='math-block' style='text-align:left;font-size:0.9rem;'>
+<pre style="color:var(--text-secondary)">
+Init: mapS={}, mapT={}
+
+i=0: s[0]='f', t[0]='b'
+     mapS['f'] = undefined, mapT['b'] = undefined. Match.
+     Update: mapS['f']=0, mapT['b']=0
+
+i=1: s[1]='o', t[1]='a'
+     mapS['o'] = undefined, mapT['a'] = undefined. Match.
+     Update: mapS['o']=1, mapT['a']=1
+
+i=2: s[2]='o', t[2]='r'
+     mapS['o'] = 1, mapT['r'] = undefined. MISMATCH!
+     Return false!
+
+<span class="highlight">Result: false</span>
+</pre></div></div></section>
+<!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    bool isIsomorphic(string s, string t) {
+        vector&lt;int&gt; mapS(256, -1), mapT(256, -1);
+        for (int i = 0; i &lt; s.size(); i++) {
+            if (mapS[s[i]] != mapT[t[i]]) return false;
+            mapS[s[i]] = mapT[t[i]] = i; // Store last seen index
+        }
+        return true;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def isIsomorphic(self, s, t):
+        return [s.find(i) for i in s] == [t.find(j) for j in t]</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

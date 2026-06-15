@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reverse Linked List - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-06-linked-list-1.html" class="navbar__link">&#8592; Back to Module 06: Linked List Part 1</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-06-linked-list-1.html">Module 06: Linked List Part 1</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Reverse Linked List</span></div>
+      <h1 class="problem-header__title">Reverse Linked List</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/reverse-linked-list/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Reverse a singly linked list and return the new head.</p><p><strong>Example:</strong> <code>1&rarr;2&rarr;3&rarr;4&rarr;5</code> &rarr; <code>5&rarr;4&rarr;3&rarr;2&rarr;1</code></p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><p style='font-size:0.9rem;'>Reversal requires redirecting each node's <code>next</code> pointer to its previous node. We need to store the previous, current, and next nodes to avoid losing references.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Store in Array, Rebuild</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Traverse the list, store all values in an array, then build a new reversed list.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> reverse(head):<br>&nbsp;&nbsp;arr = []<br>&nbsp;&nbsp;<span class='keyword'>while</span> head: arr.append(head.val); head = head.next<br>&nbsp;&nbsp;build new list from reversed arr</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Very simple to understand</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Uses O(n) extra space</li><li>Creates a new list instead of modifying in-place</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We don't need extra space. We can reverse the pointers in-place.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Iterative In-Place Reversal</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Use three pointers: prev, curr, next. At each step, reverse curr's pointer, then advance all three.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> reverse(head):<br>&nbsp;&nbsp;prev = null, curr = head<br>&nbsp;&nbsp;<span class='keyword'>while</span> curr != null:<br>&nbsp;&nbsp;&nbsp;&nbsp;next = curr.next <span class='comment'>// save next</span><br>&nbsp;&nbsp;&nbsp;&nbsp;curr.next = prev <span class='comment'>// REVERSE pointer</span><br>&nbsp;&nbsp;&nbsp;&nbsp;prev = curr <span class='comment'>// advance prev</span><br>&nbsp;&nbsp;&nbsp;&nbsp;curr = next <span class='comment'>// advance curr</span><br>&nbsp;&nbsp;<span class='keyword'>return</span> prev <span class='comment'>// new head</span></div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(1) extra space</li><li>In-place reversal</li><li>Foundation for many linked list problems</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Need to be careful with pointer order</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Reversal</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; justify-content: center; margin: 3rem 0; min-height: 100px; align-items: center; position: relative;" id="ll-container">
+            <!-- Nodes will be injected here -->
+        </div>
+
+        <div style="display: flex; gap: 2rem; justify-content: center; margin: 1rem 0; font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-secondary);">
+            <div><span style="color: var(--accent-red); font-weight: bold;">prev</span></div>
+            <div><span style="color: var(--accent-purple); font-weight: bold;">curr</span></div>
+            <div><span style="color: var(--accent-blue); font-weight: bold;">next</span></div>
+        </div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Step Reversal' to begin the reversing process.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const values = [1, 2, 3, 4, 5];
+          
+          let prev = -1; // index
+          let curr = 0;  // index
+          let nxt = -1;  // index
+          
+          let state = 0; // 0: save nxt, 1: reverse link, 2: advance prev/curr
+          
+          let links = []; // links[i] = direction of arrow out of node i. 'right' or 'left'
+          
+          let isDone = false;
+          
+          const llCont = document.getElementById('ll-container');
+          const log = document.getElementById('search-log');
+
+          function init() {
+              prev = -1;
+              curr = 0;
+              nxt = -1;
+              state = 0;
+              links = Array(values.length).fill('right');
+              isDone = false;
+              render();
+          }
+
+          function render() {
+              llCont.innerHTML = '';
+              
+              // Render NULL for prev initially
+              const nullPrev = document.createElement('div');
+              nullPrev.textContent = 'null';
+              nullPrev.style.fontFamily = 'var(--font-mono)';
+              nullPrev.style.color = 'var(--text-secondary)';
+              nullPrev.style.position = 'relative';
+              
+              if (prev === -1) {
+                  const lbl = document.createElement('div');
+                  lbl.textContent = 'prev';
+                  lbl.style.position = 'absolute';
+                  lbl.style.top = '-25px';
+                  lbl.style.left = '50%';
+                  lbl.style.transform = 'translateX(-50%)';
+                  lbl.style.color = 'var(--accent-red)';
+                  lbl.style.fontWeight = 'bold';
+                  lbl.style.fontSize = '12px';
+                  nullPrev.appendChild(lbl);
+              }
+              llCont.appendChild(nullPrev);
+              
+              const startArrow = document.createElement('div');
+              startArrow.innerHTML = (prev === -1 && curr === 0 && state > 0 && links[0] === 'left') ? '&#8592;' : ''; 
+              // Only show arrow to null if 1 is pointing left
+              startArrow.style.color = 'var(--accent-green)';
+              startArrow.style.fontWeight = 'bold';
+              startArrow.style.fontSize = '1.5rem';
+              llCont.appendChild(startArrow);
+              
+              values.forEach((val, i) => {
+                  const nodeWrapper = document.createElement('div');
+                  nodeWrapper.style.display = 'flex';
+                  nodeWrapper.style.alignItems = 'center';
+                  nodeWrapper.style.gap = '1rem';
+                  
+                  const node = document.createElement('div');
+                  node.className = 'array-item';
+                  node.style.width = '40px';
+                  node.style.height = '40px';
+                  node.style.display = 'flex';
+                  node.style.alignItems = 'center';
+                  node.style.justifyContent = 'center';
+                  node.style.background = 'var(--bg-secondary)';
+                  node.style.border = '2px solid var(--border-primary)';
+                  node.style.borderRadius = '8px';
+                  node.style.position = 'relative';
+                  node.textContent = val;
+                  
+                  // Pointers
+                  let lbls = [];
+                  if (prev === i) lbls.push('<span style="color:var(--accent-red)">prev</span>');
+                  if (curr === i) lbls.push('<span style="color:var(--accent-purple)">curr</span>');
+                  if (nxt === i) lbls.push('<span style="color:var(--accent-blue)">nxt</span>');
+                  
+                  if (lbls.length > 0) {
+                      const lblEl = document.createElement('div');
+                      lblEl.innerHTML = lbls.join(', ');
+                      lblEl.style.position = 'absolute';
+                      lblEl.style.top = '-25px';
+                      lblEl.style.left = '50%';
+                      lblEl.style.transform = 'translateX(-50%)';
+                      lblEl.style.fontWeight = 'bold';
+                      lblEl.style.fontSize = '12px';
+                      lblEl.style.whiteSpace = 'nowrap';
+                      node.appendChild(lblEl);
+                  }
+                  
+                  nodeWrapper.appendChild(node);
+                  
+                  if (i < values.length - 1) {
+                      const arrow = document.createElement('div');
+                      arrow.innerHTML = links[i] === 'right' ? '&#8594;' : '&#8592;';
+                      arrow.style.fontSize = '1.5rem';
+                      arrow.style.color = links[i] === 'left' ? 'var(--accent-green)' : 'var(--text-secondary)';
+                      arrow.style.fontWeight = links[i] === 'left' ? 'bold' : 'normal';
+                      nodeWrapper.appendChild(arrow);
+                  }
+                  
+                  llCont.appendChild(nodeWrapper);
+              });
+              
+              // End NULL
+              const endArrow = document.createElement('div');
+              endArrow.innerHTML = '&#8594;';
+              endArrow.style.fontSize = '1.5rem';
+              endArrow.style.color = 'var(--text-secondary)';
+              if(links[values.length-1] === 'left') endArrow.innerHTML = '';
+              
+              const nullNext = document.createElement('div');
+              nullNext.textContent = 'null';
+              nullNext.style.fontFamily = 'var(--font-mono)';
+              nullNext.style.color = 'var(--text-secondary)';
+              nullNext.style.position = 'relative';
+              
+              if (curr === values.length || nxt === values.length) {
+                  const lbl = document.createElement('div');
+                  let ls = [];
+                  if(curr === values.length) ls.push('<span style="color:var(--accent-purple)">curr</span>');
+                  if(nxt === values.length) ls.push('<span style="color:var(--accent-blue)">nxt</span>');
+                  lbl.innerHTML = ls.join(', ');
+                  lbl.style.position = 'absolute';
+                  lbl.style.top = '-25px';
+                  lbl.style.left = '50%';
+                  lbl.style.transform = 'translateX(-50%)';
+                  lbl.style.fontWeight = 'bold';
+                  lbl.style.fontSize = '12px';
+                  nullNext.appendChild(lbl);
+              }
+              
+              if(links[values.length-1] !== 'left') llCont.appendChild(endArrow);
+              llCont.appendChild(nullNext);
+          }
+
+          function step() {
+              if (isDone || curr >= values.length) {
+                  log.innerHTML = `🎉 <strong>Reversal Complete!</strong> <code>curr</code> has reached <code>null</code>. The new head is <code>prev</code> (${values[prev]}).`;
+                  isDone = true;
+                  render();
+                  return;
+              }
+              
+              if (state === 0) {
+                  nxt = curr + 1;
+                  log.innerHTML = `Step 1: Save the next node. <code>nxt = curr.next</code> (Node ${nxt < values.length ? values[nxt] : 'null'}).`;
+                  state = 1;
+                  render();
+              } else if (state === 1) {
+                  links[curr] = 'left';
+                  log.innerHTML = `Step 2: Reverse the link! <code>curr.next = prev</code>. Node ${values[curr]} now points backwards to ${prev >= 0 ? values[prev] : 'null'}.`;
+                  state = 2;
+                  render();
+              } else if (state === 2) {
+                  prev = curr;
+                  curr = nxt;
+                  log.innerHTML = `Step 3: Advance pointers. <code>prev = curr</code>, <code>curr = nxt</code>. Moving forward for the next iteration.`;
+                  state = 0;
+                  render();
+              }
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              init();
+              log.innerHTML = "Click 'Step Reversal' to begin the reversing process.";
+          });
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: 1 &rarr; 2 &rarr; 3</div><div class='math-block' style='text-align:left;font-size:0.9rem;'>prev=null, curr=1<br>Step 1: next=2, 1.next=null, prev=1, curr=2. List: null&larr;1 &nbsp; 2&rarr;3<br>Step 2: next=3, 2.next=1, prev=2, curr=3. List: null&larr;1&larr;2 &nbsp; 3<br>Step 3: next=null, 3.next=2, prev=3, curr=null. List: null&larr;1&larr;2&larr;<span class='highlight'>3</span><br>Return prev = <span class='highlight'>3</span> (new head)</div></div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Array + Rebuild</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Uses extra space</td></tr>
+<tr class="row--optimal"><td>Iterative 3-pointer</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        ListNode* prev = nullptr, *curr = head;
+        while (curr) {
+            ListNode* next = curr-&gt;next;
+            curr-&gt;next = prev;
+            prev = curr;
+            curr = next;
+        }
+        return prev;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def reverseList(self, head):
+        prev, curr = None, head
+        while curr:
+            nxt = curr.next
+            curr.next = prev
+            prev = curr
+            curr = nxt
+        return prev</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

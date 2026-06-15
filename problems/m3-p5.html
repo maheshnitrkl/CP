@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search a 2D Matrix - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-03-searching.html" class="navbar__link">&#8592; Back to Module 03: Searching</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-03-searching.html">Module 03: Searching</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Search a 2D Matrix</span></div>
+      <h1 class="problem-header__title">Search a 2D Matrix</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/search-a-2d-matrix/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given an <code>m x n</code> matrix where each row is sorted and the first element of each row is greater than the last element of the previous row, search for a target value.</p><p><strong>Example:</strong> matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3 &rarr; <code>true</code></p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Index Mapping: row = idx / cols, col = idx % cols</div><p style='font-size:0.9rem;margin-top:0.5rem;'>The matrix is effectively a sorted 1D array of length m&times;n. We can binary search on this virtual 1D array using the index mapping formula.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Scan Entire Matrix</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Check every element in the matrix.</p>
+        <div class="pseudocode-block"><span class='keyword'>for</span> each row in matrix:<br>&nbsp;&nbsp;<span class='keyword'>for</span> each element in row:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> element == target: <span class='keyword'>return</span> true<br><span class='keyword'>return</span> false</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(m &times; n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Dead simple</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Ignores all sorting properties</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">Both rows and the overall matrix are sorted. We can do much better.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--better">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Binary Search Per Row</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">First, binary search for the correct row (based on first/last element), then binary search within that row.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> searchMatrix(matrix, target):<br>&nbsp;&nbsp;<span class='comment'>// Find correct row</span><br>&nbsp;&nbsp;<span class='keyword'>for</span> each row:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> row[0] &le; target &le; row[last]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>return</span> binarySearch(row, target)<br>&nbsp;&nbsp;<span class='keyword'>return</span> false</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(m + log n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Uses row sorting</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Finding the row is still O(m)</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We can treat the entire matrix as a single sorted array and do a single binary search.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 3</span></div>
+        <div class="approach-card__title">Single Binary Search on Virtual 1D Array</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Treat the matrix as a 1D sorted array of length m&times;n. Use <code>row = mid/n, col = mid%n</code> to map indices.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> searchMatrix(matrix, target):<br>&nbsp;&nbsp;m = rows, n = cols<br>&nbsp;&nbsp;lo = 0, hi = m*n - 1<br>&nbsp;&nbsp;<span class='keyword'>while</span> lo &le; hi:<br>&nbsp;&nbsp;&nbsp;&nbsp;mid = lo + (hi - lo) / 2<br>&nbsp;&nbsp;&nbsp;&nbsp;val = matrix[mid / n][mid % n]<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> val == target: <span class='keyword'>return</span> true<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>elif</span> val < target: lo = mid + 1<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>else</span>: hi = mid - 1<br>&nbsp;&nbsp;<span class='keyword'>return</span> false</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(log(m &times; n))</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Single O(log(mn)) binary search</li><li>Clean index mapping</li><li>Most efficient</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Index math can be confusing</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Search</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+          <span style="color:var(--text-secondary); margin-left:1rem;">Target: <strong>3</strong></span>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap;">
+            <div class="matrix-container" id="search-matrix" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;">
+                <!-- 2D matrix injected here -->
+            </div>
+        </div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6;">
+          Click 'Step Search' to start the 2D search.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const matrix = [
+              [1, 3, 5, 7],
+              [10, 11, 16, 20],
+              [23, 30, 34, 60]
+          ];
+          const target = 3;
+          const rows = matrix.length;
+          const cols = matrix[0].length;
+          
+          const container = document.getElementById('search-matrix');
+          const log = document.getElementById('search-log');
+          let low = 0, high = (rows * cols) - 1, mid = -1, row = -1, col = -1;
+          let state = 0; // 0: calc mid, 1: calc row/col & check
+
+          function render() {
+              container.innerHTML = '';
+              for (let r = 0; r < rows; r++) {
+                  for (let c = 0; c < cols; c++) {
+                      let idx = r * cols + c;
+                      const el = document.createElement('div');
+                      el.className = 'array-item';
+                      el.textContent = matrix[r][c];
+                      el.style.width = '40px';
+                      el.style.height = '40px';
+                      el.style.display = 'flex';
+                      el.style.alignItems = 'center';
+                      el.style.justifyContent = 'center';
+                      
+                      if (idx < low || idx > high) el.style.opacity = '0.3';
+                      if (idx === mid) el.style.background = 'var(--accent-cyan)';
+                      if (state === 2 && idx === mid && matrix[r][c] === target) el.style.background = 'var(--accent-green)'; // found
+                      
+                      container.appendChild(el);
+                  }
+              }
+          }
+
+          function step() {
+              if (low > high || state === 2) {
+                  log.innerHTML = "Search finished.";
+                  return;
+              }
+              
+              if (state === 0) {
+                  mid = Math.floor((low + high) / 2);
+                  row = Math.floor(mid / cols);
+                  col = mid % cols;
+                  log.innerHTML = `Calculated 1D Mid: <code>(${low} + ${high}) / 2 = ${mid}</code>.<br>Mapped to 2D: <code>row = ${mid} / ${cols} = ${row}</code>, <code>col = ${mid} % ${cols} = ${col}</code>. Value is <strong>${matrix[row][col]}</strong>.`;
+                  state = 1;
+              } else if (state === 1) {
+                  let val = matrix[row][col];
+                  if (val === target) {
+                      log.innerHTML = `🎉 <strong>${val} == ${target}</strong>! Target found at <code>matrix[${row}][${col}]</code>.`;
+                      state = 2;
+                  } else if (val < target) {
+                      log.innerHTML = `<strong>${val} &lt; ${target}</strong>. Target must be to the right in the 1D representation. <code>low = mid + 1 = ${mid+1}</code>.`;
+                      low = mid + 1;
+                      mid = -1;
+                      state = 0;
+                  } else {
+                      log.innerHTML = `<strong>${val} &gt; ${target}</strong>. Target must be to the left in the 1D representation. <code>high = mid - 1 = ${mid-1}</code>.`;
+                      high = mid - 1;
+                      mid = -1;
+                      state = 0;
+                  }
+              }
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              low = 0; high = (rows * cols) - 1; mid = -1; row = -1; col = -1; state = 0;
+              log.innerHTML = "Click 'Step Search' to start the 2D search.";
+              render();
+          });
+          render();
+      });
+      </script>
+    </section>
+    
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Full Scan</td><td><code>O(m&times;n)</code></td><td><code>O(1)</code></td><td>Brute force</td></tr>
+<tr><td>Row + Binary</td><td><code>O(m + log n)</code></td><td><code>O(1)</code></td><td>Better</td></tr>
+<tr class="row--optimal"><td>Virtual 1D Binary Search</td><td><code>O(log(m&times;n))</code></td><td><code>O(1)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    bool searchMatrix(vector&lt;vector&lt;int&gt;&gt;&amp; matrix, int target) {
+        int m = matrix.size(), n = matrix[0].size();
+        int lo = 0, hi = m * n - 1;
+        while (lo &lt;= hi) {
+            int mid = lo + (hi - lo) / 2;
+            int val = matrix[mid / n][mid % n];
+            if (val == target) return true;
+            else if (val &lt; target) lo = mid + 1;
+            else hi = mid - 1;
+        }
+        return false;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def searchMatrix(self, matrix, target):
+        m, n = len(matrix), len(matrix[0])
+        lo, hi = 0, m * n - 1
+        while lo &lt;= hi:
+            mid = (lo + hi) // 2
+            val = matrix[mid // n][mid % n]
+            if val == target: return True
+            elif val &lt; target: lo = mid + 1
+            else: hi = mid - 1
+        return False</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

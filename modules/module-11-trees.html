@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="Module 11: Trees — CP-II Lab">
+  <title>Module 11: Trees — CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/components.css"><link rel="stylesheet" href="../css/module.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">⚡</span><span>CP-II Lab</span></a><div class="navbar__nav" id="nav-menu"><a href="../index.html" class="navbar__link">📚 All Modules</a><a href="#theory" class="navbar__link">📖 Theory</a><a href="#problems" class="navbar__link">💡 Problems</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button><button class="navbar__hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button></div></div></nav>
+  <div class="module-page">
+    <section class="module-hero"><div class="module-hero__bg"><div class="module-hero__orb module-hero__orb--1" style="background:var(--accent-green);"></div><div class="module-hero__orb module-hero__orb--2" style="background:var(--accent-cyan);"></div></div>
+      <div class="container"><div class="module-hero__content">
+        <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">›</span><span class="breadcrumb__current">Module 11</span></div>
+        <span class="module-hero__number">🌳 Module 11</span>
+        <h1 class="module-hero__title">Trees <span class="text-gradient"></span></h1>
+        <p class="module-hero__desc">Binary tree traversals (preorder, inorder, postorder), depth calculation, diameter, right side view, and path sum problems.</p>
+        <div class="module-hero__meta"><span class="module-hero__meta-item"><span class="icon">📝</span> 7 Problems</span><span class="module-hero__meta-item"><span class="icon">⏱️</span> ~3.5 hours</span><span class="module-hero__meta-item"><span class="icon">📊</span> Easy to Medium</span></div>
+      </div></div></section>
+    <div class="module-layout">
+      <aside class="module-sidebar"><nav class="toc"><div class="toc__title">Contents</div><div class="toc__list"><a href="#theory" class="toc__link active">📖 Theory</a><a href="#problems" class="toc__link">💡 Problems</a><a href="#p1" class="toc__link toc__link--sub">Binary Tree Preorder Traversal</a><a href="#p2" class="toc__link toc__link--sub">Binary Tree Inorder Traversal</a><a href="#p3" class="toc__link toc__link--sub">Binary Tree Postorder Traversal</a><a href="#p4" class="toc__link toc__link--sub">Maximum Depth of Binary Tree</a><a href="#p5" class="toc__link toc__link--sub">Diameter of Binary Tree</a><a href="#p6" class="toc__link toc__link--sub">Binary Tree Right Side View</a><a href="#p7" class="toc__link toc__link--sub">Path Sum</a></div></nav></aside>
+      <main class="module-main">
+        <section class="module-section" id="theory"><h2 class="module-section__title"><span class="icon">📖</span> Theory</h2><div class="theory-block"><h3 class="theory-block__title">🌳 Binary Tree Fundamentals</h3><div class="theory-block__content"><p>A <strong>binary tree</strong> is a hierarchical data structure where each node has at most two children (left and right).</p><p><strong>Traversal Orders:</strong></p><ul style="list-style:disc;padding-left:1.5rem;"><li><strong>Preorder (NLR):</strong> Visit node → left subtree → right subtree</li><li><strong>Inorder (LNR):</strong> Left subtree → visit node → right subtree (gives sorted order for BST)</li><li><strong>Postorder (LRN):</strong> Left subtree → right subtree → visit node</li><li><strong>Level Order (BFS):</strong> Level by level, left to right</li></ul><table class="complexity-table"><thead><tr><th>Property</th><th>Formula</th></tr></thead><tbody><tr><td>Max nodes at level L</td><td><code>2^L</code></td></tr><tr><td>Max nodes in tree of height H</td><td><code>2^(H+1) - 1</code></td></tr><tr><td>Min height for N nodes</td><td><code>⌊log₂(N)⌋</code></td></tr></tbody></table><div class="callout callout--tip"><div class="callout__title">💡 Recursion Pattern</div><div class="callout__body">Most tree problems follow this pattern: <strong>Base case</strong> (null node) → <strong>Recurse</strong> on left and right → <strong>Combine</strong> results. Think about what information each node needs from its children.</div></div></div></div></section>
+        <section class="module-section" id="visualization">
+          <h2 class="module-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+
+<div class="visualizer" id="tree-viz">
+  <div class="visualizer__controls">
+    <button class="btn btn--primary" id="btn-pre">Pre-order</button>
+    <button class="btn btn--primary" id="btn-in">In-order</button>
+    <button class="btn btn--primary" id="btn-post">Post-order</button>
+    <button class="btn btn--outline" id="btn-tree-reset" style="margin-left:1rem;">Reset</button>
+  </div>
+  
+  <div id="tree-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin: 2rem 0;">
+    <!-- Level 0 -->
+    <div>
+        <div class="t-node" id="tn-1" style="width:40px;height:40px;border-radius:50%;background:var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;">1</div>
+    </div>
+    <!-- Level 1 -->
+    <div style="display:flex; gap: 60px;">
+        <div class="t-node" id="tn-2" style="width:40px;height:40px;border-radius:50%;background:var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;">2</div>
+        <div class="t-node" id="tn-3" style="width:40px;height:40px;border-radius:50%;background:var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;">3</div>
+    </div>
+    <!-- Level 2 -->
+    <div style="display:flex; gap: 20px;">
+        <div class="t-node" id="tn-4" style="width:40px;height:40px;border-radius:50%;background:var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;">4</div>
+        <div class="t-node" id="tn-5" style="width:40px;height:40px;border-radius:50%;background:var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;">5</div>
+        <div style="width:40px;"></div> <!-- spacer -->
+        <div style="width:40px;"></div> <!-- spacer -->
+    </div>
+  </div>
+  
+  <div class="visualizer__log" id="tree-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); text-align:center; font-size: 1.5rem;">
+    Output: []
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const log = document.getElementById('tree-log');
+    
+    function resetColors() {
+        for(let i=1; i<=5; i++) {
+            document.getElementById(`tn-${i}`).style.background = 'var(--border-primary)';
+            document.getElementById(`tn-${i}`).style.color = 'var(--text-primary)';
+        }
+        log.innerHTML = "Output: []";
+    }
+
+    async function animateTraversal(order) {
+        resetColors();
+        let result = [];
+        for (let i = 0; i < order.length; i++) {
+            const node = order[i];
+            const el = document.getElementById(`tn-${node}`);
+            el.style.background = 'var(--accent-purple)';
+            el.style.color = '#fff';
+            result.push(node);
+            log.innerHTML = `Output: [ ${result.join(', ')} ]`;
+            await new Promise(r => setTimeout(r, 800));
+        }
+    }
+
+    // Tree: 1 -> L:2, R:3. 2 -> L:4, R:5. 3 is leaf.
+    document.getElementById('btn-pre').addEventListener('click', () => {
+        // N L R
+        animateTraversal([1, 2, 4, 5, 3]);
+    });
+    
+    document.getElementById('btn-in').addEventListener('click', () => {
+        // L N R
+        animateTraversal([4, 2, 5, 1, 3]);
+    });
+    
+    document.getElementById('btn-post').addEventListener('click', () => {
+        // L R N
+        animateTraversal([4, 5, 2, 3, 1]);
+    });
+    
+    document.getElementById('btn-tree-reset').addEventListener('click', resetColors);
+});
+</script>
+
+        </section>
+        <section class="module-section" id="problems"><h2 class="module-section__title"><span class="icon">💡</span> Practice Problems</h2><div class="problems-list">
+
+            <!-- Problem 1 -->
+            <a href="../problems/m11-p1.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#1</span>
+                    <h3 class="problem-card__title">Binary Tree Preorder Traversal</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 2 -->
+            <a href="../problems/m11-p2.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#2</span>
+                    <h3 class="problem-card__title">Binary Tree Inorder Traversal</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 3 -->
+            <a href="../problems/m11-p3.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#3</span>
+                    <h3 class="problem-card__title">Binary Tree Postorder Traversal</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 4 -->
+            <a href="../problems/m11-p4.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#4</span>
+                    <h3 class="problem-card__title">Maximum Depth of Binary Tree</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 5 -->
+            <a href="../problems/m11-p5.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#5</span>
+                    <h3 class="problem-card__title">Diameter of Binary Tree</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 6 -->
+            <a href="../problems/m11-p6.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#6</span>
+                    <h3 class="problem-card__title">Binary Tree Right Side View</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 7 -->
+            <a href="../problems/m11-p7.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#7</span>
+                    <h3 class="problem-card__title">Path Sum</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            </div>
+        </section>
+        <div class="module-nav"><a href="module-10-dp.html" class="module-nav__btn"><div><span class="module-nav__label">← Previous</span><span class="module-nav__title">Dynamic Programming</span></div></a><a href="module-12-graphs.html" class="module-nav__btn module-nav__btn--next"><div><span class="module-nav__label">Next →</span><span class="module-nav__title">Graphs</span></div></a></div>
+      </main>
+    </div>
+  </div>
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script><script src="../js/code-runner.js"></script>
+</body></html>

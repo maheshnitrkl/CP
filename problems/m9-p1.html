@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Common Elements Between Two Arrays - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-09-hashing.html" class="navbar__link">&#8592; Back to Module 09: Hashing</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-09-hashing.html">Module 09: Hashing</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Find Common Elements Between Two Arrays</span></div>
+      <h1 class="problem-header__title">Find Common Elements Between Two Arrays</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/find-common-elements-between-two-arrays/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Return the number of elements in nums1 that exist in nums2, and vice versa.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Nested Loops</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">For each element in nums1, search for it in nums2 using a loop. Repeat the process for nums2 searching in nums1.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> findIntersectionValues(nums1, nums2):<br>&nbsp;&nbsp;ans1 = 0, ans2 = 0<br>&nbsp;&nbsp;<span class='keyword'>for</span> x <span class='keyword'>in</span> nums1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> nums2.contains(x): ans1++<br>&nbsp;&nbsp;<span class='keyword'>for</span> x <span class='keyword'>in</span> nums2:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> nums1.contains(x): ans2++<br>&nbsp;&nbsp;<span class='keyword'>return</span> [ans1, ans2]</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n &times; m)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>No extra space</li><li>Simple logic</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Extremely slow for large arrays</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">The inner `.contains(x)` does a linear scan every time. We can speed this up by sorting the arrays and using Binary Search.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--better">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Sort + Binary Search</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Sort nums2. For each element in nums1, use binary search to check if it exists in nums2. Repeat for the other side.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> findIntersectionValues(nums1, nums2):<br>&nbsp;&nbsp;nums1.sort(), nums2.sort()<br>&nbsp;&nbsp;ans1 = sum(1 <span class='keyword'>for</span> x <span class='keyword'>in</span> nums1 <span class='keyword'>if</span> binarySearch(nums2, x))<br>&nbsp;&nbsp;ans2 = sum(1 <span class='keyword'>for</span> x <span class='keyword'>in</span> nums2 <span class='keyword'>if</span> binarySearch(nums1, x))<br>&nbsp;&nbsp;<span class='keyword'>return</span> [ans1, ans2]</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n log n + m log m)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1) or O(log n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Much faster than O(n*m)</li><li>Minimal extra space</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Mutates original arrays</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Binary Search still takes O(log n) per lookup. If we trade space for time, we can get O(1) lookups using Hash Sets.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 3</span></div>
+        <div class="approach-card__title">Hash Sets</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Store both arrays in Hash Sets for O(1) lookups.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> findIntersectionValues(nums1, nums2):<br>&nbsp;&nbsp;s1 = Set(nums1), s2 = Set(nums2)<br>&nbsp;&nbsp;ans1 = sum(1 <span class='keyword'>for</span> x <span class='keyword'>in</span> nums1 <span class='keyword'>if</span> x <span class='keyword'>in</span> s2)<br>&nbsp;&nbsp;ans2 = sum(1 <span class='keyword'>for</span> x <span class='keyword'>in</span> nums2 <span class='keyword'>if</span> x <span class='keyword'>in</span> s1)<br>&nbsp;&nbsp;<span class='keyword'>return</span> [ans1, ans2]</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n + m)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n + m)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Very fast O(1) lookups</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Needs extra space for sets</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approach Comparison Table -->
+    <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time Complexity</th><th>Space Complexity</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr class="row--brute"><td>Nested Loops</td><td><code>O(n &times; m)</code></td><td><code>O(1)</code></td><td>Naive</td></tr>
+        <tr class="row--better"><td>Sort + Binary Search</td><td><code>O(n log n + m log m)</code></td><td><code>O(1)</code></td><td>Better</td></tr>
+        <tr class="row--optimal"><td>Hash Sets</td><td><code>O(n + m)</code></td><td><code>O(n + m)</code></td><td>Optimal</td></tr>
+      </tbody>
+    </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="hash-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step">Step Processing</button>
+          <button class="btn btn--outline" id="btn-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 4rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap;">
+            <!-- Nums 1 -->
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary);">nums1 = [4,3,2,3,1]</div>
+                <div id="arr1-container" style="display: flex; gap: 0.25rem;"></div>
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-top: 1rem;">Set 1: <span id="set1-text" style="color:var(--text-primary);">{}</span></div>
+                <div style="font-family: var(--font-mono); font-size: 1.2rem; margin-top: 0.5rem;">ans1: <strong id="ans1-text" style="color:var(--accent-green);">0</strong></div>
+            </div>
+            
+            <!-- Nums 2 -->
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary);">nums2 = [2,2,5,2,3,6]</div>
+                <div id="arr2-container" style="display: flex; gap: 0.25rem;"></div>
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-top: 1rem;">Set 2: <span id="set2-text" style="color:var(--text-primary);">{}</span></div>
+                <div style="font-family: var(--font-mono); font-size: 1.2rem; margin-top: 0.5rem;">ans2: <strong id="ans2-text" style="color:var(--accent-green);">0</strong></div>
+            </div>
+        </div>
+
+        <div class="visualizer__log" id="viz-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6;">
+          Click 'Step Processing' to begin.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const nums1 = [4, 3, 2, 3, 1];
+          const nums2 = [2, 2, 5, 2, 3, 6];
+          const s1 = new Set(nums1);
+          const s2 = new Set(nums2);
+          
+          let state = 0; // 0: init, 1: phase1 (nums1), 2: phase2 (nums2), 3: done
+          let idx = 0;
+          let ans1 = 0;
+          let ans2 = 0;
+          
+          const a1Cont = document.getElementById('arr1-container');
+          const a2Cont = document.getElementById('arr2-container');
+          const log = document.getElementById('viz-log');
+
+          function init() {
+              state = 0; idx = 0; ans1 = 0; ans2 = 0;
+              document.getElementById('set1-text').textContent = "{}";
+              document.getElementById('set2-text').textContent = "{}";
+              document.getElementById('ans1-text').textContent = "0";
+              document.getElementById('ans2-text').textContent = "0";
+              render();
+              log.innerHTML = "Click 'Step Processing' to build sets and check intersections.";
+          }
+
+          function createBox(val, isHighlighted, isMatch) {
+              const el = document.createElement('div');
+              el.style.width = '30px'; el.style.height = '30px';
+              el.style.display = 'flex'; el.style.alignItems = 'center'; el.style.justifyContent = 'center';
+              el.style.border = '2px solid var(--border-primary)'; el.style.borderRadius = '4px';
+              el.textContent = val;
+              
+              if (isHighlighted) {
+                  el.style.background = isMatch ? 'var(--accent-green)' : 'var(--accent-orange)';
+                  el.style.color = 'black';
+              } else {
+                  el.style.background = 'var(--bg-secondary)';
+              }
+              return el;
+          }
+
+          function render() {
+              a1Cont.innerHTML = '';
+              nums1.forEach((v, i) => {
+                  let hl = (state === 1 && i === idx);
+                  let match = s2.has(v);
+                  a1Cont.appendChild(createBox(v, hl, match));
+              });
+              
+              a2Cont.innerHTML = '';
+              nums2.forEach((v, i) => {
+                  let hl = (state === 2 && i === idx);
+                  let match = s1.has(v);
+                  a2Cont.appendChild(createBox(v, hl, match));
+              });
+              
+              document.getElementById('ans1-text').textContent = ans1;
+              document.getElementById('ans2-text').textContent = ans2;
+          }
+
+          function step() {
+              if (state === 0) {
+                  document.getElementById('set1-text').textContent = `{${Array.from(s1).join(', ')}}`;
+                  document.getElementById('set2-text').textContent = `{${Array.from(s2).join(', ')}}`;
+                  log.innerHTML = `Created Hash Sets for <code>nums1</code> and <code>nums2</code> in O(n+m) time.`;
+                  state = 1; idx = 0;
+              } else if (state === 1) {
+                  if (idx < nums1.length) {
+                      let v = nums1[idx];
+                      if (s2.has(v)) {
+                          ans1++;
+                          log.innerHTML = `Checking <code>nums1[${idx}]</code> = <strong>${v}</strong>. It <span style="color:var(--accent-green);">EXISTS</span> in Set 2! ans1 = ${ans1}`;
+                      } else {
+                          log.innerHTML = `Checking <code>nums1[${idx}]</code> = <strong>${v}</strong>. It does <span style="color:var(--accent-orange);">NOT EXIST</span> in Set 2.`;
+                      }
+                      render();
+                      idx++;
+                  } else {
+                      state = 2; idx = 0;
+                      step(); return;
+                  }
+              } else if (state === 2) {
+                  if (idx < nums2.length) {
+                      let v = nums2[idx];
+                      if (s1.has(v)) {
+                          ans2++;
+                          log.innerHTML = `Checking <code>nums2[${idx}]</code> = <strong>${v}</strong>. It <span style="color:var(--accent-green);">EXISTS</span> in Set 1! ans2 = ${ans2}`;
+                      } else {
+                          log.innerHTML = `Checking <code>nums2[${idx}]</code> = <strong>${v}</strong>. It does <span style="color:var(--accent-orange);">NOT EXIST</span> in Set 1.`;
+                      }
+                      render();
+                      idx++;
+                  } else {
+                      state = 3;
+                      log.innerHTML = `🎉 <strong>Complete!</strong> Result is <code>[${ans1}, ${ans2}]</code>.`;
+                      render();
+                  }
+              }
+          }
+
+          document.getElementById('btn-step').addEventListener('click', step);
+          document.getElementById('btn-reset').addEventListener('click', init);
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: nums1=[4,3,2,3,1], nums2=[2,2,5,2,3,6]</div><div class='math-block' style='text-align:left;font-size:0.9rem;'>
+<pre style="color:var(--text-secondary)">
+1. Build Sets:
+   s1 = {1, 2, 3, 4}
+   s2 = {2, 3, 5, 6}
+
+2. Calculate ans1 (Iterate nums1):
+   4 &rarr; not in s2
+   3 &rarr; in s2 (ans1=1)
+   2 &rarr; in s2 (ans1=2)
+   3 &rarr; in s2 (ans1=3)
+   1 &rarr; not in s2
+   ans1 = 3
+
+3. Calculate ans2 (Iterate nums2):
+   2 &rarr; in s1 (ans2=1)
+   2 &rarr; in s1 (ans2=2)
+   5 &rarr; not in s1
+   2 &rarr; in s1 (ans2=3)
+   3 &rarr; in s1 (ans2=4)
+   6 &rarr; not in s1
+   ans2 = 4
+
+<span class="highlight">Result: [3, 4]</span>
+</pre></div></div></section>
+<!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    vector&lt;int&gt; findIntersectionValues(vector&lt;int&gt;&amp; nums1, vector&lt;int&gt;&amp; nums2) {
+        unordered_set&lt;int&gt; s1(nums1.begin(), nums1.end());
+        unordered_set&lt;int&gt; s2(nums2.begin(), nums2.end());
+        int c1 = 0, c2 = 0;
+        for (int x : nums1) if (s2.count(x)) c1++;
+        for (int x : nums2) if (s1.count(x)) c2++;
+        return {c1, c2};
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def findIntersectionValues(self, nums1, nums2):
+        s1, s2 = set(nums1), set(nums2)
+        return [sum(1 for x in nums1 if x in s2),
+                sum(1 for x in nums2 if x in s1)]</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Largest Prime Factor — CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">⚡</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-01-number-theory.html" class="navbar__link">← Back to Module 01</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">›</span><a href="../modules/module-01-number-theory.html">Module 01</a><span class="breadcrumb__sep">›</span><span class="breadcrumb__current">Largest Prime Factor</span></div>
+      <h1 class="problem-header__title">Largest Prime Factor</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://www.geeksforgeeks.org/problems/largest-prime-factor2601/1" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">🔗 GFG</a>
+      </div>
+    </header>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2>
+      <div class='math-block'>
+        <div class='formula'>Fundamental Theorem of Arithmetic</div>
+        <p style='font-size:0.9rem;margin-top:0.5rem;'>Every integer greater than 1 is either a prime itself or can be represented as the product of prime numbers.</p>
+        <p style='font-size:0.9rem;'>By repeatedly dividing out the smallest prime factors (starting from 2, then odd numbers up to &radic;n), the remaining number must either be 1 or the largest prime factor itself.</p>
+      </div>
+    </section>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+      <div class="approach-card approach-card--brute">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Check Every Number</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Iterate <code>i</code> from 2 to <code>n</code>. Check if <code>i</code> divides <code>n</code> AND if <code>i</code> is prime. Update maximum prime factor found.</p>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n &times; &radic;n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(1)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros">
+              <div class="pros-cons__title">Pros</div>
+              <ul class="pros-cons__list"><li>Simple and intuitive</li></ul>
+            </div>
+            <div class="pros-cons__col pros-cons__col--cons">
+              <div class="pros-cons__title">Cons</div>
+              <ul class="pros-cons__list"><li>Extremely slow for large n</li></ul>
+            </div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We don't need to check all numbers up to n. Factors appear in pairs up to &radic;n.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Iterate to &radic;n</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Iterate <code>i</code> up to <code>&radic;n</code> to find factors. If <code>i</code> is a factor, check if <code>i</code> or <code>n/i</code> is prime.</p>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(&radic;n &times; &radic;i)</span>
+            <span class="cx-badge cx-badge--space">Space: O(1)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros">
+              <div class="pros-cons__title">Pros</div>
+              <ul class="pros-cons__list"><li>Much faster</li></ul>
+            </div>
+            <div class="pros-cons__col pros-cons__col--cons">
+              <div class="pros-cons__title">Cons</div>
+              <ul class="pros-cons__list"><li>Still does redundant primality checks</li></ul>
+            </div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">Instead of finding factors and checking if they are prime, we can continuously divide n by its smallest prime factors to extract them dynamically.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 3</span></div>
+          <div class="approach-card__title">Prime Factorization</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Repeatedly divide out the smallest prime factor (starting with 2, then odd numbers up to &radic;n). What remains is the largest prime factor.</p>
+          <div class="pseudocode-block"><span class='keyword'>while</span> n % 2 == 0: max_prime = 2, n = n / 2<br><span class='keyword'>for</span> i = 3 <span class='keyword'>to</span> &radic;n <span class='keyword'>step</span> 2:<br>&nbsp;&nbsp;<span class='keyword'>while</span> n % i == 0:<br>&nbsp;&nbsp;&nbsp;&nbsp;max_prime = i, n = n / i<br><span class='keyword'>if</span> n > 1: max_prime = n</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(&radic;n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(1)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros">
+              <div class="pros-cons__title">Pros</div>
+              <ul class="pros-cons__list"><li>Optimal time complexity</li></ul>
+            </div>
+            <div class="pros-cons__col pros-cons__col--cons">
+              <div class="pros-cons__title">Cons</div>
+              <ul class="pros-cons__list"><li>Requires careful while loops</li></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">👀</span> Interactive Walkthrough</h2>
+      <div class="viz-controls">
+  <input type="number" id="factor-input" class="viz-input" value="315" min="2" style="width: 120px;">
+  <button class="viz-btn" id="factor-btn">Find Largest Factor</button>
+</div>
+<div class="viz-canvas" style="flex-direction: column; gap: var(--space-4);" id="factor-log"></div>
+    </section>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr><td>Brute Force</td><td><code>O(n &times; &radic;n)</code></td><td><code>O(1)</code></td><td>Too slow</td></tr>
+          <tr><td>Iterate to &radic;n</td><td><code>O(&radic;n &times; &radic;i)</code></td><td><code>O(1)</code></td><td>Good</td></tr>
+          <tr class="row--optimal"><td>Prime Factorization</td><td><code>O(&radic;n)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">💻</span> Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    long long largestPrimeFactor(int n) {
+        long long maxPrime = -1;
+        while (n % 2 == 0) {
+            maxPrime = 2;
+            n /= 2;
+        }
+        for (long long i = 3; i * i &lt;= n; i += 2) {
+            while (n % i == 0) {
+                maxPrime = i;
+                n /= i;
+            }
+        }
+        if (n &gt; 1) maxPrime = n;
+        return maxPrime;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def largestPrimeFactor(self, n):
+        max_prime = -1
+        while n % 2 == 0:
+            max_prime = 2
+            n //= 2
+        i = 3
+        while i * i &lt;= n:
+            while n % i == 0:
+                max_prime = i
+                n //= i
+            i += 2
+        if n &gt; 1:
+            max_prime = n
+        return max_prime</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+  <script>
+    
+const input2 = document.getElementById('factor-input');
+const btn2 = document.getElementById('factor-btn');
+const log2 = document.getElementById('factor-log');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+btn2.onclick = async () => {
+    btn2.disabled = true;
+    log2.innerHTML = '';
+    let n = parseInt(input2.value);
+    let maxPrime = -1;
+    
+    const append = (text) => {
+        const div = document.createElement('div');
+        div.className = `math-block`;
+        div.innerHTML = text;
+        log2.appendChild(div);
+    };
+
+    append(`Start: n = ${n}`);
+    await sleep(600);
+
+    while (n % 2 === 0) {
+        maxPrime = 2;
+        n /= 2;
+        append(`Divisible by 2. New n = ${n}, maxPrime = 2`);
+        await sleep(600);
+    }
+    
+    for (let i = 3; i * i <= n; i += 2) {
+        if(n % i === 0) {
+            append(`Checking odd factor ${i}...`);
+            await sleep(400);
+            while (n % i === 0) {
+                maxPrime = i;
+                n /= i;
+                append(`Divisible by ${i}. New n = ${n}, maxPrime = ${i}`);
+                await sleep(600);
+            }
+        }
+    }
+    
+    if (n > 1) {
+        maxPrime = n;
+        append(`Remaining n = ${n} is prime! maxPrime = ${n}`);
+    }
+    
+    append(`<span style="color:var(--accent-green)">Largest Prime Factor is ${maxPrime} ✅</span>`);
+    btn2.disabled = false;
+};
+
+  </script>
+</body>
+</html>

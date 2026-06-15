@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="Module 07: Linked List — Part 2 — CP-II Lab">
+  <title>Module 07: Linked List — Part 2 — CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/components.css"><link rel="stylesheet" href="../css/module.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">⚡</span><span>CP-II Lab</span></a><div class="navbar__nav" id="nav-menu"><a href="../index.html" class="navbar__link">📚 All Modules</a><a href="#theory" class="navbar__link">📖 Theory</a><a href="#problems" class="navbar__link">💡 Problems</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button><button class="navbar__hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button></div></div></nav>
+  <div class="module-page">
+    <section class="module-hero"><div class="module-hero__bg"><div class="module-hero__orb module-hero__orb--1" style="background:var(--accent-blue);"></div><div class="module-hero__orb module-hero__orb--2" style="background:var(--accent-orange);"></div></div>
+      <div class="container"><div class="module-hero__content">
+        <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">›</span><span class="breadcrumb__current">Module 07</span></div>
+        <span class="module-hero__number">⛓️ Module 07</span>
+        <h1 class="module-hero__title">Linked <span class="text-gradient">List — Part 2</span></h1>
+        <p class="module-hero__desc">Advanced linked list operations: sorting, merging, cycle detection, and finding intersections.</p>
+        <div class="module-hero__meta"><span class="module-hero__meta-item"><span class="icon">📝</span> 6 Problems</span><span class="module-hero__meta-item"><span class="icon">⏱️</span> ~3 hours</span><span class="module-hero__meta-item"><span class="icon">📊</span> Easy to Medium</span></div>
+      </div></div></section>
+    <div class="module-layout">
+      <aside class="module-sidebar"><nav class="toc"><div class="toc__title">Contents</div><div class="toc__list"><a href="#theory" class="toc__link active">📖 Theory</a><a href="#problems" class="toc__link">💡 Problems</a><a href="#p1" class="toc__link toc__link--sub">Sort List</a><a href="#p2" class="toc__link toc__link--sub">Remove Duplicates from Sorted Li</a><a href="#p3" class="toc__link toc__link--sub">Merge Two Sorted Lists</a><a href="#p4" class="toc__link toc__link--sub">Intersection of Two Linked Lists</a><a href="#p5" class="toc__link toc__link--sub">Linked List Cycle</a><a href="#p6" class="toc__link toc__link--sub">Linked List Cycle II</a></div></nav></aside>
+      <main class="module-main">
+        <section class="module-section" id="theory"><h2 class="module-section__title"><span class="icon">📖</span> Theory</h2><div class="theory-block"><h3 class="theory-block__title">⛓️ Advanced Linked List Techniques</h3><div class="theory-block__content"><p>This module covers advanced linked list patterns:</p><ul style="list-style:disc;padding-left:1.5rem;"><li><strong>Merge Sort on Linked Lists</strong> — O(n log n) sorting, O(1) extra space (unlike arrays)</li><li><strong>Floyd's Cycle Detection</strong> — Slow/fast pointers to detect and find the start of cycles</li><li><strong>Two-pointer techniques</strong> — For finding intersection points of two lists</li></ul><div class="callout callout--tip"><div class="callout__title">💡 Why Merge Sort for Linked Lists?</div><div class="callout__body">Unlike arrays, linked lists can be split and merged in O(1) space. Merge Sort is preferred over Quick Sort for linked lists because random access is O(n), making Quick Sort's partition expensive.</div></div></div></div></section>
+        <section class="module-section" id="visualization">
+          <h2 class="module-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+
+<div class="visualizer" id="ll-cycle-viz">
+  <div class="visualizer__controls">
+    <button class="btn btn--primary" id="btn-cycle-step">Step Slow/Fast Pointers</button>
+    <button class="btn btn--outline" id="btn-cycle-reset">Reset</button>
+  </div>
+  <div id="cycle-container" style="display: flex; gap: 1rem; justify-content: center; margin: 3rem 0; position: relative;">
+  </div>
+  <div class="visualizer__log" id="cycle-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary);">
+    Floyd's Cycle Detection. Nodes 1 → 2 → 3 → 4 → 5 → 3 (Cycle!)
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // 1 -> 2 -> 3 -> 4 -> 5 -> cycle to 3
+    // Indices: 0, 1, 2, 3, 4. Node 4's next is Node 2.
+    const container = document.getElementById('cycle-container');
+    const log = document.getElementById('cycle-log');
+    const N = 5;
+    
+    // slow moves 1, fast moves 2
+    let slow = 0, fast = 0;
+    let step = 0;
+    
+    // next array
+    const nextArr = [1, 2, 3, 4, 2];
+
+    function render() {
+        container.innerHTML = '';
+        for(let i=0; i<N; i++) {
+            const wrap = document.createElement('div');
+            wrap.style.display = 'flex'; wrap.style.alignItems = 'center'; wrap.style.gap = '1rem';
+            
+            const node = document.createElement('div');
+            node.className = 'array-item';
+            node.textContent = i + 1;
+            node.style.position = 'relative';
+            
+            let ptrs = [];
+            if (slow === i) ptrs.push('Slow');
+            if (fast === i) ptrs.push('Fast');
+            
+            if (ptrs.length > 0) {
+                const labelEl = document.createElement('div');
+                labelEl.textContent = ptrs.join(', ');
+                labelEl.style.position = 'absolute';
+                labelEl.style.bottom = '-30px';
+                labelEl.style.fontSize = '12px';
+                labelEl.style.color = 'var(--accent-orange)';
+                labelEl.style.fontWeight = 'bold';
+                labelEl.style.whiteSpace = 'nowrap';
+                node.appendChild(labelEl);
+            }
+            
+            wrap.appendChild(node);
+            
+            if (i < N - 1) {
+                const arrow = document.createElement('div');
+                arrow.style.color = 'var(--text-secondary)';
+                arrow.textContent = '→';
+                wrap.appendChild(arrow);
+            } else {
+                const cycleText = document.createElement('div');
+                cycleText.style.color = 'var(--accent-red)';
+                cycleText.style.fontWeight = 'bold';
+                cycleText.textContent = '↺ to Node 3';
+                wrap.appendChild(cycleText);
+            }
+            container.appendChild(wrap);
+        }
+    }
+
+    document.getElementById('btn-cycle-step').addEventListener('click', () => {
+        if (slow === fast && step > 0) {
+            log.innerHTML = `Slow and Fast both met at Node ${slow+1}! <strong>CYCLE DETECTED!</strong>`;
+            return;
+        }
+        
+        slow = nextArr[slow];
+        fast = nextArr[nextArr[fast]];
+        step++;
+        
+        if (slow === fast) {
+            log.innerHTML = `Step ${step}: Slow moved to Node ${slow+1}, Fast moved to Node ${fast+1}. They meet! Cycle Detected!`;
+        } else {
+            log.innerHTML = `Step ${step}: Slow moves to Node ${slow+1}. Fast moves 2 steps to Node ${fast+1}.`;
+        }
+        render();
+    });
+
+    document.getElementById('btn-cycle-reset').addEventListener('click', () => {
+        slow = 0; fast = 0; step = 0;
+        log.innerHTML = "Floyd's Cycle Detection. Nodes 1 → 2 → 3 → 4 → 5 → 3 (Cycle!)";
+        render();
+    });
+
+    render();
+});
+</script>
+
+        </section>
+        <section class="module-section" id="problems"><h2 class="module-section__title"><span class="icon">💡</span> Practice Problems</h2><div class="problems-list">
+
+            <!-- Problem 1 -->
+            <a href="../problems/m7-p1.html" id="p1" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#1</span>
+                    <h3 class="problem-card__title">Sort List</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 2 -->
+            <a href="../problems/m7-p2.html" id="p2" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#2</span>
+                    <h3 class="problem-card__title">Remove Duplicates from Sorted List</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 3 -->
+            <a href="../problems/m7-p3.html" id="p3" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#3</span>
+                    <h3 class="problem-card__title">Merge Two Sorted Lists</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 4 -->
+            <a href="../problems/m7-p4.html" id="p4" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#4</span>
+                    <h3 class="problem-card__title">Intersection of Two Linked Lists</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 5 -->
+            <a href="../problems/m7-p5.html" id="p5" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#5</span>
+                    <h3 class="problem-card__title">Linked List Cycle</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 6 -->
+            <a href="../problems/m7-p6.html" id="p6" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#6</span>
+                    <h3 class="problem-card__title">Linked List Cycle II</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            </div>
+        </section>
+        <div class="module-nav"><a href="module-06-linked-list-1.html" class="module-nav__btn"><div><span class="module-nav__label">← Previous</span><span class="module-nav__title">Linked List Part 1</span></div></a><a href="module-08-stack-queue.html" class="module-nav__btn module-nav__btn--next"><div><span class="module-nav__label">Next →</span><span class="module-nav__title">Stack & Queue</span></div></a></div>
+      </main>
+    </div>
+  </div>
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script><script src="../js/code-runner.js"></script>
+</body></html>

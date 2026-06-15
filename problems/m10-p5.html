@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unique Paths - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-10-dp.html" class="navbar__link">&#8592; Back to Module 10: DP</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-10-dp.html">Module 10: DP</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Unique Paths</span></div>
+      <h1 class="problem-header__title">Unique Paths</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/unique-paths/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time. Given the two integers m and n, return the number of possible unique paths that the robot can take to reach the bottom-right corner.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128218;</span> Mathematical Foundation</h2>
+      <div class="math-block">
+        <p>Let <code>dp[r][c]</code> be the number of unique paths from the top-left corner <code>(0,0)</code> to the cell <code>(r,c)</code>.</p>
+        <p>Since the robot can only move <strong>down</strong> or <strong>right</strong>, it can only reach <code>(r,c)</code> from either:</p>
+        <ul style="padding-left:1.5rem; margin-top:0.5rem; color:var(--text-secondary);">
+          <li>The cell directly above it: <code>(r-1, c)</code></li>
+          <li>The cell directly to its left: <code>(r, c-1)</code></li>
+        </ul>
+        <div style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-sm); margin-top:1rem; text-align:center;">
+          <code>dp[r][c] = dp[r-1][c] + dp[r][c-1]</code>
+        </div>
+        <p style="margin-top:1rem;"><strong>Base cases:</strong> The first row and first column only have 1 unique path (going straight right or straight down).</p>
+      </div>
+    </section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+      <div class="approach-card approach-card--brute">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Brute Force Recursion</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Traverse the grid recursively. From every cell, explore moving right and moving down. Return 1 when the bottom-right corner is reached.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> paths(r, c, m, n):<br>&nbsp;&nbsp;<span class='keyword'>if</span> r == m-1 and c == n-1: <span class='keyword'>return</span> 1<br>&nbsp;&nbsp;<span class='keyword'>if</span> r &ge; m or c &ge; n: <span class='keyword'>return</span> 0<br>&nbsp;&nbsp;<span class='keyword'>return</span> paths(r+1, c) + paths(r, c+1)</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(2<sup>m+n</sup>)</span>
+            <span class="cx-badge cx-badge--space">Space: O(m+n)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Simple DFS logic</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Exponential time, TLE</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Many paths converge on the same grid cell. We calculate the number of paths from `(r, c)` to the end over and over.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">2D Tabulation (DP Table)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Build an <code>m &times; n</code> matrix. Initialize the first row and column to 1, then calculate the inner cells.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> uniquePaths(m, n):<br>&nbsp;&nbsp;dp = 2D array [m][n]<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> m-1: dp[i][0] = 1<br>&nbsp;&nbsp;<span class='keyword'>for</span> j = 0 <span class='keyword'>to</span> n-1: dp[0][j] = 1<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 1 <span class='keyword'>to</span> m-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> j = 1 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dp[i][j] = dp[i-1][j] + dp[i][j-1]<br>&nbsp;&nbsp;<span class='keyword'>return</span> dp[m-1][n-1]</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(m &times; n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(m &times; n)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Fast polynomial time</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>O(m &times; n) memory is inefficient</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Notice that to calculate the current row, we only need values from the <strong>previous row</strong>. We can drop the 2D array!</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 3</span></div>
+          <div class="approach-card__title">1D DP (Space Optimized)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Maintain a 1D array representing the previous row. Update it in place as we scan through the rows.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> uniquePaths(m, n):<br>&nbsp;&nbsp;dp = array [n] of 1s<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 1 <span class='keyword'>to</span> m-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> j = 1 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dp[j] = dp[j] + dp[j-1]<br>&nbsp;&nbsp;<span class='keyword'>return</span> dp[n-1]</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(m &times; n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(n)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Great space reduction</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Still takes O(m &times; n) iterations</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">This is actually a pure Combinatorics problem. We need to make a total of `m-1` down steps and `n-1` right steps, in any order!</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 4</span></div>
+          <div class="approach-card__title">Combinatorics (Math)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">The total number of steps is <code>(m-1) + (n-1) = m+n-2</code>. We must choose <code>m-1</code> down steps (or <code>n-1</code> right steps). The answer is simply <strong>(m+n-2) Choose (m-1)</strong>.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> uniquePaths(m, n):<br>&nbsp;&nbsp;N = m + n - 2<br>&nbsp;&nbsp;R = min(m - 1, n - 1)<br>&nbsp;&nbsp;res = 1<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 1 <span class='keyword'>to</span> R:<br>&nbsp;&nbsp;&nbsp;&nbsp;res = res * (N - R + i) / i<br>&nbsp;&nbsp;<span class='keyword'>return</span> res</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(min(m, n))</span>
+            <span class="cx-badge cx-badge--space">Space: O(1)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>O(1) space, incredibly fast</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Requires integer overflow care</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr class="row--brute"><td>Recursion</td><td><code>O(2<sup>m+n</sup>)</code></td><td><code>O(m+n)</code></td><td>TLE</td></tr>
+          <tr class="row--better"><td>2D DP Tabulation</td><td><code>O(m &times; n)</code></td><td><code>O(m &times; n)</code></td><td>Good</td></tr>
+          <tr class="row--better"><td>1D DP Array</td><td><code>O(m &times; n)</code></td><td><code>O(n)</code></td><td>Better</td></tr>
+          <tr class="row--optimal"><td>Combinatorics (Math)</td><td><code>O(min(m,n))</code></td><td><code>O(1)</code></td><td>Optimal</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">&#10024;</span> Interactive Visualization</h2>
+      <div class="visualizer" id="grid-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step-grid">Step DP</button>
+          <button class="btn btn--outline" id="btn-reset-grid">Reset</button>
+          <span style="color:var(--text-secondary); margin-left:1rem;">Grid: <strong>3 x 4</strong></span>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(4, 60px); gap: 5px; justify-content: center; margin: 3rem 0;" id="grid-container">
+          <!-- 12 cells -->
+        </div>
+
+        <div class="visualizer__log" id="grid-log">
+          Initialized 3x4 grid. Base cases (top row & left col) are 1.
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const container = document.getElementById("grid-container");
+          const log = document.getElementById("grid-log");
+          const btnStep = document.getElementById("btn-step-grid");
+          const btnReset = document.getElementById("btn-reset-grid");
+
+          const m = 3, n = 4;
+          let dp = [];
+          let currentRow = 1, currentCol = 1;
+
+          function init() {
+            dp = Array(m).fill().map(() => Array(n).fill(0));
+            for(let i=0; i<m; i++) dp[i][0] = 1;
+            for(let j=0; j<n; j++) dp[0][j] = 1;
+            currentRow = 1; currentCol = 1;
+            render();
+            log.innerHTML = `Initialized 3x4 grid. Base cases (top row & left col) are 1.`;
+            btnStep.disabled = false;
+          }
+
+          function render() {
+            container.innerHTML = "";
+            for (let r = 0; r < m; r++) {
+              for (let c = 0; c < n; c++) {
+                const cell = document.createElement("div");
+                cell.style.width = "60px";
+                cell.style.height = "60px";
+                cell.style.display = "flex";
+                cell.style.alignItems = "center";
+                cell.style.justifyContent = "center";
+                cell.style.fontSize = "1.5rem";
+                cell.style.fontWeight = "bold";
+                cell.style.borderRadius = "var(--radius-sm)";
+                
+                if (r === 0 || c === 0) {
+                  cell.style.background = "var(--bg-elevated)";
+                  cell.style.border = "1px solid var(--border-primary)";
+                  cell.style.color = "var(--text-secondary)";
+                } else if (r < currentRow || (r === currentRow && c < currentCol)) {
+                  cell.style.background = "var(--accent-green-dim)";
+                  cell.style.border = "1px solid var(--accent-green)";
+                  cell.style.color = "var(--accent-green)";
+                } else if (r === currentRow && c === currentCol) {
+                  cell.style.background = "var(--accent-orange-dim)";
+                  cell.style.border = "2px solid var(--accent-orange)";
+                  cell.style.boxShadow = "0 0 10px var(--accent-orange)";
+                } else {
+                  cell.style.background = "transparent";
+                  cell.style.border = "1px dashed var(--border-primary)";
+                }
+
+                cell.textContent = dp[r][c] > 0 ? dp[r][c] : "";
+                
+                if (r === currentRow && c === currentCol) {
+                  cell.textContent = "?";
+                }
+
+                container.appendChild(cell);
+              }
+            }
+          }
+
+          btnStep.addEventListener("click", () => {
+            if (currentRow < m && currentCol < n) {
+              const r = currentRow, c = currentCol;
+              dp[r][c] = dp[r-1][c] + dp[r][c-1];
+              
+              log.innerHTML = `<code>dp[${r}][${c}] = dp[${r-1}][${c}] + dp[${r}][${c-1}]</code> &rarr; ${dp[r-1][c]} + ${dp[r][c-1]} = <strong>${dp[r][c]}</strong>`;
+              
+              currentCol++;
+              if (currentCol >= n) {
+                currentCol = 1;
+                currentRow++;
+              }
+              
+              if (currentRow >= m) {
+                btnStep.disabled = true;
+                log.innerHTML += `<br><strong>Finished!</strong> Total unique paths: ${dp[m-1][n-1]}`;
+              }
+              
+              render();
+            }
+          });
+
+          btnReset.addEventListener("click", init);
+
+          init();
+        });
+      </script>
+    </section>
+
+    <!-- 5. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++ (Math)</button><button class="code-block__tab" data-lang="python">Python (1D DP)</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        // Total steps = m-1 + n-1 = m+n-2
+        // We choose m-1 steps to go down (or n-1 to go right)
+        int N = n + m - 2;
+        int R = min(m - 1, n - 1);
+        double res = 1;
+        
+        // Calculate (N choose R) safely
+        for (int i = 1; i &lt;= R; i++) {
+            res = res * (N - R + i) / i;
+        }
+        
+        return (int)res;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def uniquePaths(self, m: int, n: int) -> int:
+        # Space optimized DP using a single 1D array
+        dp = [1] * n
+        
+        # Traverse rows
+        for i in range(1, m):
+            # Traverse columns
+            for j in range(1, n):
+                # dp[j] gets updated with itself (cell above) + left cell
+                dp[j] = dp[j] + dp[j - 1]
+                
+        return dp[-1]</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <footer class="footer" style="margin-top: 4rem; padding: 2rem 0; text-align: center; color: var(--text-tertiary); border-top: 1px solid var(--border-primary);">
+    <p>CP-II Lab &copy; 2026. Built for learning.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

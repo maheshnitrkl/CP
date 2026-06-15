@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find First and Last Position of Element in Sorted Array - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-03-searching.html" class="navbar__link">&#8592; Back to Module 03: Searching</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-03-searching.html">Module 03: Searching</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Find First and Last Position of Element in Sorted Array</span></div>
+      <h1 class="problem-header__title">Find First and Last Position of Element in Sorted Array</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given a sorted array of integers <code>nums</code> and a target value, find the starting and ending position of <code>target</code>. If not found, return <code>[-1, -1]</code>.</p><p><strong>Example:</strong> <code>nums = [5,7,7,8,8,10], target = 8</code> &rarr; <code>[3, 4]</code></p><p><strong>Constraint:</strong> Must run in <code>O(log n)</code> time.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Binary Search finds an element in O(log n) by halving the search space each step.</div><p style='font-size:0.9rem;margin-top:0.5rem;'>For the first occurrence, when we find target, we keep searching <em>left</em> (set high = mid - 1). For the last occurrence, we keep searching <em>right</em> (set low = mid + 1).</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Linear Scan</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Scan left to right to find first occurrence, then continue to find last occurrence.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> searchRange(nums, target):<br>&nbsp;&nbsp;first = -1, last = -1<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> nums[i] == target:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> first == -1: first = i<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;last = i<br>&nbsp;&nbsp;<span class='keyword'>return</span> [first, last]</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Very simple</li><li>Always works</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Doesn't use the sorted property at all</li><li>O(n) is too slow for the constraint</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">The array is <em>sorted</em>! We're ignoring this structure. Binary search can find elements in O(log n).</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Two Binary Searches</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Run binary search twice: once configured to find the <em>leftmost</em> occurrence (when found, keep going left), once for the <em>rightmost</em> (when found, keep going right).</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> searchRange(nums, target):<br>&nbsp;&nbsp;<span class='keyword'>return</span> [findBound(nums, target, true),<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;findBound(nums, target, false)]<br><br><span class='keyword'>function</span> findBound(nums, target, isFirst):<br>&nbsp;&nbsp;lo = 0, hi = n-1, result = -1<br>&nbsp;&nbsp;<span class='keyword'>while</span> lo &le; hi:<br>&nbsp;&nbsp;&nbsp;&nbsp;mid = lo + (hi - lo) / 2<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> nums[mid] == target:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result = mid<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> isFirst: hi = mid - 1 <span class='comment'>// keep searching left</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>else</span>: lo = mid + 1 <span class='comment'>// keep searching right</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>elif</span> nums[mid] < target: lo = mid + 1<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>else</span>: hi = mid - 1<br>&nbsp;&nbsp;<span class='keyword'>return</span> result</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(log n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(log n) time</li><li>Meets the constraint</li><li>Clean separation of concerns</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Slightly more complex than naive binary search</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-first">Step: Find First</button>
+          <button class="btn btn--primary" id="btn-search-last">Step: Find Last</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+          <span style="color:var(--text-secondary); margin-left:1rem;">Target: <strong>8</strong></span>
+        </div>
+        <div class="array-container" id="search-array" style="display: flex; gap: 0.5rem; justify-content: center; margin: 2rem 0; position: relative; height: 80px;">
+          <!-- Array elements will be injected here by JS -->
+        </div>
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6;">
+          Click 'Step: Find First' or 'Step: Find Last' to start stepping through the search.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const arr = [5, 7, 7, 8, 8, 10];
+          const target = 8;
+          const container = document.getElementById('search-array');
+          const log = document.getElementById('search-log');
+          let low = 0, high = arr.length - 1, mid = -1;
+          let state = -1; // -1: uninitialized, 0: ready to calc mid, 1: checking
+          let isFirst = true;
+          let result = -1;
+          let mode = ''; // 'first' or 'last'
+
+          function render() {
+              container.innerHTML = '';
+              arr.forEach((val, i) => {
+                  const el = document.createElement('div');
+                  el.className = 'array-item';
+                  el.textContent = val;
+                  
+                  if (state !== -1) {
+                      if (i < low || i > high) el.style.opacity = '0.3';
+                      if (i === mid) el.style.background = 'var(--accent-cyan)';
+                      if (i === result && state === 2) el.style.background = 'var(--accent-green)';
+                  }
+                  
+                  // Labels
+                  let labels = [];
+                  if (state !== -1 && i === low) labels.push('L');
+                  if (state !== -1 && i === high) labels.push('H');
+                  if (state !== -1 && i === mid) labels.push('M');
+                  if (state === 2 && i === result) labels.push('Res');
+                  
+                  if (labels.length > 0) {
+                      const labelEl = document.createElement('div');
+                      labelEl.textContent = labels.join(',');
+                      labelEl.style.position = 'absolute';
+                      labelEl.style.bottom = '-25px';
+                      labelEl.style.fontSize = '12px';
+                      labelEl.style.color = 'var(--accent-orange)';
+                      labelEl.style.fontWeight = 'bold';
+                      el.appendChild(labelEl);
+                  }
+                  container.appendChild(el);
+              });
+          }
+
+          function step() {
+              if (low > high) {
+                  log.innerHTML = `Search finished. Final result for ${isFirst ? 'First' : 'Last'} Occurrence is <strong>${result}</strong>.`;
+                  state = 2; // finished
+                  render();
+                  return;
+              }
+              
+              if (state === 0) {
+                  mid = Math.floor((low + high) / 2);
+                  log.innerHTML = `[${mode.toUpperCase()}] Calculated Mid: <code>(${low} + ${high}) / 2 = ${mid}</code>. Value is <strong>${arr[mid]}</strong>`;
+                  state = 1;
+              } else if (state === 1) {
+                  if (arr[mid] === target) {
+                      result = mid;
+                      if (isFirst) {
+                          log.innerHTML = `🎉 Found target! Because we want the <strong>First</strong> occurrence, we keep searching left: <code>high = mid - 1 = ${mid-1}</code>`;
+                          high = mid - 1;
+                      } else {
+                          log.innerHTML = `🎉 Found target! Because we want the <strong>Last</strong> occurrence, we keep searching right: <code>low = mid + 1 = ${mid+1}</code>`;
+                          low = mid + 1;
+                      }
+                      mid = -1;
+                  } else if (arr[mid] < target) {
+                      log.innerHTML = `<strong>${arr[mid]} &lt; ${target}</strong>. Target must be to the right. <code>low = mid + 1 = ${mid+1}</code>.`;
+                      low = mid + 1;
+                      mid = -1;
+                  } else {
+                      log.innerHTML = `<strong>${arr[mid]} &gt; ${target}</strong>. Target must be to the left. <code>high = mid - 1 = ${mid-1}</code>.`;
+                      high = mid - 1;
+                      mid = -1;
+                  }
+                  state = 0;
+              }
+              render();
+          }
+
+          document.getElementById('btn-search-first').addEventListener('click', () => {
+              if (mode !== 'first') { mode = 'first'; isFirst = true; low = 0; high = arr.length - 1; mid = -1; result = -1; state = 0; }
+              step();
+          });
+
+          document.getElementById('btn-search-last').addEventListener('click', () => {
+              if (mode !== 'last') { mode = 'last'; isFirst = false; low = 0; high = arr.length - 1; mid = -1; result = -1; state = 0; }
+              step();
+          });
+
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              low = 0; high = arr.length - 1; mid = -1; state = -1; result = -1; mode = '';
+              log.innerHTML = "Click 'Step: Find First' or 'Step: Find Last' to start stepping through the search.";
+              render();
+          });
+
+          render();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: nums = [5,7,7,8,8,10], target = 8</div><div class='math-block' style='text-align:left;font-size:0.9rem;'><strong>Finding First (isFirst=true):</strong><br>lo=0, hi=5: mid=2, nums[2]=7 < 8 &rarr; lo=3<br>lo=3, hi=5: mid=4, nums[4]=8 == 8 &rarr; result=4, hi=3 (search left)<br>lo=3, hi=3: mid=3, nums[3]=8 == 8 &rarr; result=<span class='highlight'>3</span>, hi=2<br>lo=3 > hi=2 &rarr; stop. First = 3<br><br><strong>Finding Last (isFirst=false):</strong><br>lo=0, hi=5: mid=2, nums[2]=7 < 8 &rarr; lo=3<br>lo=3, hi=5: mid=4, nums[4]=8 == 8 &rarr; result=4, lo=5 (search right)<br>lo=5, hi=5: mid=5, nums[5]=10 > 8 &rarr; hi=4<br>lo=5 > hi=4 &rarr; stop. Last = <span class='highlight'>4</span><br><br><strong>Result: [3, 4]</strong></div></div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Linear Scan</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Ignores sorted property</td></tr>
+<tr class="row--optimal"><td>Two Binary Searches</td><td><code>O(log n)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    vector&lt;int&gt; searchRange(vector&lt;int&gt;&amp; nums, int target) {
+        return {findBound(nums, target, true), findBound(nums, target, false)};
+    }
+    int findBound(vector&lt;int&gt;&amp; nums, int target, bool isFirst) {
+        int lo = 0, hi = nums.size()-1, result = -1;
+        while (lo &lt;= hi) {
+            int mid = lo + (hi-lo)/2;
+            if (nums[mid] == target) {
+                result = mid;
+                if (isFirst) hi = mid - 1;
+                else lo = mid + 1;
+            } else if (nums[mid] &lt; target) lo = mid + 1;
+            else hi = mid - 1;
+        }
+        return result;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def searchRange(self, nums, target):
+        def find(is_first):
+            lo, hi, result = 0, len(nums)-1, -1
+            while lo &lt;= hi:
+                mid = (lo + hi) // 2
+                if nums[mid] == target:
+                    result = mid
+                    if is_first: hi = mid - 1
+                    else: lo = mid + 1
+                elif nums[mid] &lt; target: lo = mid + 1
+                else: hi = mid - 1
+            return result
+        return [find(True), find(False)]</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

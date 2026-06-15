@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intersection of Two Linked Lists - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-06-linked-list-1.html" class="navbar__link">&#8592; Back to Module 06: Linked List Part 1</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-06-linked-list-1.html">Module 06: Linked List Part 1</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Intersection of Two Linked Lists</span></div>
+      <h1 class="problem-header__title">Intersection of Two Linked Lists</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/intersection-of-two-linked-lists/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given the heads of two singly linked lists, return the node at which they intersect. If no intersection, return <code>null</code>.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>len(A) + len(B) = len(B) + len(A)</div><p style='font-size:0.9rem;margin-top:0.5rem;'>If pointer A traverses list A then list B, and pointer B traverses list B then list A, they will meet at the intersection node (or both reach null if no intersection). Both travel the same total distance!</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Hash Set</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Store all nodes of list A in a set. Traverse list B, checking if any node is in the set.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> getIntersection(headA, headB):<br>&nbsp;&nbsp;visited = Set()<br>&nbsp;&nbsp;<span class='keyword'>while</span> headA: visited.add(headA); headA = headA.next<br>&nbsp;&nbsp;<span class='keyword'>while</span> headB:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> headB in visited: <span class='keyword'>return</span> headB<br>&nbsp;&nbsp;&nbsp;&nbsp;headB = headB.next<br>&nbsp;&nbsp;<span class='keyword'>return</span> null</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n+m)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Simple</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>O(n) space for the set</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We're using O(n) space. The two-pointer technique achieves O(1) space.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Two Pointers (Switch Lists)</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Pointer A starts at headA, pointer B at headB. When A reaches the end, redirect to headB. When B reaches the end, redirect to headA. They meet at the intersection!</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> getIntersection(headA, headB):<br>&nbsp;&nbsp;a = headA, b = headB<br>&nbsp;&nbsp;<span class='keyword'>while</span> a != b:<br>&nbsp;&nbsp;&nbsp;&nbsp;a = a.next <span class='keyword'>if</span> a <span class='keyword'>else</span> headB<br>&nbsp;&nbsp;&nbsp;&nbsp;b = b.next <span class='keyword'>if</span> b <span class='keyword'>else</span> headA<br>&nbsp;&nbsp;<span class='keyword'>return</span> a</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n+m)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(1) space</li><li>Elegant equal-distance property</li><li>Handles different-length lists automatically</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Less intuitive why it works</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Pointers</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 2rem; margin: 3rem 0; min-height: 250px; padding: 0 1rem; align-items: center;" id="ll-container">
+            <div style="text-align: center; font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: -1rem;">
+                Pointer A Path: headA &rarr; null &rarr; headB
+            </div>
+            <div id="pathA-cont" style="display: flex; gap: 0.5rem; align-items: center; min-height: 50px; flex-wrap: wrap; justify-content: center;"></div>
+            
+            <div style="text-align: center; font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: -1rem; margin-top: 1rem;">
+                Pointer B Path: headB &rarr; null &rarr; headA
+            </div>
+            <div id="pathB-cont" style="display: flex; gap: 0.5rem; align-items: center; min-height: 50px; flex-wrap: wrap; justify-content: center;"></div>
+        </div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Step Pointers' to advance Pointer A and Pointer B.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          // List A: 1 -> 2 -> [6 -> 7]
+          // List B: 3 -> 4 -> 5 -> [6 -> 7]
+          // Intersection: 6
+          
+          const pathA = [1, 2, 6, 7, 'null', 3, 4, 5, 6, 7, 'null'];
+          const pathB = [3, 4, 5, 6, 7, 'null', 1, 2, 6, 7, 'null'];
+          
+          let pA = 0;
+          let pB = 0;
+          let isDone = false;
+          
+          const pathACont = document.getElementById('pathA-cont');
+          const pathBCont = document.getElementById('pathB-cont');
+          const log = document.getElementById('search-log');
+
+          function init() {
+              pA = 0;
+              pB = 0;
+              isDone = false;
+              render();
+          }
+
+          function createNode(val, highlightColor = null, isTarget = false) {
+              const node = document.createElement('div');
+              node.className = 'array-item';
+              node.style.width = '35px';
+              node.style.height = '35px';
+              node.style.display = 'flex';
+              node.style.alignItems = 'center';
+              node.style.justifyContent = 'center';
+              node.style.background = highlightColor || 'var(--bg-secondary)';
+              if(highlightColor) {
+                  node.style.color = 'black';
+                  node.style.fontWeight = 'bold';
+              }
+              if(isTarget) {
+                  node.style.border = '3px solid var(--accent-green)';
+                  node.style.boxShadow = '0 0 10px var(--accent-green)';
+              } else {
+                  node.style.border = '2px solid var(--border-primary)';
+              }
+              node.style.borderRadius = '8px';
+              node.style.fontSize = val === 'null' ? '0.7rem' : '1rem';
+              node.textContent = val;
+              return node;
+          }
+
+          function createArrow(isSwap = false) {
+              const arrow = document.createElement('div');
+              arrow.innerHTML = isSwap ? '&#10555;' : '&#8594;';
+              arrow.style.fontSize = isSwap ? '1.8rem' : '1.2rem';
+              arrow.style.color = isSwap ? 'var(--accent-purple)' : 'var(--text-secondary)';
+              arrow.style.fontWeight = isSwap ? 'bold' : 'normal';
+              return arrow;
+          }
+
+          function renderPath(path, ptrIdx, container, label, highlightColor) {
+              container.innerHTML = '';
+              for(let i = 0; i < path.length; i++) {
+                  const wrap = document.createElement('div');
+                  wrap.style.display = 'flex';
+                  wrap.style.alignItems = 'center';
+                  wrap.style.gap = '0.5rem';
+                  
+                  const isMatch = isDone && i === 8; // index 8 is the matching '6'
+                  
+                  const node = createNode(path[i], (i === ptrIdx) ? highlightColor : (isMatch ? 'var(--accent-green)' : null), isMatch);
+                  node.style.position = 'relative';
+                  
+                  if (i === ptrIdx) {
+                      const lbl = document.createElement('div');
+                      lbl.textContent = label;
+                      lbl.style.position = 'absolute';
+                      lbl.style.top = '-25px';
+                      lbl.style.left = '50%';
+                      lbl.style.transform = 'translateX(-50%)';
+                      lbl.style.color = highlightColor;
+                      lbl.style.fontWeight = 'bold';
+                      lbl.style.fontSize = '12px';
+                      node.appendChild(lbl);
+                  }
+                  
+                  wrap.appendChild(node);
+                  
+                  if (i < path.length - 1) {
+                      const isSwap = path[i] === 'null';
+                      wrap.appendChild(createArrow(isSwap));
+                  }
+                  container.appendChild(wrap);
+              }
+          }
+
+          function render() {
+              renderPath(pathA, pA, pathACont, 'pA', 'var(--accent-blue)');
+              renderPath(pathB, pB, pathBCont, 'pB', 'var(--accent-orange)');
+          }
+
+          function step() {
+              if (isDone) {
+                  log.innerHTML = `🎉 <strong>Complete!</strong> Intersection found at Node <strong>6</strong>.`;
+                  return;
+              }
+              
+              if (pA === 8 && pB === 8) { // They meet at index 8 (node '6')
+                  isDone = true;
+                  log.innerHTML = `<strong>Intersection found!</strong> Both pointers reached Node <strong>6</strong> at the same time.`;
+                  render();
+                  return;
+              }
+              
+              let prevA = pathA[pA];
+              let prevB = pathB[pB];
+              
+              pA++;
+              pB++;
+              
+              let msg = `Step pointers forward.<br>`;
+              
+              if (prevA === 'null') {
+                  msg += `<code>pA</code> reached <code>null</code>, teleporting to head of List B.<br>`;
+              }
+              if (prevB === 'null') {
+                  msg += `<code>pB</code> reached <code>null</code>, teleporting to head of List A.<br>`;
+              }
+              
+              msg += `Currently comparing: <code>pA (${pathA[pA]})</code> and <code>pB (${pathB[pB]})</code>.`;
+              
+              if (pA === 8 && pB === 8) {
+                  msg += ` <strong>They match!</strong>`;
+                  isDone = true;
+              }
+              
+              log.innerHTML = msg;
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              init();
+              log.innerHTML = "Click 'Step Pointers' to advance Pointer A and Pointer B.";
+          });
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Hash Set</td><td><code>O(n+m)</code></td><td><code>O(n)</code></td><td>Extra space</td></tr>
+<tr class="row--optimal"><td>Two Pointers Switch</td><td><code>O(n+m)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        ListNode *a = headA, *b = headB;
+        while (a != b) {
+            a = a ? a-&gt;next : headB;
+            b = b ? b-&gt;next : headA;
+        }
+        return a;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def getIntersectionNode(self, headA, headB):
+        a, b = headA, headB
+        while a != b:
+            a = a.next if a else headB
+            b = b.next if b else headA
+        return a</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

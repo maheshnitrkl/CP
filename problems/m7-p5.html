@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reorder List - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-07-linked-list-2.html" class="navbar__link">&#8592; Back to Module 07: Linked List Part 2</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-07-linked-list-2.html">Module 07: Linked List Part 2</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Reorder List</span></div>
+      <h1 class="problem-header__title">Reorder List</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/reorder-list/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Reorder list: L0 &rarr; Ln &rarr; L1 &rarr; Ln-1 &rarr; L2 &rarr; ...</p><p><strong>Example:</strong> <code>1&rarr;2&rarr;3&rarr;4</code> &rarr; <code>1&rarr;4&rarr;2&rarr;3</code></p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Array + Interleave</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Store nodes in array. Use two pointers from both ends to build new order.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> reorderList(head):<br>&nbsp;&nbsp;nodes = toArray(head)<br>&nbsp;&nbsp;i = 0, j = n-1<br>&nbsp;&nbsp;<span class='keyword'>while</span> i < j:<br>&nbsp;&nbsp;&nbsp;&nbsp;nodes[i].next = nodes[j]; i++<br>&nbsp;&nbsp;&nbsp;&nbsp;nodes[j].next = nodes[i]; j--</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Simple with array</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>O(n) extra space</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We can do this in O(1) space using find-middle + reverse + merge.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Find Middle + Reverse + Merge</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">1) Find middle 2) Reverse second half 3) Merge/interleave both halves.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> reorderList(head):<br>&nbsp;&nbsp;mid = findMiddle(head)<br>&nbsp;&nbsp;second = reverse(mid.next); mid.next = null<br>&nbsp;&nbsp;<span class='comment'>// interleave first and second halves</span><br>&nbsp;&nbsp;<span class='keyword'>while</span> second:<br>&nbsp;&nbsp;&nbsp;&nbsp;tmp1 = first.next; tmp2 = second.next<br>&nbsp;&nbsp;&nbsp;&nbsp;first.next = second; second.next = tmp1<br>&nbsp;&nbsp;&nbsp;&nbsp;first = tmp1; second = tmp2</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(1) space</li><li>Combines 3 fundamental LL operations</li><li>Beautiful composition</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>More complex implementation</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Next Phase</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 2rem; margin: 4rem 0; min-height: 150px; align-items: center; position: relative;" id="ll-container">
+            <!-- Nodes will be injected here -->
+        </div>
+
+        <div style="text-align: center; margin: 1rem 0; font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-secondary);" id="phase-indicator">
+            <strong>Initialization</strong>
+        </div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Next Phase' to start reordering the list.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          let state = 0; 
+          let isDone = false;
+          
+          const llCont = document.getElementById('ll-container');
+          const log = document.getElementById('search-log');
+          const phaseInd = document.getElementById('phase-indicator');
+          
+          // Pre-defined states
+          const states = [
+              { lists: [[1, 2, 3, 4, 5]], phase: "Initial List", log: "Starting list: 1 -> 2 -> 3 -> 4 -> 5" },
+              { lists: [[1, 2, 3], [4, 5]], phase: "Phase 1: Split in Half", log: "Use slow/fast pointers to find the middle. Split into L1 and L2." },
+              { lists: [[1, 2, 3], [5, 4]], phase: "Phase 2: Reverse L2", log: "Reverse the second half (L2) in place." },
+              { lists: [[1, 5, 2, 4, 3]], phase: "Phase 3: Zipper Merge", log: "Alternate nodes from L1 and L2: L1[0] -> L2[0] -> L1[1] -> L2[1]..." }
+          ];
+
+          function init() {
+              state = 0;
+              isDone = false;
+              render();
+              log.innerHTML = "Click 'Next Phase' to start reordering the list.";
+          }
+
+          function createNode(val) {
+              const node = document.createElement('div');
+              node.className = 'array-item';
+              node.style.width = '40px';
+              node.style.height = '40px';
+              node.style.display = 'flex';
+              node.style.alignItems = 'center';
+              node.style.justifyContent = 'center';
+              node.style.background = 'var(--bg-secondary)';
+              node.style.border = '2px solid var(--border-primary)';
+              node.style.borderRadius = '8px';
+              node.style.position = 'relative';
+              node.textContent = val;
+              return node;
+          }
+
+          function render() {
+              llCont.innerHTML = '';
+              const currentState = states[state] || states[states.length - 1];
+              
+              phaseInd.innerHTML = `<strong>${currentState.phase}</strong>`;
+              
+              currentState.lists.forEach((list, idx) => {
+                  const listWrap = document.createElement('div');
+                  listWrap.style.display = 'flex';
+                  listWrap.style.alignItems = 'center';
+                  listWrap.style.gap = '1rem';
+                  
+                  if (state === 1 || state === 2) {
+                      const lbl = document.createElement('div');
+                      lbl.style.fontFamily = 'var(--font-mono)';
+                      lbl.style.color = 'var(--text-secondary)';
+                      lbl.style.width = '30px';
+                      lbl.textContent = idx === 0 ? 'L1:' : 'L2:';
+                      listWrap.appendChild(lbl);
+                  }
+                  
+                  list.forEach((val, i) => {
+                      const n = createNode(val);
+                      if(state === 3) {
+                          n.style.background = 'var(--accent-green)';
+                          n.style.color = 'black';
+                          n.style.fontWeight = 'bold';
+                      } else if (state === 2 && idx === 1) {
+                          n.style.background = 'var(--accent-orange)';
+                          n.style.color = 'black';
+                      } else if (state === 1) {
+                          n.style.background = idx === 0 ? 'var(--accent-blue)' : 'var(--accent-purple)';
+                          n.style.color = 'white';
+                      }
+                      
+                      listWrap.appendChild(n);
+                      
+                      if (i < list.length - 1) {
+                          const arrow = document.createElement('div');
+                          arrow.innerHTML = '&#8594;';
+                          arrow.style.fontSize = '1.2rem';
+                          arrow.style.color = 'var(--text-secondary)';
+                          listWrap.appendChild(arrow);
+                      }
+                  });
+                  llCont.appendChild(listWrap);
+              });
+          }
+
+          function step() {
+              if (isDone) {
+                  log.innerHTML = `🎉 <strong>Reorder Complete!</strong>`;
+                  return;
+              }
+              
+              state++;
+              if (state >= states.length) {
+                  isDone = true;
+                  state = states.length - 1;
+                  log.innerHTML = `🎉 <strong>Reorder Complete!</strong>`;
+              } else {
+                  log.innerHTML = states[state].log;
+              }
+              
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              init();
+          });
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Array Interleave</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Extra space</td></tr>
+<tr class="row--optimal"><td>Middle+Reverse+Merge</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    void reorderList(ListNode* head) {
+        if (!head || !head-&gt;next) return;
+        ListNode *slow = head, *fast = head;
+        while (fast-&gt;next &amp;&amp; fast-&gt;next-&gt;next) { slow = slow-&gt;next; fast = fast-&gt;next-&gt;next; }
+        ListNode *prev = nullptr, *curr = slow-&gt;next; slow-&gt;next = nullptr;
+        while (curr) { ListNode *nxt = curr-&gt;next; curr-&gt;next = prev; prev = curr; curr = nxt; }
+        ListNode *first = head, *second = prev;
+        while (second) {
+            ListNode *t1 = first-&gt;next, *t2 = second-&gt;next;
+            first-&gt;next = second; second-&gt;next = t1;
+            first = t1; second = t2;
+        }
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def reorderList(self, head):
+        slow, fast = head, head
+        while fast.next and fast.next.next: slow = slow.next; fast = fast.next.next
+        prev, curr = None, slow.next; slow.next = None
+        while curr: nxt = curr.next; curr.next = prev; prev = curr; curr = nxt
+        first, second = head, prev
+        while second:
+            t1, t2 = first.next, second.next
+            first.next = second; second.next = t1
+            first, second = t1, t2</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

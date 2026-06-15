@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find if Path Exists in Graph - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-12-graphs.html" class="navbar__link">&#8592; Back to Module 12: Graphs</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-12-graphs.html">Module 12: Graphs</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Find if Path Exists in Graph</span></div>
+      <h1 class="problem-header__title">Find if Path Exists in Graph</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/find-if-path-exists-in-graph/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; Problem Link</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>There is a bi-directional graph with n vertices, where each vertex is labeled from 0 to n - 1 (inclusive). Given an array edges, return true if there is a valid path from source to destination, or false otherwise.</p></div>
+    </section>
+
+    <!-- 2. Logic & Core Concept -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128218;</span> Logic & Core Concept</h2>
+      <div class="math-block">
+        <p>The problem asks if there is a path connecting a <code>source</code> vertex to a <code>destination</code> vertex in an undirected graph.</p>
+        <p>This is equivalent to checking if the source and destination belong to the <strong>same connected component</strong>.</p>
+        <div style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-sm); margin-top:1rem;">
+          There are two main families of algorithms to solve this:
+          <ul style="margin-left: 1.5rem; margin-top: 0.5rem; color:var(--text-secondary);">
+            <li><strong>Graph Traversal (DFS or BFS):</strong> Start at the source, explore neighbors, and see if we ever reach the destination.</li>
+            <li><strong>Disjoint Set Union (Union-Find):</strong> Process all edges to group connected vertices into sets. Then simply check if <code>source</code> and <code>destination</code> are in the same set.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Traversal &#8594; Union-Find</h2>
+      
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Depth-First Search (DFS) / Breadth-First Search (BFS)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">First, build an adjacency list from the given edges. Then, start a traversal (DFS or BFS) from the <code>source</code>. Keep a <code>visited</code> array to avoid cycles. If we pop/visit the <code>destination</code>, return true. If the traversal finishes without finding it, return false.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> validPath(n, edges, source, destination):<br>&nbsp;&nbsp;<span class='keyword'>if</span> source == destination: <span class='keyword'>return</span> true<br>&nbsp;&nbsp;adj = buildAdjacencyList(n, edges)<br>&nbsp;&nbsp;visited = array of false, visited[source] = true<br>&nbsp;&nbsp;queue = [source]<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>while</span> queue is not empty:<br>&nbsp;&nbsp;&nbsp;&nbsp;curr = queue.dequeue()<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> curr == destination: <span class='keyword'>return</span> true<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> neighbor <span class='keyword'>in</span> adj[curr]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> not visited[neighbor]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;visited[neighbor] = true<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;queue.enqueue(neighbor)<br>&nbsp;&nbsp;<span class='keyword'>return</span> false</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(V + E)</span>
+            <span class="cx-badge cx-badge--space">Space: O(V + E) (for adjacency list + queue/stack)</span>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why explore alternatives?</div><div class="why-optimize__body">Building the adjacency list takes extra memory O(E). Can we determine connectivity without building the full graph representation? Yes, using Union-Find.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Disjoint Set Union (Union-Find)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Union-Find is perfect for checking if two nodes are in the same component. Initially, every node is its own parent. For each edge <code>(u, v)</code>, we union their sets. Finally, we check if <code>find(source) == find(destination)</code>.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> validPath(n, edges, source, destination):<br>&nbsp;&nbsp;parent = array [0...n-1]<br>&nbsp;&nbsp;rank = array of 0s<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>function</span> find(i):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> parent[i] == i: <span class='keyword'>return</span> i<br>&nbsp;&nbsp;&nbsp;&nbsp;parent[i] = find(parent[i]) <span class='comment'>// Path compression</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>return</span> parent[i]<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>function</span> union(i, j):<br>&nbsp;&nbsp;&nbsp;&nbsp;root_i = find(i), root_j = find(j)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> root_i != root_j: parent[root_i] = root_j <span class='comment'>// Simplified union</span><br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>for</span> (u, v) <span class='keyword'>in</span> edges:<br>&nbsp;&nbsp;&nbsp;&nbsp;union(u, v)<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>return</span> find(source) == find(destination)</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(V + E * &alpha;(V))</span>
+            <span class="cx-badge cx-badge--space">Space: O(V) (only parent and rank arrays)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Space efficient: No need to store the adjacency list. O(V) space instead of O(V+E).</li><li>Very fast in practice due to path compression.</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Cannot easily reconstruct the actual path, but for a boolean yes/no, it's perfect.</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr class="row--better"><td>BFS / DFS</td><td><code>O(V + E)</code></td><td><code>O(V + E)</code></td><td>Standard Traversal</td></tr>
+          <tr class="row--optimal"><td>Union-Find</td><td><code>O(V + E&alpha;(V))</code></td><td><code>O(V)</code></td><td>Most Space Efficient</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">&#10024;</span> Interactive Visualization (BFS)</h2>
+      <div class="visualizer" id="bfs-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step-bfs">Next Step</button>
+          <button class="btn btn--outline" id="btn-reset-bfs">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; margin: 2rem 0; flex-wrap: wrap; justify-content: center; align-items:flex-start;">
+          <!-- Graph Display -->
+          <div style="position: relative; width: 350px; height: 300px; background:var(--bg-elevated); border:1px solid var(--border-primary); border-radius:var(--radius-md);">
+            <!-- Edges (SVG) -->
+            <svg style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1;">
+              <!-- 0-1, 1-2, 2-0, 3-4, 4-5, 5-3, 2-3 -->
+              <line id="eb-0-1" x1="100" y1="50" x2="50" y2="130" stroke="var(--text-secondary)" stroke-width="3" />
+              <line id="eb-1-2" x1="50" y1="130" x2="150" y2="130" stroke="var(--text-secondary)" stroke-width="3" />
+              <line id="eb-2-0" x1="150" y1="130" x2="100" y2="50" stroke="var(--text-secondary)" stroke-width="3" />
+              
+              <!-- connection between clusters -->
+              <line id="eb-2-3" x1="150" y1="130" x2="250" y2="130" stroke="var(--text-secondary)" stroke-width="3" stroke-dasharray="5,5" />
+              
+              <line id="eb-3-4" x1="250" y1="130" x2="200" y2="210" stroke="var(--text-secondary)" stroke-width="3" />
+              <line id="eb-4-5" x1="200" y1="210" x2="300" y2="210" stroke="var(--text-secondary)" stroke-width="3" />
+              <line id="eb-5-3" x1="300" y1="210" x2="250" y2="130" stroke="var(--text-secondary)" stroke-width="3" />
+            </svg>
+            
+            <!-- Nodes -->
+            <!-- Cluster 1 -->
+            <div class="g-node" id="nb-0" style="position:absolute; top:30px; left:80px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--accent-orange); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s; color:var(--accent-orange);">0 (Src)</div>
+            <div class="g-node" id="nb-1" style="position:absolute; top:110px; left:30px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s;">1</div>
+            <div class="g-node" id="nb-2" style="position:absolute; top:110px; left:130px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s;">2</div>
+            
+            <!-- Cluster 2 -->
+            <div class="g-node" id="nb-3" style="position:absolute; top:110px; left:230px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s;">3</div>
+            <div class="g-node" id="nb-4" style="position:absolute; top:190px; left:180px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s;">4</div>
+            <div class="g-node" id="nb-5" style="position:absolute; top:190px; left:280px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--accent-blue); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s; color:var(--accent-blue);">5 (Dst)</div>
+          </div>
+          
+          <!-- Queue & Output -->
+          <div style="display: flex; flex-direction: column; gap: 1rem; width: 250px;">
+            <div style="background: var(--bg-elevated); padding: 1rem; border: 1px solid var(--border-primary); border-radius: var(--radius-md);">
+              <h3 style="margin-bottom: 0.5rem; font-size:1rem;">Queue</h3>
+              <div id="bfs-queue" style="display:flex; gap:0.5rem; font-family:monospace; min-height:40px; overflow-x:auto;">
+                <!-- Queue items go here -->
+              </div>
+            </div>
+            
+            <div style="background: var(--bg-elevated); padding: 1rem; border: 1px solid var(--border-primary); border-radius: var(--radius-md);">
+              <h3 style="margin-bottom: 0.5rem; font-size:1rem;">Visited Set</h3>
+              <div id="bfs-visited" style="font-size: 1.2rem; font-weight: bold; color: var(--accent-green); font-family: monospace; letter-spacing: 2px;">
+                {}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="visualizer__log" id="bfs-viz-log">
+          Click "Next Step" to start BFS from Source (0) to Destination (5).
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const btnStep = document.getElementById("btn-step-bfs");
+          const btnReset = document.getElementById("btn-reset-bfs");
+          const log = document.getElementById("bfs-viz-log");
+          const queueEl = document.getElementById("bfs-queue");
+          const visitedEl = document.getElementById("bfs-visited");
+          
+          const steps = [
+            { q: [0], v: [0], msg: "Initialize queue with source node 0. Mark 0 as visited." },
+            { pop: 0, q: [], v: [0], msg: "Dequeue 0. Is 0 the destination (5)? No." },
+            { q: [1, 2], v: [0, 1, 2], edge: ['eb-0-1', 'eb-2-0'], msg: "Enqueue unvisited neighbors of 0: [1, 2]." },
+            { pop: 1, q: [2], v: [0, 1, 2], msg: "Dequeue 1. Is 1 the destination? No." },
+            { q: [2], v: [0, 1, 2], edge: ['eb-1-2'], msg: "Neighbors of 1 are 0 and 2. Both are already visited." },
+            { pop: 2, q: [], v: [0, 1, 2], msg: "Dequeue 2. Is 2 the destination? No." },
+            { q: [3], v: [0, 1, 2, 3], edge: ['eb-2-3'], msg: "Enqueue unvisited neighbor of 2: [3]." },
+            { pop: 3, q: [], v: [0, 1, 2, 3], msg: "Dequeue 3. Is 3 the destination? No." },
+            { q: [4, 5], v: [0, 1, 2, 3, 4, 5], edge: ['eb-3-4', 'eb-5-3'], msg: "Enqueue unvisited neighbors of 3: [4, 5]." },
+            { pop: 4, q: [5], v: [0, 1, 2, 3, 4, 5], msg: "Dequeue 4. Is 4 the destination? No." },
+            { q: [5], v: [0, 1, 2, 3, 4, 5], edge: ['eb-4-5'], msg: "Neighbors of 4 are 3 and 5. Both are already visited." },
+            { pop: 5, q: [], v: [0, 1, 2, 3, 4, 5], found: true, msg: "Dequeue 5. Is 5 the destination? <strong>YES! Path Exists.</strong>" }
+          ];
+
+          let stepIdx = 0;
+
+          function resetViz() {
+            for(let i=0; i<=5; i++) {
+              const node = document.getElementById(`nb-${i}`);
+              node.style.background = "var(--bg-main)";
+              node.style.color = "var(--text-primary)";
+              node.style.boxShadow = "none";
+              if (i===0) {
+                node.style.borderColor = "var(--accent-orange)";
+                node.style.color = "var(--accent-orange)";
+              } else if (i===5) {
+                node.style.borderColor = "var(--accent-blue)";
+                node.style.color = "var(--accent-blue)";
+              } else {
+                node.style.borderColor = "var(--border-primary)";
+              }
+            }
+            for(const e of ['eb-0-1', 'eb-1-2', 'eb-2-0', 'eb-2-3', 'eb-3-4', 'eb-4-5', 'eb-5-3']) {
+              document.getElementById(e).setAttribute('stroke', "var(--text-secondary)");
+            }
+            queueEl.innerHTML = "";
+            visitedEl.innerHTML = "{}";
+          }
+
+          function init() {
+            stepIdx = 0;
+            resetViz();
+            log.innerHTML = "Click \"Next Step\" to start BFS from Source (0) to Destination (5).";
+            btnStep.disabled = false;
+          }
+
+          function renderQueue(q) {
+            queueEl.innerHTML = "";
+            for (let item of q) {
+              const frame = document.createElement("div");
+              frame.style.padding = "4px 8px";
+              frame.style.background = "var(--bg-elevated)";
+              frame.style.border = "1px solid var(--border-primary)";
+              frame.style.borderRadius = "4px";
+              frame.innerText = item;
+              queueEl.appendChild(frame);
+            }
+          }
+
+          btnStep.addEventListener("click", () => {
+            if (stepIdx >= steps.length) return;
+            
+            // clear edge highlights
+            for(const e of ['eb-0-1', 'eb-1-2', 'eb-2-0', 'eb-2-3', 'eb-3-4', 'eb-4-5', 'eb-5-3']) {
+              document.getElementById(e).setAttribute('stroke', "var(--text-secondary)");
+            }
+            
+            const step = steps[stepIdx];
+            
+            renderQueue(step.q);
+            visitedEl.innerHTML = `{${step.v.join(", ")}}`;
+            
+            // Update node colors
+            for (let v of step.v) {
+               const node = document.getElementById(`nb-${v}`);
+               node.style.background = "var(--accent-green-dim)";
+            }
+            
+            if (step.pop !== undefined) {
+               const node = document.getElementById(`nb-${step.pop}`);
+               node.style.background = "var(--accent-orange)";
+               if (step.found) {
+                   node.style.background = "var(--accent-green)";
+                   node.style.color = "var(--bg-main)";
+                   node.style.boxShadow = "0 0 15px var(--accent-green)";
+               }
+            }
+            
+            if (step.edge) {
+                for (let e of step.edge) {
+                    document.getElementById(e).setAttribute('stroke', "var(--accent-orange)");
+                }
+            }
+            
+            log.innerHTML = step.msg;
+            
+            stepIdx++;
+            if (stepIdx >= steps.length) {
+              btnStep.disabled = true;
+            }
+          });
+
+          btnReset.addEventListener("click", init);
+        });
+      </script>
+    </section>
+
+    <!-- 5. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++ (Union Find)</button><button class="code-block__tab" data-lang="python">Python (Union Find)</button><button class="code-block__tab" data-lang="python2">Python (BFS)</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+    vector&lt;int&gt; parent;
+    
+    int find(int i) {
+        if (parent[i] == i) return i;
+        // Path compression
+        return parent[i] = find(parent[i]);
+    }
+    
+    void unite(int i, int j) {
+        int root_i = find(i);
+        int root_j = find(j);
+        if (root_i != root_j) {
+            parent[root_i] = root_j;
+        }
+    }
+    
+public:
+    bool validPath(int n, vector&lt;vector&lt;int&gt;&gt;&amp; edges, int source, int destination) {
+        // Initialize DSU
+        parent.resize(n);
+        for (int i = 0; i &lt; n; i++) {
+            parent[i] = i;
+        }
+        
+        // Union all edges
+        for (const auto&amp; edge : edges) {
+            unite(edge[0], edge[1]);
+        }
+        
+        // Check if source and destination are in the same set
+        return find(source) == find(destination);
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def validPath(self, n: int, edges: List[List[int]], source: int, destination: int) -> bool:
+        parent = [i for i in range(n)]
+        
+        def find(i):
+            if parent[i] == i:
+                return i
+            # Path compression
+            parent[i] = find(parent[i])
+            return parent[i]
+            
+        def union(i, j):
+            root_i = find(i)
+            root_j = find(j)
+            if root_i != root_j:
+                parent[root_i] = root_j
+                
+        # Group connected components
+        for u, v in edges:
+            union(u, v)
+            
+        # Check if source and destination are in same component
+        return find(source) == find(destination)</code></pre></div><div class="code-block__content" data-lang="python2"><pre><code class="language-python">class Solution:
+    def validPath(self, n: int, edges: List[List[int]], source: int, destination: int) -> bool:
+        from collections import defaultdict, deque
+        
+        # Build adjacency list
+        adj = defaultdict(list)
+        for u, v in edges:
+            adj[u].append(v)
+            adj[v].append(u)
+            
+        queue = deque([source])
+        visited = set([source])
+        
+        while queue:
+            curr = queue.popleft()
+            if curr == destination:
+                return True
+                
+            for neighbor in adj[curr]:
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+                    
+        return False</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <footer class="footer" style="margin-top: 4rem; padding: 2rem 0; text-align: center; color: var(--text-tertiary); border-top: 1px solid var(--border-primary);">
+    <p>CP-II Lab &copy; 2026. Built for learning.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

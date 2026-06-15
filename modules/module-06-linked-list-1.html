@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="Module 06: Linked List — Part 1 — CP-II Lab">
+  <title>Module 06: Linked List — Part 1 — CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/components.css"><link rel="stylesheet" href="../css/module.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">⚡</span><span>CP-II Lab</span></a><div class="navbar__nav" id="nav-menu"><a href="../index.html" class="navbar__link">📚 All Modules</a><a href="#theory" class="navbar__link">📖 Theory</a><a href="#problems" class="navbar__link">💡 Problems</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button><button class="navbar__hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button></div></div></nav>
+  <div class="module-page">
+    <section class="module-hero"><div class="module-hero__bg"><div class="module-hero__orb module-hero__orb--1" style="background:var(--accent-blue);"></div><div class="module-hero__orb module-hero__orb--2" style="background:var(--accent-purple);"></div></div>
+      <div class="container"><div class="module-hero__content">
+        <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">›</span><span class="breadcrumb__current">Module 06</span></div>
+        <span class="module-hero__number">🔗 Module 06</span>
+        <h1 class="module-hero__title">Linked <span class="text-gradient">List — Part 1</span></h1>
+        <p class="module-hero__desc">Master Singly, Doubly, and Circular linked lists. Learn to find the middle, delete nodes, reverse lists, and detect palindromes.</p>
+        <div class="module-hero__meta"><span class="module-hero__meta-item"><span class="icon">📝</span> 6 Problems</span><span class="module-hero__meta-item"><span class="icon">⏱️</span> ~3 hours</span><span class="module-hero__meta-item"><span class="icon">📊</span> Easy</span></div>
+      </div></div></section>
+    <div class="module-layout">
+      <aside class="module-sidebar"><nav class="toc"><div class="toc__title">Contents</div><div class="toc__list"><a href="#theory" class="toc__link active">📖 Theory</a><a href="#problems" class="toc__link">💡 Problems</a><a href="#p1" class="toc__link toc__link--sub">Middle of the Linked List</a><a href="#p2" class="toc__link toc__link--sub">Delete Node in a Linked List</a><a href="#p3" class="toc__link toc__link--sub">Reverse Linked List</a><a href="#p4" class="toc__link toc__link--sub">Convert Binary Number in Linked </a><a href="#p5" class="toc__link toc__link--sub">Palindrome Linked List</a><a href="#p6" class="toc__link toc__link--sub">Remove Linked List Elements</a></div></nav></aside>
+      <main class="module-main">
+        <section class="module-section" id="theory"><h2 class="module-section__title"><span class="icon">📖</span> Theory</h2>
+          <div class="theory-block"><h3 class="theory-block__title">🔗 Linked List Basics</h3><div class="theory-block__content">
+            <p>A <strong>linked list</strong> is a linear data structure where elements are stored in nodes, and each node points to the next. Unlike arrays, linked lists don't require contiguous memory.</p>
+            <table class="complexity-table"><thead><tr><th>Operation</th><th>Array</th><th>Linked List</th></tr></thead><tbody>
+              <tr><td>Access by index</td><td><code>O(1)</code></td><td><code>O(n)</code></td></tr>
+              <tr><td>Insert at head</td><td><code>O(n)</code></td><td><code>O(1)</code></td></tr>
+              <tr><td>Insert at tail</td><td><code>O(1)*</code></td><td><code>O(n) / O(1)</code></td></tr>
+              <tr><td>Delete</td><td><code>O(n)</code></td><td><code>O(1)</code> if node known</td></tr>
+              <tr><td>Search</td><td><code>O(n)</code></td><td><code>O(n)</code></td></tr>
+            </tbody></table>
+            <div class="callout callout--tip"><div class="callout__title">💡 Key Technique: Two Pointers</div><div class="callout__body">Many linked list problems use <strong>slow/fast pointers</strong>. Slow moves 1 step, fast moves 2 steps. When fast reaches the end, slow is at the middle. Also used for cycle detection (Floyd's algorithm).</div></div>
+          </div></div></section>
+        <section class="module-section" id="visualization">
+          <h2 class="module-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+
+<div class="visualizer" id="ll-viz">
+  <div class="visualizer__controls">
+    <button class="btn btn--primary" id="btn-ll-step">Step Reversal</button>
+    <button class="btn btn--outline" id="btn-ll-reset">Reset</button>
+  </div>
+  <div id="ll-container" style="display: flex; gap: 1rem; justify-content: center; margin: 3rem 0; position: relative;">
+    <!-- Nodes injected here -->
+  </div>
+  <div class="visualizer__log" id="ll-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary);">
+    Visualizing iterative Linked List Reversal.
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const vals = [1, 2, 3, 4];
+    const container = document.getElementById('ll-container');
+    const log = document.getElementById('ll-log');
+    
+    // States for reversing 1->2->3->4
+    // prev, curr, next
+    const states = [
+        { c: 0, p: -1, msg: "<code>prev = null</code>, <code>curr = head (1)</code>" },
+        { c: 0, p: -1, n: 1, msg: "<code>next = curr.next (2)</code>" },
+        { c: 0, p: -1, n: 1, r: [0], msg: "<code>curr.next = prev (null)</code> -> Node 1 points backwards!" },
+        { c: 1, p: 0, n: 1, r: [0], msg: "<code>prev = curr (1)</code>, <code>curr = next (2)</code>. Advance!" },
+        
+        { c: 1, p: 0, n: 2, r: [0], msg: "<code>next = curr.next (3)</code>" },
+        { c: 1, p: 0, n: 2, r: [0, 1], msg: "<code>curr.next = prev (1)</code> -> Node 2 points backwards!" },
+        { c: 2, p: 1, n: 2, r: [0, 1], msg: "<code>prev = curr (2)</code>, <code>curr = next (3)</code>. Advance!" },
+        
+        { c: 2, p: 1, n: 3, r: [0, 1], msg: "<code>next = curr.next (4)</code>" },
+        { c: 2, p: 1, n: 3, r: [0, 1, 2], msg: "<code>curr.next = prev (2)</code> -> Node 3 points backwards!" },
+        { c: 3, p: 2, n: 3, r: [0, 1, 2], msg: "<code>prev = curr (3)</code>, <code>curr = next (4)</code>. Advance!" },
+        
+        { c: 3, p: 2, n: 4, r: [0, 1, 2], msg: "<code>next = curr.next (null)</code>" },
+        { c: 3, p: 2, n: 4, r: [0, 1, 2, 3], msg: "<code>curr.next = prev (3)</code> -> Node 4 points backwards!" },
+        { c: 4, p: 3, n: 4, r: [0, 1, 2, 3], msg: "<code>prev = curr (4)</code>, <code>curr = next (null)</code>. Finished! Prev is new head." }
+    ];
+    
+    let step = 0;
+
+    function render(s) {
+        container.innerHTML = '';
+        vals.forEach((v, i) => {
+            const wrap = document.createElement('div');
+            wrap.style.display = 'flex'; wrap.style.alignItems = 'center'; wrap.style.gap = '1rem';
+            
+            const node = document.createElement('div');
+            node.className = 'array-item';
+            node.textContent = v;
+            node.style.position = 'relative';
+            
+            // Pointers
+            let ptrs = [];
+            if (s.c === i) ptrs.push('curr');
+            if (s.p === i) ptrs.push('prev');
+            if (s.n === i) ptrs.push('next');
+            
+            if (ptrs.length > 0) {
+                const labelEl = document.createElement('div');
+                labelEl.textContent = ptrs.join(', ');
+                labelEl.style.position = 'absolute';
+                labelEl.style.bottom = '-30px';
+                labelEl.style.fontSize = '12px';
+                labelEl.style.color = 'var(--accent-orange)';
+                labelEl.style.fontWeight = 'bold';
+                labelEl.style.whiteSpace = 'nowrap';
+                node.appendChild(labelEl);
+            }
+            
+            wrap.appendChild(node);
+            
+            if (i < vals.length - 1) {
+                const arrow = document.createElement('div');
+                arrow.style.color = 'var(--text-secondary)';
+                arrow.style.fontWeight = 'bold';
+                // If this node is reversed, arrow points left (but we show it visually differently)
+                if (s.r && s.r.includes(i)) {
+                    arrow.textContent = '←';
+                    arrow.style.color = 'var(--accent-cyan)';
+                } else {
+                    arrow.textContent = '→';
+                }
+                wrap.appendChild(arrow);
+            }
+            container.appendChild(wrap);
+        });
+        
+        // Null node at end
+        if (s.c === 4 || s.n === 4) {
+             const wrap = document.createElement('div');
+             wrap.style.display = 'flex'; wrap.style.alignItems = 'center'; wrap.style.gap = '1rem';
+             const node = document.createElement('div');
+             node.textContent = 'null';
+             node.style.color = 'var(--text-secondary)';
+             node.style.position = 'relative';
+             let ptrs = [];
+             if (s.c === 4) ptrs.push('curr');
+             if (s.n === 4) ptrs.push('next');
+             if (ptrs.length > 0) {
+                const labelEl = document.createElement('div');
+                labelEl.textContent = ptrs.join(', ');
+                labelEl.style.position = 'absolute';
+                labelEl.style.bottom = '-30px';
+                labelEl.style.fontSize = '12px';
+                labelEl.style.color = 'var(--accent-orange)';
+                labelEl.style.fontWeight = 'bold';
+                node.appendChild(labelEl);
+            }
+            wrap.appendChild(node);
+            container.appendChild(wrap);
+        }
+        
+        log.innerHTML = s.msg;
+    }
+
+    document.getElementById('btn-ll-step').addEventListener('click', () => {
+        if (step < states.length) {
+            render(states[step]);
+            step++;
+        }
+    });
+
+    document.getElementById('btn-ll-reset').addEventListener('click', () => {
+        step = 0;
+        render({ c: 0, p: -1, msg: "Visualizing iterative Linked List Reversal." });
+    });
+
+    render({ c: 0, p: -1, msg: "Visualizing iterative Linked List Reversal." });
+});
+</script>
+
+        </section>
+        <section class="module-section" id="problems"><h2 class="module-section__title"><span class="icon">💡</span> Practice Problems</h2><div class="problems-list">
+
+            <!-- Problem 1 -->
+            <a href="../problems/m6-p1.html" id="p1" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#1</span>
+                    <h3 class="problem-card__title">Middle of the Linked List</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 2 -->
+            <a href="../problems/m6-p2.html" id="p2" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#2</span>
+                    <h3 class="problem-card__title">Delete Node in a Linked List</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 3 -->
+            <a href="../problems/m6-p3.html" id="p3" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#3</span>
+                    <h3 class="problem-card__title">Reverse Linked List</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 4 -->
+            <a href="../problems/m6-p4.html" id="p4" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#4</span>
+                    <h3 class="problem-card__title">Convert Binary Number in Linked List to Integer</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 5 -->
+            <a href="../problems/m6-p5.html" id="p5" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#5</span>
+                    <h3 class="problem-card__title">Palindrome Linked List</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 6 -->
+            <a href="../problems/m6-p6.html" id="p6" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#6</span>
+                    <h3 class="problem-card__title">Remove Linked List Elements</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            </div>
+        </section>
+        <div class="module-nav"><a href="module-05-recursion-backtracking.html" class="module-nav__btn"><div><span class="module-nav__label">← Previous</span><span class="module-nav__title">Recursion & Backtracking</span></div></a><a href="module-07-linked-list-2.html" class="module-nav__btn module-nav__btn--next"><div><span class="module-nav__label">Next →</span><span class="module-nav__title">Linked List Part 2</span></div></a></div>
+      </main>
+    </div>
+  </div>
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script><script src="../js/code-runner.js"></script>
+</body></html>

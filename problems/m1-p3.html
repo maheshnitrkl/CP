@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Integer to Roman — CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">⚡</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-01-number-theory.html" class="navbar__link">← Back to Module 01</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">›</span><a href="../modules/module-01-number-theory.html">Module 01</a><span class="breadcrumb__sep">›</span><span class="breadcrumb__current">Integer to Roman</span></div>
+      <h1 class="problem-header__title">Integer to Roman</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/integer-to-roman/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">🔗 LeetCode</a>
+      </div>
+    </header>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2>
+      <div class='math-block'>
+        <div class='formula'>Greedy Subtraction</div>
+        <p style='font-size:0.9rem;margin-top:0.5rem;'>Roman numerals are fundamentally an additive and subtractive system based on predefined place values (M=1000, CM=900, D=500...).</p>
+        <p style='font-size:0.9rem;'>By always subtracting the largest possible value (Greedy Approach), we guarantee the minimal number of symbols are used.</p>
+      </div>
+    </section>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Naive &#8594; Optimal</h2>
+      
+      <div class="approach-card approach-card--brute">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Verbose / Hardcoded Conditions</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Write massive nested `if/else` or `switch` blocks handling thousands, hundreds, tens, and ones separately.</p>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(1)</span>
+            <span class="cx-badge cx-badge--space">Space: O(1)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros">
+              <div class="pros-cons__title">Pros</div>
+              <ul class="pros-cons__list"><li>Straightforward logic</li></ul>
+            </div>
+            <div class="pros-cons__col pros-cons__col--cons">
+              <div class="pros-cons__title">Cons</div>
+              <ul class="pros-cons__list"><li>Extremely long and unmaintainable code</li><li>Prone to typos</li></ul>
+            </div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We can generalize the logic by storing the mapping of values to symbols and using a loop.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Greedy Subtraction</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Predefine two arrays/lists mapping values `[1000, 900, 500...]` to symbols `['M', 'CM', 'D'...]`. Repeatedly subtract the largest possible value and append its symbol to the result string.</p>
+          <div class="pseudocode-block"><span class='keyword'>for</span> each (val, sym) <span class='keyword'>in</span> roman_map:<br>&nbsp;&nbsp;<span class='keyword'>while</span> n >= val:<br>&nbsp;&nbsp;&nbsp;&nbsp;result += sym<br>&nbsp;&nbsp;&nbsp;&nbsp;n -= val<br><span class='keyword'>return</span> result</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(1)</span>
+            <span class="cx-badge cx-badge--space">Space: O(1)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros">
+              <div class="pros-cons__title">Pros</div>
+              <ul class="pros-cons__list"><li>Clean, elegant, and maintainable</li></ul>
+            </div>
+            <div class="pros-cons__col pros-cons__col--cons">
+              <div class="pros-cons__title">Cons</div>
+              <ul class="pros-cons__list"><li>None</li></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">👀</span> Interactive Walkthrough</h2>
+      <div class="viz-controls">
+  <input type="number" id="roman-input" class="viz-input" value="1984" min="1" max="3999" style="width: 120px;">
+  <button class="viz-btn" id="roman-btn">Convert to Roman</button>
+</div>
+<div class="viz-canvas" style="flex-direction: column; gap: var(--space-4);" id="roman-log">
+    <div class="math-block" id="roman-res" style="font-size: 2rem; color: var(--accent-orange);"></div>
+</div>
+    </section>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr><td>Verbose Hardcoding</td><td><code>O(1)</code></td><td><code>O(1)</code></td><td>Too messy</td></tr>
+          <tr class="row--optimal"><td>Greedy Subtraction</td><td><code>O(1)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">💻</span> Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    string intToRoman(int num) {
+        vector&lt;pair&lt;int,string&gt;&gt; table = {
+            {1000,"M"}, {900,"CM"}, {500,"D"}, {400,"CD"},
+            {100,"C"}, {90,"XC"}, {50,"L"}, {40,"XL"},
+            {10,"X"}, {9,"IX"}, {5,"V"}, {4,"IV"}, {1,"I"}
+        };
+        string result;
+        for (auto& [val, sym] : table) {
+            while (num &gt;= val) {
+                result += sym;
+                num -= val;
+            }
+        }
+        return result;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def intToRoman(self, num: int) -&gt; str:
+        table = [
+            (1000, "M"), (900, "CM"), (500, "D"), (400, "CD"),
+            (100, "C"), (90, "XC"), (50, "L"), (40, "XL"),
+            (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I")
+        ]
+        result = []
+        for val, sym in table:
+            while num &gt;= val:
+                result.append(sym)
+                num -= val
+        return "".join(result)</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+  <script>
+    
+const input3 = document.getElementById('roman-input');
+const btn3 = document.getElementById('roman-btn');
+const log3 = document.getElementById('roman-log');
+const res3 = document.getElementById('roman-res');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+const table = [
+    [1000, "M"], [900, "CM"], [500, "D"], [400, "CD"],
+    [100, "C"], [90, "XC"], [50, "L"], [40, "XL"],
+    [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]
+];
+
+btn3.onclick = async () => {
+    btn3.disabled = true;
+    res3.textContent = '';
+    // clear previous steps
+    Array.from(log3.children).forEach(c => { if(c.id !== 'roman-res') c.remove(); });
+    
+    let num = parseInt(input3.value);
+    let roman = "";
+    
+    for (let [val, sym] of table) {
+        if(num >= val) {
+            const div = document.createElement('div');
+            div.className = `math-block`;
+            log3.insertBefore(div, res3);
+            
+            while (num >= val) {
+                roman += sym;
+                num -= val;
+                res3.textContent = roman;
+                div.innerHTML = `Value ≥ ${val}: Append <strong>${sym}</strong>. Remaining: ${num}`;
+                await sleep(500);
+            }
+        }
+    }
+    
+    const div = document.createElement('div');
+    div.className = `math-block success`;
+    div.innerHTML = `Final Roman Numeral: <span style="color:var(--accent-green)">${roman}</span>`;
+    log3.insertBefore(div, res3);
+    
+    btn3.disabled = false;
+};
+
+  </script>
+</body>
+</html>

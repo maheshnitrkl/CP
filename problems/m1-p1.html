@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class Test (Primality Test) - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-01-number-theory.html" class="navbar__link">&#8592; Back to Module 01: Number Theory</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-01-number-theory.html">Module 01: Number Theory</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Class Test (Primality Test)</span></div>
+      <h1 class="problem-header__title">Class Test (Primality Test)</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://www.geeksforgeeks.org/batch/cp-mathematics/track/cp-mathprimeFactorization/problem/class-test" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; GFG</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Check if a given number <code>n</code> is a prime number.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Factors appear in pairs up to &radic;n</div><p style='font-size:0.9rem;margin-top:0.5rem;'>If <code>n = a &times; b</code>, one factor must be &le; &radic;n. Thus, checking up to &radic;n is sufficient.</p><p style='font-size:0.9rem;'><strong>6k &plusmn; 1 Rule:</strong> All primes > 3 can be written as 6k+1 or 6k-1.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Iterate 2 to n-1</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Check if any number from 2 to n-1 divides n.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> isPrime(n):<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 2 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> n % i == 0: <span class='keyword'>return</span> false<br>&nbsp;&nbsp;<span class='keyword'>return</span> true</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Simple</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Too slow for large n (e.g. n=10^9)</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We only need to check up to &radic;n.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--better">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Iterate to &radic;n</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Only check divisors up to &radic;n.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> isPrime(n):<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 2 <span class='keyword'>to</span> &radic;n:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> n % i == 0: <span class='keyword'>return</span> false<br>&nbsp;&nbsp;<span class='keyword'>return</span> true</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(&radic;n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Much faster</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Can skip even numbers</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We can skip multiples of 2 and 3 entirely using the 6k&plusmn;1 rule.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 3</span></div>
+        <div class="approach-card__title">6k &plusmn; 1 Optimization</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Check 2 and 3, then only check i and i+2 where i starts at 5 and increments by 6.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> isPrime(n):<br>&nbsp;&nbsp;<span class='keyword'>if</span> n &le; 1: <span class='keyword'>return</span> false<br>&nbsp;&nbsp;<span class='keyword'>if</span> n &le; 3: <span class='keyword'>return</span> true<br>&nbsp;&nbsp;<span class='keyword'>if</span> n % 2 == 0 OR n % 3 == 0: <span class='keyword'>return</span> false<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 5 <span class='keyword'>to</span> &radic;n <span class='keyword'>step</span> 6:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> n % i == 0 OR n % (i+2) == 0: <span class='keyword'>return</span> false<br>&nbsp;&nbsp;<span class='keyword'>return</span> true</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(&radic;n / 3)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Fastest deterministic single-prime check</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Slightly more complex code</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Logic Flow Diagram -->
+    
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class="viz-controls"><input type="number" id="prime-input" class="viz-input" value="101" min="1" max="10000" style="width: 120px;"><button class="viz-btn" id="check-btn">Check Primality</button></div><div class="viz-canvas" style="flex-direction: column; gap: var(--space-4);" id="prime-log"></div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Brute Force</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Too slow</td></tr>
+<tr><td>Iterate to &radic;n</td><td><code>O(&radic;n)</code></td><td><code>O(1)</code></td><td>Good</td></tr>
+<tr class="row--optimal"><td>6k &plusmn; 1</td><td><code>O(&radic;n)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    bool isPrime(int n) {
+        if (n &lt;= 1) return false;
+        if (n &lt;= 3) return true;
+        if (n % 2 == 0 || n % 3 == 0) return false;
+        for (int i = 5; i * i &lt;= n; i += 6) {
+            if (n % i == 0 || n % (i + 2) == 0)
+                return false;
+        }
+        return true;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def isPrime(self, n):
+        if n &lt;= 1: return False
+        if n &lt;= 3: return True
+        if n % 2 == 0 or n % 3 == 0: return False
+        i = 5
+        while i * i &lt;= n:
+            if n % i == 0 or n % (i + 2) == 0: return False
+            i += 6
+        return True</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>\n  <script>const input = document.getElementById('prime-input'); const btn = document.getElementById('check-btn'); const log = document.getElementById('prime-log'); const sleep = ms => new Promise(r => setTimeout(r, ms)); btn.onclick = async () => { btn.disabled = true; log.innerHTML = ''; let n = parseInt(input.value); const append = (text, type='highlight') => { const div = document.createElement('div'); div.className = `math-block ${type}`; div.innerHTML = text; log.appendChild(div); }; if (n <= 1) { append(`${n} <= 1 -> <span style="color:var(--accent-red)">Not Prime</span>`); btn.disabled=false; return; } if (n <= 3) { append(`${n} <= 3 -> <span style="color:var(--accent-green)">Is Prime</span>`); btn.disabled=false; return; } append(`Checking base cases: Divisible by 2 or 3?`); await sleep(600); if (n % 2 === 0) { append(`${n} is divisible by 2 -> <span style="color:var(--accent-red)">Not Prime</span>`); btn.disabled=false; return; } if (n % 3 === 0) { append(`${n} is divisible by 3 -> <span style="color:var(--accent-red)">Not Prime</span>`); btn.disabled=false; return; } append(`Passed base cases. Checking 6k±1 up to √${n} (${Math.floor(Math.sqrt(n))})`); await sleep(600); for (let i = 5; i * i <= n; i += 6) { append(`Checking i = ${i} and i+2 = ${i+2}...`); await sleep(600); if (n % i === 0) { append(`${n} is divisible by ${i} -> <span style="color:var(--accent-red)">Not Prime</span>`); btn.disabled = false; return; } if (n % (i + 2) === 0) { append(`${n} is divisible by ${i+2} -> <span style="color:var(--accent-red)">Not Prime</span>`); btn.disabled = false; return; } } append(`No factors found! -> <span style="color:var(--accent-green)">Is Prime ✅</span>`, 'success'); btn.disabled = false; };</script>
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linked List Cycle II - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-07-linked-list-2.html" class="navbar__link">&#8592; Back to Module 07: Linked List Part 2</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-07-linked-list-2.html">Module 07: Linked List Part 2</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Linked List Cycle II</span></div>
+      <h1 class="problem-header__title">Linked List Cycle II</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/linked-list-cycle-ii/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given a linked list, return the node where the cycle begins. If no cycle, return <code>null</code>.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Mathematical Proof</div><p style='font-size:0.9rem;margin-top:0.5rem;'>Let the distance from head to cycle start = <strong>a</strong>, cycle start to meeting point = <strong>b</strong>, and remaining cycle = <strong>c</strong>.</p><p style='font-size:0.85rem;'>Slow travels: a + b. Fast travels: a + b + (b + c) = a + 2b + c.</p><p style='font-size:0.85rem;'>Since fast = 2 &times; slow: a + 2b + c = 2(a + b) &rarr; <span class='highlight'>a = c</span></p><p style='font-size:0.85rem;'>So the distance from <em>head to cycle start</em> equals the distance from <em>meeting point to cycle start</em>! Move one pointer from head and one from meeting point, both at speed 1. They meet at the cycle start!</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Hash Set</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Track visited nodes. The first repeated node is the cycle start.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> detectCycle(head):<br>&nbsp;&nbsp;visited = Set()<br>&nbsp;&nbsp;<span class='keyword'>while</span> head:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> head in visited: <span class='keyword'>return</span> head<br>&nbsp;&nbsp;&nbsp;&nbsp;visited.add(head); head = head.next<br>&nbsp;&nbsp;<span class='keyword'>return</span> null</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Simple</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>O(n) space</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">Floyd's algorithm extended with the a = c proof finds the start in O(1) space.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Floyd's + Math (a = c)</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Find meeting point with slow/fast. Then move one pointer from head, one from meeting point, both at speed 1. They meet at cycle start.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> detectCycle(head):<br>&nbsp;&nbsp;slow = fast = head<br>&nbsp;&nbsp;<span class='keyword'>while</span> fast AND fast.next:<br>&nbsp;&nbsp;&nbsp;&nbsp;slow = slow.next; fast = fast.next.next<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> slow == fast: <span class='comment'>// cycle detected</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;entry = head<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>while</span> entry != slow:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;entry = entry.next; slow = slow.next<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>return</span> entry<br>&nbsp;&nbsp;<span class='keyword'>return</span> null</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(1) space</li><li>Beautiful mathematical proof</li><li>Industry-standard algorithm</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>The proof of a = c is non-obvious</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Pointers</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; justify-content: center; margin: 4rem 0; min-height: 100px; align-items: center; position: relative;" id="ll-container">
+            <!-- Nodes will be injected here -->
+        </div>
+
+        <div style="display: flex; gap: 2rem; justify-content: center; margin: 1rem 0; font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-secondary);">
+            <div>Phase 1: <span style="color: var(--accent-purple); font-weight: bold;">slow (🐢)</span> &amp; <span style="color: var(--accent-orange); font-weight: bold;">fast (🐇)</span></div>
+            <div>Phase 2: <span style="color: var(--accent-blue); font-weight: bold;">head (📍)</span> &amp; <span style="color: var(--accent-purple); font-weight: bold;">slow (🐢)</span></div>
+        </div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          <strong>Phase 1:</strong> Click 'Step Pointers' to advance Tortoise and Hare.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const values = [3, 2, 0, -4];
+          const nextMap = [1, 2, 3, 1]; // indices
+          
+          let slow = 0;
+          let fast = 0;
+          let ptr1 = -1; // head ptr for Phase 2
+          
+          let phase = 1; // 1: find cycle, 2: find start
+          let isDone = false;
+          
+          const llCont = document.getElementById('ll-container');
+          const log = document.getElementById('search-log');
+
+          function init() {
+              slow = 0;
+              fast = 0;
+              ptr1 = -1;
+              phase = 1;
+              isDone = false;
+              render();
+          }
+
+          function render() {
+              llCont.innerHTML = '';
+              
+              values.forEach((val, i) => {
+                  const nodeWrapper = document.createElement('div');
+                  nodeWrapper.style.display = 'flex';
+                  nodeWrapper.style.alignItems = 'center';
+                  nodeWrapper.style.gap = '1rem';
+                  nodeWrapper.style.position = 'relative';
+                  
+                  const node = document.createElement('div');
+                  node.className = 'array-item';
+                  node.style.width = '40px';
+                  node.style.height = '40px';
+                  node.style.display = 'flex';
+                  node.style.alignItems = 'center';
+                  node.style.justifyContent = 'center';
+                  
+                  const isMatch = (isDone && ptr1 === i && slow === i);
+                  node.style.background = isMatch ? 'var(--accent-green)' : 'var(--bg-secondary)';
+                  if(isMatch) node.style.color = 'black';
+                  
+                  node.style.border = '2px solid var(--border-primary)';
+                  node.style.borderRadius = '8px';
+                  node.style.position = 'relative';
+                  node.textContent = val;
+                  
+                  // Pointers
+                  let lbls = [];
+                  if (phase === 1) {
+                      if (slow === i) lbls.push('<span style="color:var(--accent-purple)">slow 🐢</span>');
+                      if (fast === i) lbls.push('<span style="color:var(--accent-orange)">fast 🐇</span>');
+                  } else {
+                      if (ptr1 === i) lbls.push('<span style="color:var(--accent-blue)">head 📍</span>');
+                      if (slow === i) lbls.push('<span style="color:var(--accent-purple)">slow 🐢</span>');
+                  }
+                  
+                  if (lbls.length > 0) {
+                      const lblEl = document.createElement('div');
+                      lblEl.innerHTML = lbls.join('<br>');
+                      lblEl.style.position = 'absolute';
+                      lblEl.style.top = '-40px';
+                      lblEl.style.left = '50%';
+                      lblEl.style.transform = 'translateX(-50%)';
+                      lblEl.style.fontWeight = 'bold';
+                      lblEl.style.fontSize = '12px';
+                      lblEl.style.whiteSpace = 'nowrap';
+                      lblEl.style.textAlign = 'center';
+                      node.appendChild(lblEl);
+                  }
+                  
+                  nodeWrapper.appendChild(node);
+                  
+                  if (i < values.length - 1) {
+                      const arrowWrap = document.createElement('div');
+                      arrowWrap.style.position = 'relative';
+                      
+                      const arrow = document.createElement('div');
+                      arrow.innerHTML = '&#8594;';
+                      arrow.style.fontSize = '1.5rem';
+                      arrow.style.color = 'var(--text-secondary)';
+                      
+                      arrowWrap.appendChild(arrow);
+                      nodeWrapper.appendChild(arrowWrap);
+                  } else {
+                      // The loop arrow
+                      const loopWrap = document.createElement('div');
+                      loopWrap.style.position = 'absolute';
+                      loopWrap.style.bottom = '-30px';
+                      loopWrap.style.left = '-120px'; // Approx to go back to index 1
+                      loopWrap.style.width = '150px';
+                      loopWrap.style.height = '20px';
+                      loopWrap.style.borderBottom = '2px dashed var(--accent-red)';
+                      loopWrap.style.borderLeft = '2px dashed var(--accent-red)';
+                      loopWrap.style.borderRight = '2px dashed var(--accent-red)';
+                      loopWrap.style.borderBottomLeftRadius = '10px';
+                      loopWrap.style.borderBottomRightRadius = '10px';
+                      
+                      const arrhead = document.createElement('div');
+                      arrhead.innerHTML = '&#9650;';
+                      arrhead.style.position = 'absolute';
+                      arrhead.style.left = '-6px';
+                      arrhead.style.top = '-10px';
+                      arrhead.style.color = 'var(--accent-red)';
+                      arrhead.style.fontSize = '12px';
+                      
+                      loopWrap.appendChild(arrhead);
+                      nodeWrapper.appendChild(loopWrap);
+                  }
+                  
+                  llCont.appendChild(nodeWrapper);
+              });
+          }
+
+          function step() {
+              if (isDone) {
+                  log.innerHTML = `🎉 <strong>Cycle Start Found!</strong> Return node <strong>${values[slow]}</strong>.`;
+                  return;
+              }
+              
+              if (phase === 1) {
+                  let nextSlow = nextMap[slow];
+                  let nextFast1 = nextMap[fast];
+                  let nextFast2 = nextMap[nextFast1];
+                  
+                  slow = nextSlow;
+                  fast = nextFast2;
+                  
+                  if (slow === fast) {
+                      phase = 2;
+                      ptr1 = 0; // head
+                      log.innerHTML = `<strong>Phase 1 Complete!</strong> <code>slow</code> and <code>fast</code> met at Node <strong>${values[slow]}</strong>.<br>
+                      <strong>Phase 2:</strong> Set <code>head</code> to start. Move both 1 step at a time.`;
+                  } else {
+                      log.innerHTML = `<strong>Phase 1:</strong> <code>slow</code> moves to <strong>${values[slow]}</strong>. <code>fast</code> moves to <strong>${values[fast]}</strong>.`;
+                  }
+              } else {
+                  // Phase 2
+                  ptr1 = nextMap[ptr1];
+                  slow = nextMap[slow];
+                  
+                  if (ptr1 === slow) {
+                      isDone = true;
+                      log.innerHTML = `<strong>Phase 2 Complete!</strong> Both pointers collide at Node <strong>${values[slow]}</strong>! This is the start of the cycle.`;
+                  } else {
+                      log.innerHTML = `<strong>Phase 2:</strong> <code>head</code> moves to <strong>${values[ptr1]}</strong>. <code>slow</code> moves to <strong>${values[slow]}</strong>.`;
+                  }
+              }
+              
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              init();
+              log.innerHTML = "<strong>Phase 1:</strong> Click 'Step Pointers' to advance Tortoise and Hare.";
+          });
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'>
+  <div class='walkthrough-step__desc'>Trace: 3 &rarr; 2 &rarr; 0 &rarr; -4 &rarr; (cycle to 2)</div>
+  <div class='math-block' style='text-align:left;font-size:0.85rem;'><pre style='color:var(--text-secondary);'>
+Phase 1: Find Intersection
+  slow = 3, fast = 3
+  slow moves to 2, fast moves to 0
+  slow moves to 0, fast moves to 2
+  slow moves to -4, fast moves to -4 (They meet at -4)
+
+Phase 2: Find Cycle Start
+  entry = head (3)
+  slow is at meeting point (-4)
+  
+  entry moves to 2
+  slow moves to 2 (from -4 &rarr; 2)
+  
+<span class='highlight'>entry == slow (2 == 2). Cycle start found! Return node 2.</span></pre></div></div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Hash Set</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Simple but extra space</td></tr>
+<tr class="row--optimal"><td>Floyd's + Math</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+        ListNode *slow = head, *fast = head;
+        while (fast &amp;&amp; fast-&gt;next) {
+            slow = slow-&gt;next; fast = fast-&gt;next-&gt;next;
+            if (slow == fast) {
+                ListNode *entry = head;
+                while (entry != slow) { entry = entry-&gt;next; slow = slow-&gt;next; }
+                return entry;
+            }
+        }
+        return nullptr;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def detectCycle(self, head):
+        slow = fast = head
+        while fast and fast.next:
+            slow = slow.next; fast = fast.next.next
+            if slow == fast:
+                entry = head
+                while entry != slow:
+                    entry = entry.next; slow = slow.next
+                return entry
+        return None</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

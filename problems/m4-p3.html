@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merge Intervals - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-04-sorting.html" class="navbar__link">&#8592; Back to Module 04: Sorting</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-04-sorting.html">Module 04: Sorting</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Merge Intervals</span></div>
+      <h1 class="problem-header__title">Merge Intervals</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/merge-intervals/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given an array of intervals <code>[[start, end]]</code>, merge all overlapping intervals.</p><p><strong>Example:</strong> <code>[[1,3],[2,6],[8,10],[15,18]]</code> &rarr; <code>[[1,6],[8,10],[15,18]]</code></p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Two intervals [a,b] and [c,d] overlap if and only if a &le; d AND c &le; b</div><p style='font-size:0.9rem;margin-top:0.5rem;'>After sorting by start time, we only need to check if the current interval overlaps with the last merged one (current.start &le; last.end).</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Check All Pairs</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Compare every pair of intervals. If they overlap, merge them. Repeat until no more merges possible.</p>
+        <div class="pseudocode-block"><span class='keyword'>repeat</span>:<br>&nbsp;&nbsp;merged = false<br>&nbsp;&nbsp;<span class='keyword'>for</span> each pair (i, j):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> overlaps(i, j):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;merge(i, j); merged = true<br><span class='keyword'>until</span> not merged</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n<sup>2</sup>) or worse</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>No sorting needed</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>O(n^2) pair comparisons</li><li>May need multiple passes</li><li>Complex merge logic</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">Sorting by start time means we only need to compare adjacent intervals. One pass after sorting!</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Sort + Linear Merge</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Sort intervals by start time. Then iterate: if current interval overlaps with the last merged one, extend the end. Otherwise, start a new merged interval.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> merge(intervals):<br>&nbsp;&nbsp;sort intervals by start time<br>&nbsp;&nbsp;result = [intervals[0]]<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 1 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> intervals[i].start &le; result.last.end:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result.last.end = max(result.last.end, intervals[i].end)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>else</span>:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result.append(intervals[i])<br>&nbsp;&nbsp;<span class='keyword'>return</span> result</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n log n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(n log n) dominated by sorting</li><li>Single pass after sorting</li><li>Clean and elegant</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Sorting modifies order</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Merge</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="text-align: center; font-family: var(--font-mono); margin: 1rem 0;">Input Intervals (Sorted by Start)</div>
+        <div class="array-container" id="intervals-array" style="position: relative; height: 120px; border-bottom: 2px solid var(--border-primary); margin-bottom: 1rem;">
+        </div>
+
+        <div style="text-align: center; font-family: var(--font-mono); margin: 1rem 0;">Merged Result</div>
+        <div class="array-container" id="merged-array" style="position: relative; height: 60px; margin-bottom: 2rem;">
+        </div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6;">
+          Click 'Step Merge' to process the first interval.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const intervals = [[1,3], [2,6], [8,10], [15,18]];
+          let merged = [];
+          let currentIdx = 0;
+          let state = 0; // 0: picking, 1: deciding, 2: done
+          
+          const maxTime = 20; // For scaling 0-100%
+          const containerIn = document.getElementById('intervals-array');
+          const containerOut = document.getElementById('merged-array');
+          const log = document.getElementById('search-log');
+
+          function render() {
+              containerIn.innerHTML = '';
+              containerOut.innerHTML = '';
+              
+              // Draw input intervals
+              intervals.forEach((inv, i) => {
+                  const el = document.createElement('div');
+                  el.style.position = 'absolute';
+                  el.style.left = (inv[0] / maxTime) * 100 + '%';
+                  el.style.width = ((inv[1] - inv[0]) / maxTime) * 100 + '%';
+                  el.style.top = (i * 25) + 'px';
+                  el.style.height = '20px';
+                  el.style.background = (i === currentIdx && state === 1) ? 'var(--accent-cyan)' : 'var(--accent-purple)';
+                  el.style.opacity = (i < currentIdx) ? '0.3' : '1';
+                  el.style.borderRadius = '4px';
+                  el.style.display = 'flex';
+                  el.style.alignItems = 'center';
+                  el.style.justifyContent = 'center';
+                  el.style.fontSize = '10px';
+                  el.textContent = `[${inv[0]},${inv[1]}]`;
+                  containerIn.appendChild(el);
+              });
+
+              // Draw merged intervals
+              merged.forEach((inv, i) => {
+                  const el = document.createElement('div');
+                  el.style.position = 'absolute';
+                  el.style.left = (inv[0] / maxTime) * 100 + '%';
+                  el.style.width = ((inv[1] - inv[0]) / maxTime) * 100 + '%';
+                  el.style.top = '10px';
+                  el.style.height = '25px';
+                  el.style.background = 'var(--accent-green)';
+                  el.style.borderRadius = '4px';
+                  el.style.display = 'flex';
+                  el.style.alignItems = 'center';
+                  el.style.justifyContent = 'center';
+                  el.style.fontSize = '12px';
+                  el.style.color = 'black';
+                  el.style.fontWeight = 'bold';
+                  el.textContent = `[${inv[0]},${inv[1]}]`;
+                  containerOut.appendChild(el);
+              });
+          }
+
+          function step() {
+              if (currentIdx >= intervals.length) {
+                  log.innerHTML = `🎉 All intervals processed! Result: ${JSON.stringify(merged)}`;
+                  render();
+                  return;
+              }
+              
+              if (state === 0) {
+                  const inv = intervals[currentIdx];
+                  if (merged.length === 0) {
+                      log.innerHTML = `Array is empty. Adding first interval <strong>[${inv[0]}, ${inv[1]}]</strong> directly.`;
+                      merged.push([...inv]);
+                      currentIdx++;
+                  } else {
+                      const last = merged[merged.length - 1];
+                      log.innerHTML = `Current interval: <strong>[${inv[0]}, ${inv[1]}]</strong>. Last merged: <strong>[${last[0]}, ${last[1]}]</strong>. Do they overlap?`;
+                      state = 1;
+                  }
+              } else if (state === 1) {
+                  const inv = intervals[currentIdx];
+                  const last = merged[merged.length - 1];
+                  
+                  if (inv[0] <= last[1]) {
+                      log.innerHTML = `Yes! <code>${inv[0]} <= ${last[1]}</code>. They overlap. Merge them by taking <code>max(${last[1]}, ${inv[1]})</code>.`;
+                      last[1] = Math.max(last[1], inv[1]);
+                  } else {
+                      log.innerHTML = `No! <code>${inv[0]} > ${last[1]}</code>. No overlap. Add <strong>[${inv[0]}, ${inv[1]}]</strong> as a new interval.`;
+                      merged.push([...inv]);
+                  }
+                  currentIdx++;
+                  state = 0;
+              }
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              merged = [];
+              currentIdx = 0;
+              state = 0;
+              log.innerHTML = "Click 'Step Merge' to process the first interval.";
+              render();
+          });
+          render();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Check All Pairs</td><td><code>O(n<sup>2</sup>)</code></td><td><code>O(n)</code></td><td>Too slow</td></tr>
+<tr class="row--optimal"><td>Sort + Linear Merge</td><td><code>O(n log n)</code></td><td><code>O(n)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    vector&lt;vector&lt;int&gt;&gt; merge(vector&lt;vector&lt;int&gt;&gt;&amp; intervals) {
+        sort(intervals.begin(), intervals.end());
+        vector&lt;vector&lt;int&gt;&gt; result = {intervals[0]};
+        for (int i = 1; i &lt; intervals.size(); i++) {
+            if (intervals[i][0] &lt;= result.back()[1])
+                result.back()[1] = max(result.back()[1], intervals[i][1]);
+            else
+                result.push_back(intervals[i]);
+        }
+        return result;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def merge(self, intervals):
+        intervals.sort()
+        result = [intervals[0]]
+        for start, end in intervals[1:]:
+            if start &lt;= result[-1][1]:
+                result[-1][1] = max(result[-1][1], end)
+            else:
+                result.append([start, end])
+        return result</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

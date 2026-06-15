@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remove Nth Node From End of List - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-06-linked-list-1.html" class="navbar__link">&#8592; Back to Module 06: Linked List Part 1</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-06-linked-list-1.html">Module 06: Linked List Part 1</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Remove Nth Node From End of List</span></div>
+      <h1 class="problem-header__title">Remove Nth Node From End of List</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/remove-nth-node-from-end-of-list/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Remove the n<sup>th</sup> node from the <strong>end</strong> of a linked list and return the head.</p><p><strong>Example:</strong> <code>1&rarr;2&rarr;3&rarr;4&rarr;5, n=2</code> &rarr; <code>1&rarr;2&rarr;3&rarr;5</code></p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Two Passes</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">First pass: count total length L. Second pass: remove node at position L-n.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> removeNthFromEnd(head, n):<br>&nbsp;&nbsp;L = countNodes(head)<br>&nbsp;&nbsp;target = L - n<br>&nbsp;&nbsp;<span class='comment'>// traverse to target-1, remove next node</span></div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(L)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Simple two-pass approach</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Two passes through the list</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We can do it in one pass using two pointers separated by n nodes.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Two Pointers (Gap of n)</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Advance the 'fast' pointer n steps ahead. Then move both fast and slow together. When fast reaches the end, slow is just before the node to remove.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> removeNthFromEnd(head, n):<br>&nbsp;&nbsp;dummy = ListNode(0, head)<br>&nbsp;&nbsp;slow = fast = dummy<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> n: fast = fast.next<br>&nbsp;&nbsp;<span class='keyword'>while</span> fast != null:<br>&nbsp;&nbsp;&nbsp;&nbsp;slow = slow.next; fast = fast.next<br>&nbsp;&nbsp;slow.next = slow.next.next <span class='comment'>// skip target</span><br>&nbsp;&nbsp;<span class='keyword'>return</span> dummy.next</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(L)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Single pass</li><li>Elegant gap technique</li><li>Dummy node handles edge case of removing head</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Gap concept is slightly tricky</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Pointers</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="text-align: center; font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 1rem;">
+            Remove <strong>n=2</strong> from end
+        </div>
+        
+        <div style="display: flex; gap: 1rem; justify-content: center; margin: 3rem 0; min-height: 100px; align-items: center; position: relative;" id="ll-container">
+            <!-- Nodes will be injected here -->
+        </div>
+
+        <div style="display: flex; gap: 2rem; justify-content: center; margin: 1rem 0; font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-secondary);">
+            <div><span style="color: var(--accent-purple); font-weight: bold;">slow</span></div>
+            <div><span style="color: var(--accent-orange); font-weight: bold;">fast</span></div>
+        </div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Step Pointers' to advance fast pointer n+1 times.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const values = ['D', 1, 2, 3, 4, 5]; // Dummy + 5 nodes
+          const n = 2;
+          
+          let slow = 0; // index in values (0 is Dummy)
+          let fast = 0; // index in values
+          
+          let state = 0; // 0: advance fast (n+1) times, 1: advance both, 2: delete
+          let stepsToAdvance = n + 1;
+          let isDeleted = false;
+          
+          const llCont = document.getElementById('ll-container');
+          const log = document.getElementById('search-log');
+
+          function init() {
+              slow = 0;
+              fast = 0;
+              state = 0;
+              stepsToAdvance = n + 1;
+              isDeleted = false;
+              render();
+          }
+
+          function render() {
+              llCont.innerHTML = '';
+              
+              values.forEach((val, i) => {
+                  const nodeWrapper = document.createElement('div');
+                  nodeWrapper.style.display = 'flex';
+                  nodeWrapper.style.alignItems = 'center';
+                  nodeWrapper.style.gap = '1rem';
+                  nodeWrapper.style.position = 'relative';
+                  
+                  const node = document.createElement('div');
+                  node.className = 'array-item';
+                  node.style.width = '40px';
+                  node.style.height = '40px';
+                  node.style.display = 'flex';
+                  node.style.alignItems = 'center';
+                  node.style.justifyContent = 'center';
+                  node.style.background = 'var(--bg-secondary)';
+                  node.style.border = '2px solid var(--border-primary)';
+                  node.style.borderRadius = '8px';
+                  node.style.position = 'relative';
+                  node.textContent = val;
+                  
+                  if (isDeleted && i === slow + 1) {
+                      node.style.opacity = '0.3';
+                      node.style.background = 'var(--accent-red)';
+                      node.style.color = 'white';
+                      node.style.textDecoration = 'line-through';
+                  }
+                  
+                  // Pointers
+                  let lbls = [];
+                  if (slow === i) lbls.push('<span style="color:var(--accent-purple)">slow</span>');
+                  if (fast === i) lbls.push('<span style="color:var(--accent-orange)">fast</span>');
+                  
+                  if (lbls.length > 0) {
+                      const lblEl = document.createElement('div');
+                      lblEl.innerHTML = lbls.join(', ');
+                      lblEl.style.position = 'absolute';
+                      lblEl.style.top = '-25px';
+                      lblEl.style.left = '50%';
+                      lblEl.style.transform = 'translateX(-50%)';
+                      lblEl.style.fontWeight = 'bold';
+                      lblEl.style.fontSize = '12px';
+                      lblEl.style.whiteSpace = 'nowrap';
+                      node.appendChild(lblEl);
+                  }
+                  
+                  nodeWrapper.appendChild(node);
+                  
+                  if (i < values.length - 1) {
+                      const arrowWrap = document.createElement('div');
+                      arrowWrap.style.position = 'relative';
+                      
+                      const arrow = document.createElement('div');
+                      arrow.innerHTML = '&#8594;';
+                      arrow.style.fontSize = '1.5rem';
+                      arrow.style.color = 'var(--text-secondary)';
+                      
+                      if (isDeleted && i === slow) {
+                          // Draw a bridging arrow over the next node
+                          arrow.style.color = 'var(--accent-red)';
+                          arrow.innerHTML = '&#8594;';
+                          arrow.style.textDecoration = 'line-through';
+                          
+                          // Bridge
+                          const bridge = document.createElement('div');
+                          bridge.style.position = 'absolute';
+                          bridge.style.top = '-30px';
+                          bridge.style.left = '0';
+                          bridge.style.width = '100px'; // approximate width spanning deleted node
+                          bridge.style.height = '30px';
+                          bridge.style.borderTop = '2px dashed var(--accent-green)';
+                          bridge.style.borderLeft = '2px dashed var(--accent-green)';
+                          bridge.style.borderRight = '2px dashed var(--accent-green)';
+                          bridge.style.borderTopLeftRadius = '10px';
+                          bridge.style.borderTopRightRadius = '10px';
+                          bridge.innerHTML = '<div style="position:absolute; right:-5px; bottom:-8px; color:var(--accent-green)">&#9660;</div>';
+                          arrowWrap.appendChild(bridge);
+                      }
+                      
+                      if(isDeleted && i === slow + 1) {
+                          arrow.style.opacity = '0.3';
+                      }
+                      
+                      arrowWrap.appendChild(arrow);
+                      nodeWrapper.appendChild(arrowWrap);
+                  }
+                  
+                  llCont.appendChild(nodeWrapper);
+              });
+              
+              // End NULL
+              const endArrow = document.createElement('div');
+              endArrow.innerHTML = '&#8594;';
+              endArrow.style.fontSize = '1.5rem';
+              endArrow.style.color = 'var(--text-secondary)';
+              
+              const nullNext = document.createElement('div');
+              nullNext.textContent = 'null';
+              nullNext.style.fontFamily = 'var(--font-mono)';
+              nullNext.style.color = 'var(--text-secondary)';
+              nullNext.style.position = 'relative';
+              
+              if (fast === values.length) {
+                  const lblEl2 = document.createElement('div');
+                  lblEl2.innerHTML = '<span style="color:var(--accent-orange)">fast</span>';
+                  lblEl2.style.position = 'absolute';
+                  lblEl2.style.top = '-25px';
+                  lblEl2.style.left = '50%';
+                  lblEl2.style.transform = 'translateX(-50%)';
+                  lblEl2.style.fontWeight = 'bold';
+                  lblEl2.style.fontSize = '12px';
+                  nullNext.appendChild(lblEl2);
+              }
+              
+              llCont.appendChild(endArrow);
+              llCont.appendChild(nullNext);
+          }
+
+          function step() {
+              if (isDeleted) {
+                  log.innerHTML = `🎉 <strong>Complete!</strong> Return <code>dummy.next</code>.`;
+                  return;
+              }
+              
+              if (state === 0) {
+                  if (stepsToAdvance > 0) {
+                      fast++;
+                      stepsToAdvance--;
+                      log.innerHTML = `Step 1: <code>fast</code> advances to create a gap of <code>n+1</code> (${n+1}). Remaining: ${stepsToAdvance}`;
+                      if(stepsToAdvance === 0) state = 1;
+                  }
+              } else if (state === 1) {
+                  if (fast < values.length) {
+                      slow++;
+                      fast++;
+                      log.innerHTML = `Step 2: Advance both <code>slow</code> and <code>fast</code> until <code>fast</code> reaches <code>null</code>.`;
+                  }
+                  if (fast === values.length) {
+                      state = 2;
+                  }
+              } else if (state === 2) {
+                  isDeleted = true;
+                  let target = values[slow + 1];
+                  log.innerHTML = `Step 3: <code>fast</code> reached <code>null</code>! <code>slow</code> is exactly before the target node (<strong>${target}</strong>). <code>slow.next = slow.next.next</code>.`;
+              }
+              
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              init();
+              log.innerHTML = "Click 'Step Pointers' to advance fast pointer n+1 times.";
+          });
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Two Passes</td><td><code>O(L)</code></td><td><code>O(1)</code></td><td>Simple</td></tr>
+<tr class="row--optimal"><td>Two Pointers (n Gap)</td><td><code>O(L)</code></td><td><code>O(1)</code></td><td>Optimal &mdash; single pass</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        ListNode dummy(0, head);
+        ListNode *slow = &amp;dummy, *fast = &amp;dummy;
+        for (int i = 0; i &lt;= n; i++) fast = fast-&gt;next;
+        while (fast) { slow = slow-&gt;next; fast = fast-&gt;next; }
+        ListNode* toDelete = slow-&gt;next;
+        slow-&gt;next = slow-&gt;next-&gt;next;
+        delete toDelete;
+        return dummy.next;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def removeNthFromEnd(self, head, n):
+        dummy = ListNode(0, head)
+        slow = fast = dummy
+        for _ in range(n + 1): fast = fast.next
+        while fast:
+            slow = slow.next; fast = fast.next
+        slow.next = slow.next.next
+        return dummy.next</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

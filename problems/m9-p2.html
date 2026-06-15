@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contains Duplicate - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-09-hashing.html" class="navbar__link">&#8592; Back to Module 09: Hashing</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-09-hashing.html">Module 09: Hashing</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Contains Duplicate</span></div>
+      <h1 class="problem-header__title">Contains Duplicate</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/contains-duplicate/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Return true if any value appears at least twice.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Nested Loops</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Compare every element with every other element in the array to find a match.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> containsDuplicate(nums):<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> len(nums)-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> j = i+1 <span class='keyword'>to</span> len(nums)-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> nums[i] == nums[j]: <span class='keyword'>return</span> true<br>&nbsp;&nbsp;<span class='keyword'>return</span> false</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n<sup>2</sup>)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>No extra space</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Time Limit Exceeded (TLE)</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Checking every pair is too slow. If we sort the array first, duplicates will be adjacent to each other.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--better">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Sorting</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Sort the array. Then, iterate through it once to check if any adjacent elements are identical.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> containsDuplicate(nums):<br>&nbsp;&nbsp;nums.sort()<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> len(nums)-2:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> nums[i] == nums[i+1]: <span class='keyword'>return</span> true<br>&nbsp;&nbsp;<span class='keyword'>return</span> false</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n log n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1) or O(log n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Passes all test cases</li><li>Minimal extra space</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Mutates the input array</li><li>Slower than linear time</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Sorting takes O(n log n) time. We can trade space for time to achieve O(n) using a Hash Set.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 3</span></div>
+        <div class="approach-card__title">Hash Set</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Add elements to a Hash Set. If the size of the set is less than the length of the array, there are duplicates.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> containsDuplicate(nums):<br>&nbsp;&nbsp;<span class='keyword'>return</span> len(Set(nums)) != len(nums)</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>One liner</li><li>O(n) time</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>O(n) space</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approach Comparison Table -->
+    <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time Complexity</th><th>Space Complexity</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr class="row--brute"><td>Nested Loops</td><td><code>O(n&sup2;)</code></td><td><code>O(1)</code></td><td>Naive</td></tr>
+        <tr class="row--better"><td>Sorting</td><td><code>O(n log n)</code></td><td><code>O(1)</code></td><td>Better</td></tr>
+        <tr class="row--optimal"><td>Hash Set</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Optimal</td></tr>
+      </tbody>
+    </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="dup-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step">Step Processing</button>
+          <button class="btn btn--outline" id="btn-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 4rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap; align-items:center;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary);">nums = [1, 2, 3, 1]</div>
+                <div id="arr-container" style="display: flex; gap: 0.5rem;"></div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary);">Hash Set</div>
+                <div id="set-container" style="display: flex; gap: 0.5rem; min-width: 150px; min-height: 50px; border: 2px dashed var(--border-primary); padding: 0.5rem; border-radius: 8px; flex-wrap: wrap;"></div>
+            </div>
+        </div>
+
+        <div class="visualizer__log" id="viz-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6;">
+          Click 'Step Processing' to insert elements into the set.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const nums = [1, 2, 3, 1];
+          let s = new Set();
+          let idx = 0;
+          let isDone = false;
+          
+          const arrCont = document.getElementById('arr-container');
+          const setCont = document.getElementById('set-container');
+          const log = document.getElementById('viz-log');
+
+          function init() {
+              s = new Set();
+              idx = 0;
+              isDone = false;
+              render();
+              log.innerHTML = "Click 'Step Processing' to insert elements into the set.";
+          }
+
+          function createBox(val, hlType) {
+              const el = document.createElement('div');
+              el.style.width = '35px'; el.style.height = '35px';
+              el.style.display = 'flex'; el.style.alignItems = 'center'; el.style.justifyContent = 'center';
+              el.style.border = '2px solid var(--border-primary)'; el.style.borderRadius = '6px';
+              el.textContent = val;
+              
+              if (hlType === 'curr') {
+                  el.style.background = 'var(--accent-purple)'; el.style.color = 'black';
+              } else if (hlType === 'dup') {
+                  el.style.background = 'var(--accent-orange)'; el.style.color = 'black';
+              } else {
+                  el.style.background = 'var(--bg-secondary)';
+              }
+              return el;
+          }
+
+          function render() {
+              arrCont.innerHTML = '';
+              nums.forEach((v, i) => {
+                  let hl = '';
+                  if (i === idx && !isDone) hl = 'curr';
+                  if (isDone && i === nums.length - 1 && nums[idx] === nums[nums.length-1]) hl = 'dup';
+                  arrCont.appendChild(createBox(v, hl));
+              });
+              
+              setCont.innerHTML = '';
+              s.forEach(v => {
+                  let hl = '';
+                  if (isDone && v === nums[idx]) hl = 'dup';
+                  setCont.appendChild(createBox(v, hl));
+              });
+          }
+
+          function step() {
+              if (isDone) return;
+              if (idx >= nums.length) return;
+              
+              let v = nums[idx];
+              if (s.has(v)) {
+                  log.innerHTML = `⚠️ Encountered <strong>${v}</strong> at index ${idx}. It is <span style="color:var(--accent-orange);">ALREADY IN THE SET</span>.<br>Duplicates exist! Return <strong>true</strong>.`;
+                  isDone = true;
+                  render();
+                  return;
+              } else {
+                  s.add(v);
+                  log.innerHTML = `Element <strong>${v}</strong> is not in set. Added to set.`;
+              }
+              
+              idx++;
+              if (idx >= nums.length && !isDone) {
+                  log.innerHTML += `<br>🎉 Array fully processed. No duplicates found! Return <strong>false</strong>.`;
+                  isDone = true;
+              }
+              render();
+          }
+
+          document.getElementById('btn-step').addEventListener('click', step);
+          document.getElementById('btn-reset').addEventListener('click', init);
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: nums=[1, 2, 3, 1]</div><div class='math-block' style='text-align:left;font-size:0.9rem;'>
+<pre style="color:var(--text-secondary)">
+Init: Set = {}
+
+i=0: nums[0]=1. Set doesn't have 1. Add 1 &rarr; Set = {1}
+i=1: nums[1]=2. Set doesn't have 2. Add 2 &rarr; Set = {1, 2}
+i=2: nums[2]=3. Set doesn't have 3. Add 3 &rarr; Set = {1, 2, 3}
+i=3: nums[3]=1. Set HAS 1! Collision!
+
+<span class="highlight">Result: true (Contains duplicate)</span>
+</pre></div></div></section>
+<!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    bool containsDuplicate(vector&lt;int&gt;&amp; nums) {
+        unordered_set&lt;int&gt; s(nums.begin(), nums.end());
+        return s.size() != nums.size();
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def containsDuplicate(self, nums):
+        return len(set(nums)) != len(nums)</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

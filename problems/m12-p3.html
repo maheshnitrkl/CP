@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keys and Rooms - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-12-graphs.html" class="navbar__link">&#8592; Back to Module 12: Graphs</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-12-graphs.html">Module 12: Graphs</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Keys and Rooms</span></div>
+      <h1 class="problem-header__title">Keys and Rooms</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/keys-and-rooms/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; Problem Link</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>There are n rooms labeled from 0 to n - 1 and all the rooms are locked except for room 0. Your goal is to visit all the rooms. When you visit a room, you may find a set of distinct keys in it that can unlock other rooms.</p></div>
+    </section>
+
+    <!-- 2. Logic & Core Concept -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128218;</span> Logic & Core Concept</h2>
+      <div class="math-block">
+        <p>You start in Room 0, which is unlocked. Inside each room, you might find keys to other rooms.</p>
+        <p>This is a classic graph traversal problem where <strong>rooms are nodes</strong> and <strong>keys are directed edges</strong>.</p>
+        <div style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-sm); margin-top:1rem; text-align:center;">
+          <code>rooms = [[1], [2], [3], []]</code> means Room 0 has a key to Room 1, Room 1 has a key to Room 2, etc.
+        </div>
+        <p style="margin-top:1rem;">To see if we can visit all rooms, we start at Room 0, follow the keys to open new rooms, and keep track of which rooms we've visited. If the total number of visited rooms equals <code>n</code>, we win.</p>
+      </div>
+    </section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: DFS &#8594; BFS</h2>
+      
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Depth-First Search (DFS)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">We can use a simple recursive DFS. When we enter a room, we mark it as visited, pick up all the keys, and immediately try to enter those rooms if we haven't already. A global counter tracks how many rooms we've opened.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> canVisitAllRooms(rooms):<br>&nbsp;&nbsp;n = len(rooms)<br>&nbsp;&nbsp;visited = array of false (size n)<br>&nbsp;&nbsp;visited[0] = true<br>&nbsp;&nbsp;count = 1<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>function</span> dfs(room):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> key <span class='keyword'>in</span> rooms[room]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> not visited[key]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;visited[key] = true<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count += 1<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dfs(key)<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;dfs(0)<br>&nbsp;&nbsp;<span class='keyword'>return</span> count == n</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(N + E)</span>
+            <span class="cx-badge cx-badge--space">Space: O(N)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Short and elegant code.</li><li>No need to build an adjacency list (it's already given as `rooms`).</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Recursion stack depth could reach N.</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Alternative</div><div class="why-optimize__body">If you prefer avoiding deep recursion, a standard Breadth-First Search (BFS) works just as well.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Breadth-First Search (BFS)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">We use a queue. Start with Room 0 in the queue. Pop a room, grab its keys, and for every key to an unvisited room, mark it visited and push it to the queue.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> canVisitAllRoomsBFS(rooms):<br>&nbsp;&nbsp;visited = set([0])<br>&nbsp;&nbsp;queue = [0]<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>while</span> queue is not empty:<br>&nbsp;&nbsp;&nbsp;&nbsp;curr = queue.dequeue()<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> key <span class='keyword'>in</span> rooms[curr]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> key not in visited:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;visited.add(key)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;queue.enqueue(key)<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>return</span> len(visited) == len(rooms)</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(N + E)</span>
+            <span class="cx-badge cx-badge--space">Space: O(N)</span>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr class="row--optimal"><td>DFS (Recursion)</td><td><code>O(N + E)</code></td><td><code>O(N)</code></td><td>Shortest Code</td></tr>
+          <tr class="row--better"><td>BFS (Queue)</td><td><code>O(N + E)</code></td><td><code>O(N)</code></td><td>Iterative, Safe from Stack Overflow</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">&#10024;</span> Interactive Visualization (DFS)</h2>
+      <div class="visualizer" id="rooms-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step-rooms">Next Step</button>
+          <button class="btn btn--outline" id="btn-reset-rooms">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; margin: 2rem 0; flex-wrap: wrap; justify-content: center; align-items:flex-start;">
+          <!-- Rooms Display -->
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap; max-width: 400px; justify-content: center;">
+            
+            <div class="room-card" id="room-0" style="width: 80px; height: 100px; border: 2px solid var(--accent-orange); border-radius: 8px; background: var(--bg-main); display: flex; flex-direction: column; align-items: center; position: relative; transition: all 0.3s; color: var(--accent-orange);">
+              <div style="font-weight: bold; padding-top: 5px; border-bottom: 1px solid var(--border-primary); width: 100%; text-align: center;">R0</div>
+              <div style="display:flex; gap:2px; flex-wrap:wrap; padding:5px; justify-content:center;">
+                <span style="font-size: 1.2rem;">&#128273;1</span>
+                <span style="font-size: 1.2rem;">&#128273;3</span>
+              </div>
+            </div>
+            
+            <div class="room-card" id="room-1" style="width: 80px; height: 100px; border: 2px solid var(--text-secondary); border-radius: 8px; background: #1a1a1a; display: flex; flex-direction: column; align-items: center; position: relative; transition: all 0.3s; opacity: 0.5;">
+              <div style="position:absolute; top:-10px; right:-10px; font-size:1.5rem;" id="lock-1">&#128274;</div>
+              <div style="font-weight: bold; padding-top: 5px; border-bottom: 1px solid var(--border-primary); width: 100%; text-align: center;">R1</div>
+              <div style="display:flex; gap:2px; flex-wrap:wrap; padding:5px; justify-content:center;">
+                <span style="font-size: 1.2rem;">&#128273;0</span>
+                <span style="font-size: 1.2rem;">&#128273;1</span>
+              </div>
+            </div>
+            
+            <div class="room-card" id="room-2" style="width: 80px; height: 100px; border: 2px solid var(--text-secondary); border-radius: 8px; background: #1a1a1a; display: flex; flex-direction: column; align-items: center; position: relative; transition: all 0.3s; opacity: 0.5;">
+              <div style="position:absolute; top:-10px; right:-10px; font-size:1.5rem;" id="lock-2">&#128274;</div>
+              <div style="font-weight: bold; padding-top: 5px; border-bottom: 1px solid var(--border-primary); width: 100%; text-align: center;">R2</div>
+              <div style="display:flex; gap:2px; flex-wrap:wrap; padding:5px; justify-content:center;">
+                <span style="font-size: 1.2rem;">&#128273;2</span>
+              </div>
+            </div>
+            
+            <div class="room-card" id="room-3" style="width: 80px; height: 100px; border: 2px solid var(--text-secondary); border-radius: 8px; background: #1a1a1a; display: flex; flex-direction: column; align-items: center; position: relative; transition: all 0.3s; opacity: 0.5;">
+              <div style="position:absolute; top:-10px; right:-10px; font-size:1.5rem;" id="lock-3">&#128274;</div>
+              <div style="font-weight: bold; padding-top: 5px; border-bottom: 1px solid var(--border-primary); width: 100%; text-align: center;">R3</div>
+              <div style="display:flex; gap:2px; flex-wrap:wrap; padding:5px; justify-content:center;">
+                <span style="font-size: 1.2rem;">&#128273;0</span>
+              </div>
+            </div>
+            
+          </div>
+          
+          <!-- Keyring & Stats -->
+          <div style="display: flex; flex-direction: column; gap: 1rem; width: 250px;">
+            <div style="background: var(--bg-elevated); padding: 1rem; border: 1px solid var(--border-primary); border-radius: var(--radius-md);">
+              <h3 style="margin-bottom: 0.5rem; font-size:1rem;">Keys Collected</h3>
+              <div id="keyring" style="font-size: 1.5rem; letter-spacing: 5px;">
+                
+              </div>
+            </div>
+            
+            <div style="background: var(--bg-elevated); padding: 1rem; border: 1px solid var(--border-primary); border-radius: var(--radius-md);">
+              <h3 style="margin-bottom: 0.5rem; font-size:1rem;">Rooms Visited</h3>
+              <div style="font-size: 2rem; font-weight: bold; color: var(--accent-green);" id="rooms-count">
+                1 / 4
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="visualizer__log" id="rooms-viz-log">
+          Click "Next Step" to start DFS. Room 0 is unlocked.
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const btnStep = document.getElementById("btn-step-rooms");
+          const btnReset = document.getElementById("btn-reset-rooms");
+          const log = document.getElementById("rooms-viz-log");
+          const keyringEl = document.getElementById("keyring");
+          const countEl = document.getElementById("rooms-count");
+          
+          // Graph: [[1,3], [0,1], [2], [0]]
+          // DFS from 0:
+          // visit 0. Keys: 1, 3.
+          // dfs(1). visit 1. Keys: 0, 1. (already visited)
+          // dfs(3). visit 3. Keys: 0. (already visited)
+          // 2 is unvisited. Return false.
+          
+          const steps = [
+            { r: 0, k: [1, 3], count: 1, msg: "In Room 0. Found keys: 1, 3." },
+            { r: 1, unlock: 1, count: 2, msg: "Use key 1 to unlock Room 1. Entering Room 1." },
+            { r: 1, k: [1, 3, 0, '1dup'], count: 2, msg: "In Room 1. Found keys: 0, 1. (Both already opened or found)." },
+            { r: 3, unlock: 3, count: 3, msg: "Backtrack to Room 0's keys. Use key 3 to unlock Room 3. Entering Room 3." },
+            { r: 3, k: [1, 3, 0, '1dup', '0dup'], count: 3, msg: "In Room 3. Found key: 0. (Already opened)." },
+            { finish: True, count: 3, msg: "DFS completes. Total visited: 3. n=4. <strong>Cannot visit all rooms!</strong> (Room 2 is locked forever)." }
+          ];
+
+          let stepIdx = 0;
+
+          function resetViz() {
+            // Reset rooms
+            for(let i=0; i<4; i++) {
+              const el = document.getElementById(`room-${i}`);
+              if(i === 0) {
+                el.style.borderColor = "var(--accent-orange)";
+                el.style.color = "var(--accent-orange)";
+                el.style.background = "var(--bg-main)";
+                el.style.opacity = "1";
+              } else {
+                el.style.borderColor = "var(--text-secondary)";
+                el.style.color = "var(--text-primary)";
+                el.style.background = "#1a1a1a";
+                el.style.opacity = "0.5";
+                document.getElementById(`lock-${i}`).innerHTML = "&#128274;";
+                document.getElementById(`lock-${i}`).style.opacity = "1";
+              }
+            }
+            keyringEl.innerHTML = "";
+            countEl.innerHTML = "1 / 4";
+            countEl.style.color = "var(--text-primary)";
+          }
+
+          function init() {
+            stepIdx = 0;
+            resetViz();
+            log.innerHTML = "Click \"Next Step\" to start DFS. Room 0 is unlocked.";
+            btnStep.disabled = false;
+          }
+
+          btnStep.addEventListener("click", () => {
+            if (stepIdx >= steps.length) return;
+            const step = steps[stepIdx];
+            
+            // clear highlights
+            for(let i=0; i<4; i++) {
+                if(document.getElementById(`room-${i}`).style.background === "var(--accent-green-dim)") {
+                    document.getElementById(`room-${i}`).style.background = "var(--bg-main)";
+                }
+            }
+            
+            if (step.unlock !== undefined) {
+                const el = document.getElementById(`room-${step.unlock}`);
+                el.style.borderColor = "var(--accent-green)";
+                el.style.color = "var(--accent-green)";
+                el.style.opacity = "1";
+                document.getElementById(`lock-${step.unlock}`).innerHTML = "&#128275;"; // open lock
+                // animate unlock
+                setTimeout(() => {
+                    document.getElementById(`lock-${step.unlock}`).style.opacity = "0";
+                }, 500);
+            }
+            
+            if (step.r !== undefined) {
+                document.getElementById(`room-${step.r}`).style.background = "var(--accent-green-dim)";
+            }
+            
+            if (step.k !== undefined) {
+                let html = "";
+                for(let key of step.k) {
+                    if (typeof key === 'number') html += `&#128273;${key} `;
+                }
+                keyringEl.innerHTML = html;
+            }
+            
+            if (step.count !== undefined) {
+                countEl.innerHTML = `${step.count} / 4`;
+            }
+            
+            if (step.finish) {
+                countEl.style.color = "var(--accent-red)";
+            }
+            
+            log.innerHTML = step.msg;
+            
+            stepIdx++;
+            if (stepIdx >= steps.length) {
+              btnStep.disabled = true;
+            }
+          });
+
+          btnReset.addEventListener("click", init);
+        });
+      </script>
+    </section>
+
+    <!-- 5. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++ (DFS)</button><button class="code-block__tab" data-lang="python">Python (DFS)</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+    int count = 0;
+    
+    void dfs(int room, vector&lt;vector&lt;int&gt;&gt;&amp; rooms, vector&lt;bool&gt;&amp; visited) {
+        visited[room] = true;
+        count++;
+        
+        for (int key : rooms[room]) {
+            if (!visited[key]) {
+                dfs(key, rooms, visited);
+            }
+        }
+    }
+    
+public:
+    bool canVisitAllRooms(vector&lt;vector&lt;int&gt;&gt;&amp; rooms) {
+        int n = rooms.size();
+        vector&lt;bool&gt; visited(n, false);
+        
+        dfs(0, rooms, visited);
+        
+        return count == n;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def canVisitAllRooms(self, rooms: List[List[int]]) -> bool:
+        n = len(rooms)
+        visited = [False] * n
+        self.count = 0
+        
+        def dfs(room):
+            visited[room] = True
+            self.count += 1
+            for key in rooms[room]:
+                if not visited[key]:
+                    dfs(key)
+                    
+        dfs(0)
+        return self.count == n</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <footer class="footer" style="margin-top: 4rem; padding: 2rem 0; text-align: center; color: var(--text-tertiary); border-top: 1px solid var(--border-primary);">
+    <p>CP-II Lab &copy; 2026. Built for learning.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

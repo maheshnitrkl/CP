@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Climbing Stairs - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-10-dp.html" class="navbar__link">&#8592; Back to Module 10: DP</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-10-dp.html">Module 10: DP</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Climbing Stairs</span></div>
+      <h1 class="problem-header__title">Climbing Stairs</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/climbing-stairs/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>You are climbing a staircase. It takes n steps to reach the top. Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128218;</span> Mathematical Foundation</h2>
+      <div class="math-block">
+        <p>To reach the <code>i</code>-th step, you could only have come from either the <code>(i-1)</code>-th step (by taking a 1-step) or the <code>(i-2)</code>-th step (by taking a 2-step).</p>
+        <p>Therefore, the total number of distinct ways to reach step <code>i</code> is the sum of the ways to reach step <code>i-1</code> and step <code>i-2</code>. This is precisely the <strong>Fibonacci sequence</strong>.</p>
+        <div style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-sm); margin-top:1rem; text-align:center;">
+          <code>Ways(n) = Ways(n-1) + Ways(n-2)</code>
+        </div>
+        <p style="margin-top:1rem;"><strong>Base cases:</strong> <code>Ways(1) = 1</code>, <code>Ways(2) = 2</code>.</p>
+      </div>
+    </section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+      <div class="approach-card approach-card--brute">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Brute Force Recursion</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Directly translate the recurrence into a recursive function. Recomputes overlapping subproblems exponentially.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> climbStairs(n):<br>&nbsp;&nbsp;<span class='keyword'>if</span> n &lt;= 2: <span class='keyword'>return</span> n<br>&nbsp;&nbsp;<span class='keyword'>return</span> climbStairs(n-1) + climbStairs(n-2)</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(2<sup>n</sup>)</span>
+            <span class="cx-badge cx-badge--space">Space: O(n)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Simple math translation</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Time Limit Exceeded</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Redundant work. We calculate <code>climbStairs(3)</code> multiple times. We should cache the results!</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Top-Down Memoization</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Store the result of each step in a hash map or array. If we've seen it before, return it instantly.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> climbStairs(n, memo):<br>&nbsp;&nbsp;<span class='keyword'>if</span> n &lt;= 2: <span class='keyword'>return</span> n<br>&nbsp;&nbsp;<span class='keyword'>if</span> memo[n] exists: <span class='keyword'>return</span> memo[n]<br>&nbsp;&nbsp;memo[n] = climbStairs(n-1, memo) + climbStairs(n-2, memo)<br>&nbsp;&nbsp;<span class='keyword'>return</span> memo[n]</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(n)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Linear time</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Call stack overhead</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Recursion uses the call stack. We can iterate bottom-up instead using a DP table.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 3</span></div>
+          <div class="approach-card__title">Bottom-Up Tabulation (1D DP)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Create an array <code>dp</code> of size <code>n+1</code>. Fill it iteratively starting from 1 up to n.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> climbStairs(n):<br>&nbsp;&nbsp;<span class='keyword'>if</span> n &lt;= 2: <span class='keyword'>return</span> n<br>&nbsp;&nbsp;dp = array of size n+1<br>&nbsp;&nbsp;dp[1] = 1, dp[2] = 2<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 3 <span class='keyword'>to</span> n:<br>&nbsp;&nbsp;&nbsp;&nbsp;dp[i] = dp[i-1] + dp[i-2]<br>&nbsp;&nbsp;<span class='keyword'>return</span> dp[n]</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(n)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>No stack overflow risk</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>O(n) space</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">We only ever look at <code>dp[i-1]</code> and <code>dp[i-2]</code>. We don't need the entire array, just two variables!</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 4</span></div>
+          <div class="approach-card__title">Space-Optimized DP (Two Variables)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Keep track of just the last two calculated steps (like the Fibonacci sequence calculation).</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> climbStairs(n):<br>&nbsp;&nbsp;<span class='keyword'>if</span> n &lt;= 2: <span class='keyword'>return</span> n<br>&nbsp;&nbsp;a = 1, b = 2<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 3 <span class='keyword'>to</span> n:<br>&nbsp;&nbsp;&nbsp;&nbsp;c = a + b<br>&nbsp;&nbsp;&nbsp;&nbsp;a = b<br>&nbsp;&nbsp;&nbsp;&nbsp;b = c<br>&nbsp;&nbsp;<span class='keyword'>return</span> b</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(1)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>O(1) optimal space</li><li>Fastest execution</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>None</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr class="row--brute"><td>Recursion</td><td><code>O(2<sup>n</sup>)</code></td><td><code>O(n)</code></td><td>TLE</td></tr>
+          <tr class="row--better"><td>Memoization</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Better</td></tr>
+          <tr class="row--better"><td>1D Tabulation</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Better</td></tr>
+          <tr class="row--optimal"><td>Space Optimized</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">&#10024;</span> Interactive Visualization</h2>
+      <div class="visualizer" id="stairs-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step-stairs">Next Step</button>
+          <button class="btn btn--outline" id="btn-reset-stairs">Reset</button>
+        </div>
+        
+        <div style="display: flex; align-items: flex-end; justify-content: center; gap: 4px; margin: 3rem 0; height: 200px;" id="stairs-container">
+          <!-- Stairs will be generated by JS -->
+        </div>
+
+        <div class="visualizer__log" id="stairs-log">
+          Calculating ways for n=5. We start with base cases Step 1 and Step 2.
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const container = document.getElementById("stairs-container");
+          const log = document.getElementById("stairs-log");
+          const btnStep = document.getElementById("btn-step-stairs");
+          const btnReset = document.getElementById("btn-reset-stairs");
+
+          const n = 5;
+          let currentStep = 1;
+          const ways = [0, 1, 2, 3, 5, 8];
+
+          function render() {
+            container.innerHTML = "";
+            for (let i = 1; i <= n; i++) {
+              const stair = document.createElement("div");
+              stair.style.width = "60px";
+              stair.style.height = `${i * 40}px`;
+              stair.style.background = i <= currentStep ? "var(--accent-orange)" : "var(--bg-elevated)";
+              stair.style.border = "2px solid var(--border-primary)";
+              stair.style.display = "flex";
+              stair.style.flexDirection = "column";
+              stair.style.justifyContent = "flex-start";
+              stair.style.alignItems = "center";
+              stair.style.paddingTop = "10px";
+              stair.style.transition = "all 0.3s ease";
+              
+              if (i === currentStep && i > 2) {
+                stair.style.boxShadow = "0 0 15px var(--accent-orange)";
+              }
+
+              const label = document.createElement("span");
+              label.style.fontWeight = "bold";
+              label.style.color = i <= currentStep ? "#000" : "var(--text-secondary)";
+              label.textContent = `S${i}`;
+              stair.appendChild(label);
+
+              if (i <= currentStep) {
+                const val = document.createElement("span");
+                val.style.marginTop = "5px";
+                val.style.color = "#000";
+                val.style.fontWeight = "900";
+                val.style.fontSize = "1.2rem";
+                val.textContent = ways[i];
+                stair.appendChild(val);
+              }
+
+              container.appendChild(stair);
+            }
+          }
+
+          btnStep.addEventListener("click", () => {
+            if (currentStep < n) {
+              currentStep++;
+              render();
+              if (currentStep <= 2) {
+                log.innerHTML = `Base case: Ways to reach Step ${currentStep} = ${ways[currentStep]}`;
+              } else {
+                log.innerHTML = `<code>dp[${currentStep}] = dp[${currentStep-1}] + dp[${currentStep-2}]</code> &rarr; ${ways[currentStep-1]} + ${ways[currentStep-2]} = ${ways[currentStep]} ways.`;
+              }
+            } else {
+              log.innerHTML = `<strong>Finished!</strong> 8 distinct ways to reach Step 5.`;
+            }
+          });
+
+          btnReset.addEventListener("click", () => {
+            currentStep = 2;
+            render();
+            log.innerHTML = "Calculating ways for n=5. We start with base cases Step 1 and Step 2.";
+          });
+
+          // Init
+          currentStep = 2;
+          render();
+        });
+      </script>
+    </section>
+
+    <!-- 5. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    int climbStairs(int n) {
+        if (n &lt;= 2) return n;
+        
+        int prev2 = 1; // Step 1
+        int prev1 = 2; // Step 2
+        
+        for (int i = 3; i &lt;= n; i++) {
+            int current = prev1 + prev2;
+            prev2 = prev1;
+            prev1 = current;
+        }
+        
+        return prev1;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def climbStairs(self, n: int) -> int:
+        if n &lt;= 2:
+            return n
+            
+        prev2 = 1
+        prev1 = 2
+        
+        for _ in range(3, n + 1):
+            current = prev1 + prev2
+            prev2 = prev1
+            prev1 = current
+            
+        return prev1</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <footer class="footer" style="margin-top: 4rem; padding: 2rem 0; text-align: center; color: var(--text-tertiary); border-top: 1px solid var(--border-primary);">
+    <p>CP-II Lab &copy; 2026. Built for learning.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

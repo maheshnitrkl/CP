@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Two Numbers - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-06-linked-list-1.html" class="navbar__link">&#8592; Back to Module 06: Linked List Part 1</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-06-linked-list-1.html">Module 06: Linked List Part 1</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Add Two Numbers</span></div>
+      <h1 class="problem-header__title">Add Two Numbers</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/add-two-numbers/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Two non-empty linked lists represent two non-negative integers stored in <strong>reverse order</strong>. Add them and return the sum as a linked list.</p><p><strong>Example:</strong> <code>2&rarr;4&rarr;3</code> + <code>5&rarr;6&rarr;4</code> &rarr; <code>7&rarr;0&rarr;8</code> (342 + 465 = 807)</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Convert to Numbers, Add, Convert Back</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Convert both lists to integers, add them, convert the sum back to a list.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> addTwoNumbers(l1, l2):<br>&nbsp;&nbsp;num1 = listToInt(l1)<br>&nbsp;&nbsp;num2 = listToInt(l2)<br>&nbsp;&nbsp;<span class='keyword'>return</span> intToList(num1 + num2)</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n + m)</span>
+          <span class="cx-badge cx-badge--space">Space: O(max(n,m))</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Conceptually simple</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Integer overflow for very long numbers</li><li>Not using linked list structure</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">This fails for very large numbers (100+ digits). We should add digit by digit with carry, like elementary school addition.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Digit-by-Digit with Carry</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Add corresponding digits plus carry. Create a new node for each digit of the result. Continue until both lists are exhausted and carry is 0.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> addTwoNumbers(l1, l2):<br>&nbsp;&nbsp;dummy = ListNode(0)<br>&nbsp;&nbsp;curr = dummy, carry = 0<br>&nbsp;&nbsp;<span class='keyword'>while</span> l1 OR l2 OR carry:<br>&nbsp;&nbsp;&nbsp;&nbsp;sum = carry<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> l1: sum += l1.val; l1 = l1.next<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> l2: sum += l2.val; l2 = l2.next<br>&nbsp;&nbsp;&nbsp;&nbsp;carry = sum / 10<br>&nbsp;&nbsp;&nbsp;&nbsp;curr.next = ListNode(sum % 10)<br>&nbsp;&nbsp;&nbsp;&nbsp;curr = curr.next<br>&nbsp;&nbsp;<span class='keyword'>return</span> dummy.next</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(max(n,m))</span>
+          <span class="cx-badge cx-badge--space">Space: O(max(n,m))</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Handles arbitrary length numbers</li><li>No integer overflow</li><li>Elegant carry propagation</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Creates new nodes for the result</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Addition</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; margin: 3rem 0; min-height: 250px; padding: 0 1rem;" id="ll-container">
+            <div style="display: flex; align-items: center; gap: 1rem; position: relative;">
+                <div style="width: 80px; font-family: var(--font-mono); color: var(--text-secondary); text-align: right;">List 1:</div>
+                <div id="list1-cont" style="display: flex; gap: 1rem; align-items: center; min-height: 50px;"></div>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 1rem; position: relative;">
+                <div style="width: 80px; font-family: var(--font-mono); color: var(--text-secondary); text-align: right;">List 2:</div>
+                <div id="list2-cont" style="display: flex; gap: 1rem; align-items: center; min-height: 50px;"></div>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 1rem; position: relative;">
+                <div style="width: 80px; font-family: var(--font-mono); color: var(--accent-orange); text-align: right; font-weight: bold;">Carry:</div>
+                <div id="carry-val" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: var(--bg-elevated); border: 2px solid var(--accent-orange); font-weight: bold; color: var(--accent-orange); font-size: 1.2rem;">0</div>
+            </div>
+            
+            <div style="border-top: 2px solid var(--border-primary); margin: 0.5rem 0;"></div>
+            
+            <div style="display: flex; align-items: center; gap: 1rem; position: relative;">
+                <div style="width: 80px; font-family: var(--font-mono); color: var(--text-secondary); text-align: right;">Result:</div>
+                <div id="result-cont" style="display: flex; gap: 1rem; align-items: center; min-height: 50px; flex-wrap: wrap;"></div>
+            </div>
+        </div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Step Addition' to add nodes digit by digit.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const l1_vals = [2, 4, 3]; // 342
+          const l2_vals = [5, 6, 4]; // 465
+          
+          let p1 = 0;
+          let p2 = 0;
+          let carry = 0;
+          
+          let result = [];
+          let isDone = false;
+          
+          const l1Cont = document.getElementById('list1-cont');
+          const l2Cont = document.getElementById('list2-cont');
+          const resCont = document.getElementById('result-cont');
+          const carryEl = document.getElementById('carry-val');
+          const log = document.getElementById('search-log');
+
+          function init() {
+              p1 = 0;
+              p2 = 0;
+              carry = 0;
+              result = [];
+              isDone = false;
+              render();
+          }
+
+          function createNode(val, highlightColor = null) {
+              const node = document.createElement('div');
+              node.className = 'array-item';
+              node.style.width = '40px';
+              node.style.height = '40px';
+              node.style.display = 'flex';
+              node.style.alignItems = 'center';
+              node.style.justifyContent = 'center';
+              node.style.background = highlightColor || 'var(--bg-secondary)';
+              if(highlightColor) {
+                  node.style.color = 'black';
+                  node.style.fontWeight = 'bold';
+              }
+              node.style.border = '2px solid var(--border-primary)';
+              node.style.borderRadius = '8px';
+              node.textContent = val;
+              return node;
+          }
+
+          function createArrow() {
+              const arrow = document.createElement('div');
+              arrow.innerHTML = '&#8594;';
+              arrow.style.fontSize = '1.5rem';
+              arrow.style.color = 'var(--text-secondary)';
+              return arrow;
+          }
+
+          function renderList(vals, ptrIdx, container, label, highlightColor) {
+              container.innerHTML = '';
+              for(let i = ptrIdx; i < vals.length; i++) {
+                  const wrap = document.createElement('div');
+                  wrap.style.display = 'flex';
+                  wrap.style.alignItems = 'center';
+                  wrap.style.gap = '1rem';
+                  
+                  const node = createNode(vals[i], (i === ptrIdx) ? highlightColor : null);
+                  node.style.position = 'relative';
+                  
+                  if (i === ptrIdx) {
+                      const lbl = document.createElement('div');
+                      lbl.textContent = label;
+                      lbl.style.position = 'absolute';
+                      lbl.style.top = '-25px';
+                      lbl.style.left = '50%';
+                      lbl.style.transform = 'translateX(-50%)';
+                      lbl.style.color = highlightColor;
+                      lbl.style.fontWeight = 'bold';
+                      lbl.style.fontSize = '12px';
+                      node.appendChild(lbl);
+                  }
+                  
+                  wrap.appendChild(node);
+                  
+                  if (i < vals.length - 1) {
+                      wrap.appendChild(createArrow());
+                  }
+                  container.appendChild(wrap);
+              }
+              
+              if (ptrIdx === vals.length) {
+                  const nullNode = document.createElement('div');
+                  nullNode.textContent = 'null';
+                  nullNode.style.fontFamily = 'var(--font-mono)';
+                  nullNode.style.color = 'var(--text-secondary)';
+                  nullNode.style.position = 'relative';
+                  
+                  const lbl = document.createElement('div');
+                  lbl.textContent = label;
+                  lbl.style.position = 'absolute';
+                  lbl.style.top = '-25px';
+                  lbl.style.left = '50%';
+                  lbl.style.transform = 'translateX(-50%)';
+                  lbl.style.color = highlightColor;
+                  lbl.style.fontWeight = 'bold';
+                  lbl.style.fontSize = '12px';
+                  nullNode.appendChild(lbl);
+                  
+                  container.appendChild(nullNode);
+              }
+          }
+
+          function render() {
+              renderList(l1_vals, p1, l1Cont, 'p1', 'var(--accent-blue)');
+              renderList(l2_vals, p2, l2Cont, 'p2', 'var(--accent-purple)');
+              
+              carryEl.textContent = carry;
+              
+              resCont.innerHTML = '';
+              
+              const dummyWrap = document.createElement('div');
+              dummyWrap.style.display = 'flex';
+              dummyWrap.style.alignItems = 'center';
+              dummyWrap.style.gap = '1rem';
+              const dummyNode = createNode('D');
+              dummyWrap.appendChild(dummyNode);
+              
+              if(result.length > 0) dummyWrap.appendChild(createArrow());
+              resCont.appendChild(dummyWrap);
+              
+              result.forEach((val, i) => {
+                  const wrap = document.createElement('div');
+                  wrap.style.display = 'flex';
+                  wrap.style.alignItems = 'center';
+                  wrap.style.gap = '1rem';
+                  
+                  const node = createNode(val, 'var(--accent-green)');
+                  wrap.appendChild(node);
+                  
+                  if (i < result.length - 1) {
+                      wrap.appendChild(createArrow());
+                  } else if (isDone) {
+                      wrap.appendChild(createArrow());
+                      const n = document.createElement('div');
+                      n.textContent = 'null';
+                      n.style.fontFamily = 'var(--font-mono)';
+                      n.style.color = 'var(--text-secondary)';
+                      wrap.appendChild(n);
+                  }
+                  resCont.appendChild(wrap);
+              });
+          }
+
+          function step() {
+              if (isDone) {
+                  log.innerHTML = `🎉 <strong>Addition Complete!</strong> Return <code>dummy.next</code>.`;
+                  return;
+              }
+              
+              if (p1 === l1_vals.length && p2 === l2_vals.length && carry === 0) {
+                  isDone = true;
+                  log.innerHTML = `Both lists exhausted and carry is 0. <strong>Addition complete!</strong>`;
+                  render();
+                  return;
+              }
+              
+              let v1 = p1 < l1_vals.length ? l1_vals[p1] : 0;
+              let v2 = p2 < l2_vals.length ? l2_vals[p2] : 0;
+              
+              let sum = v1 + v2 + carry;
+              let newCarry = Math.floor(sum / 10);
+              let digit = sum % 10;
+              
+              result.push(digit);
+              
+              log.innerHTML = `Add: <code>v1 (${v1}) + v2 (${v2}) + carry (${carry}) = ${sum}</code>.<br>
+              New node: <strong>${digit}</strong>. New carry: <strong>${newCarry}</strong>.`;
+              
+              carry = newCarry;
+              
+              if (p1 < l1_vals.length) p1++;
+              if (p2 < l2_vals.length) p2++;
+              
+              if(p1 === l1_vals.length && p2 === l2_vals.length && carry === 0) {
+                  isDone = true;
+                  log.innerHTML += `<br>All digits processed!`;
+              }
+              
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              init();
+              log.innerHTML = "Click 'Step Addition' to add nodes digit by digit.";
+          });
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Convert + Add</td><td><code>O(n+m)</code></td><td><code>O(max)</code></td><td>Integer overflow risk</td></tr>
+<tr class="row--optimal"><td>Digit-by-Digit</td><td><code>O(max(n,m))</code></td><td><code>O(max(n,m))</code></td><td>Optimal &mdash; no overflow</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        ListNode dummy(0), *curr = &amp;dummy;
+        int carry = 0;
+        while (l1 || l2 || carry) {
+            int sum = carry;
+            if (l1) { sum += l1-&gt;val; l1 = l1-&gt;next; }
+            if (l2) { sum += l2-&gt;val; l2 = l2-&gt;next; }
+            carry = sum / 10;
+            curr-&gt;next = new ListNode(sum % 10);
+            curr = curr-&gt;next;
+        }
+        return dummy.next;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def addTwoNumbers(self, l1, l2):
+        dummy = curr = ListNode(0)
+        carry = 0
+        while l1 or l2 or carry:
+            s = carry
+            if l1: s += l1.val; l1 = l1.next
+            if l2: s += l2.val; l2 = l2.next
+            carry, digit = divmod(s, 10)
+            curr.next = ListNode(digit)
+            curr = curr.next
+        return dummy.next</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

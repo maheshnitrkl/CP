@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Implement Queue using Stacks - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-08-stack-queue.html" class="navbar__link">&#8592; Back to Module 08: Stack & Queue</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-08-stack-queue.html">Module 08: Stack & Queue</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Implement Queue using Stacks</span></div>
+      <h1 class="problem-header__title">Implement Queue using Stacks</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/implement-queue-using-stacks/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Implement a first-in-first-out (FIFO) queue using only two stacks.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Two Stacks (Push O(n), Pop O(1))</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">To enqueue an element, move all elements from Stack1 to Stack2, push the new element to Stack1, and then move all elements back to Stack1. This keeps the oldest element at the top.</p>
+        <div class="pseudocode-block"><span class='keyword'>class</span> MyQueue:<br>&nbsp;&nbsp;s1 = [], s2 = []<br>&nbsp;&nbsp;<span class='keyword'>function</span> push(x):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>while</span> not s1.empty(): s2.push(s1.pop())<br>&nbsp;&nbsp;&nbsp;&nbsp;s1.push(x)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>while</span> not s2.empty(): s1.push(s2.pop())<br>&nbsp;&nbsp;<span class='keyword'>function</span> pop(): <span class='keyword'>return</span> s1.pop()</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: Push: O(n), Pop: O(1)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Fast Pop O(1)</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Push is O(n)</li><li>Constant moving back and forth</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">We can avoid moving elements back and forth. Elements poured into Stack2 are already in Queue order! We only need to pour when Stack2 is empty.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Two Stacks (Push O(1), Pop Amortized O(1))</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Stack1 for enqueuing. When dequeuing, if Stack2 is empty, pop all elements from Stack1 and push to Stack2 (reverses order). Pop from Stack2.</p>
+        <div class="pseudocode-block"><span class='keyword'>class</span> MyQueue:<br>&nbsp;&nbsp;inStack = [], outStack = []<br>&nbsp;&nbsp;<span class='keyword'>function</span> push(x): inStack.push(x)<br>&nbsp;&nbsp;<span class='keyword'>function</span> pop():<br>&nbsp;&nbsp;&nbsp;&nbsp;shift()<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>return</span> outStack.pop()<br>&nbsp;&nbsp;<span class='keyword'>function</span> shift():<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> outStack.empty():<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>while</span> not inStack.empty():<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outStack.push(inStack.pop())</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: Push: O(1), Pop: Amortized O(1)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Amortized O(1) for pop</li><li>Push is strictly O(1)</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Worst case pop is O(n)</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approach Comparison Table -->
+    <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Push Time</th><th>Pop Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr class="row--brute"><td>Two Stacks (Fast Pop)</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td><code>O(n)</code></td><td>Naive</td></tr>
+        <tr class="row--optimal"><td>Two Stacks (Amortized)</td><td><code>O(1)</code></td><td>Amortized <code>O(1)</code></td><td><code>O(n)</code></td><td>Optimal</td></tr>
+      </tbody>
+    </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="queue-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step">Step Operations</button>
+          <button class="btn btn--outline" id="btn-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 4rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap;">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">In Stack</div>
+                <div id="in-stack-cont" style="display: flex; flex-direction: column-reverse; gap: 0.5rem; width: 100px; min-height: 150px; border-bottom: 2px solid var(--border-primary); padding-bottom: 0.5rem;"></div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">Out Stack</div>
+                <div id="out-stack-cont" style="display: flex; flex-direction: column-reverse; gap: 0.5rem; width: 100px; min-height: 150px; border-bottom: 2px solid var(--border-primary); padding-bottom: 0.5rem;"></div>
+            </div>
+        </div>
+
+        <div class="visualizer__log" id="viz-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;"></div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const ops = [
+              {type: 'push', val: 1},
+              {type: 'push', val: 2},
+              {type: 'pop'},
+              {type: 'push', val: 3},
+              {type: 'pop'}
+          ];
+          let inSt = [];
+          let outSt = [];
+          let opIdx = 0;
+          let state = 0; // 0: new op, 1: pouring
+          let isDone = false;
+          
+          const inCont = document.getElementById('in-stack-cont');
+          const outCont = document.getElementById('out-stack-cont');
+          const log = document.getElementById('viz-log');
+
+          function init() {
+              inSt = [];
+              outSt = [];
+              opIdx = 0;
+              state = 0;
+              isDone = false;
+              render();
+              log.innerHTML = "Click 'Step Operations' to begin.";
+          }
+
+          function createBox(val) {
+              const el = document.createElement('div');
+              el.style.width = '100%';
+              el.style.height = '40px';
+              el.style.display = 'flex';
+              el.style.alignItems = 'center';
+              el.style.justifyContent = 'center';
+              el.style.background = 'var(--bg-secondary)';
+              el.style.border = '2px solid var(--border-primary)';
+              el.style.borderRadius = '8px';
+              el.textContent = val;
+              return el;
+          }
+
+          function render() {
+              inCont.innerHTML = '';
+              outCont.innerHTML = '';
+              inSt.forEach(v => inCont.appendChild(createBox(v)));
+              outSt.forEach(v => outCont.appendChild(createBox(v)));
+          }
+
+          function step() {
+              if (isDone) return;
+              if (opIdx >= ops.length && state === 0) {
+                  log.innerHTML = `🎉 <strong>Sequence Complete!</strong>`;
+                  isDone = true;
+                  return;
+              }
+              
+              if (state === 1) {
+                  if (inSt.length > 0) {
+                      const v = inSt.pop();
+                      outSt.push(v);
+                      log.innerHTML = `Pouring: popped <strong>${v}</strong> from In Stack, pushed to Out Stack.`;
+                  } else {
+                      state = 0;
+                      step(); // immediately continue to pop
+                      return;
+                  }
+              } else if (state === 0) {
+                  const op = ops[opIdx];
+                  if (op.type === 'push') {
+                      inSt.push(op.val);
+                      log.innerHTML = `<code>push(${op.val})</code>: Pushed <strong>${op.val}</strong> to In Stack.`;
+                      opIdx++;
+                  } else if (op.type === 'pop') {
+                      if (outSt.length === 0) {
+                          if (inSt.length > 0) {
+                              state = 1;
+                              log.innerHTML = `<code>pop()</code>: Out Stack is empty! Initiating pour from In Stack...`;
+                          } else {
+                              log.innerHTML = `<code>pop()</code>: Error, queue is empty.`;
+                              opIdx++;
+                          }
+                      } else {
+                          const v = outSt.pop();
+                          log.innerHTML = `<code>pop()</code>: Popped <strong>${v}</strong> from Out Stack.`;
+                          opIdx++;
+                      }
+                  }
+              }
+              render();
+          }
+
+          document.getElementById('btn-step').addEventListener('click', step);
+          document.getElementById('btn-reset').addEventListener('click', init);
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: push(1), push(2), pop(), push(3), pop()</div><div class='math-block' style='text-align:left;font-size:0.9rem;'>
+<pre style="color:var(--text-secondary)">
+1. push(1) &rarr; In: [1], Out: []
+2. push(2) &rarr; In: [1, 2], Out: []
+3. pop():
+   Out is empty. Pour In to Out:
+   - Pop 2 from In, Push to Out. Out: [2]
+   - Pop 1 from In, Push to Out. Out: [2, 1]
+   In is empty. Pop from Out &rarr; <span class="highlight">Returns 1</span>. Out: [2]
+4. push(3) &rarr; In: [3], Out: [2]
+5. pop():
+   Out is NOT empty ([2]). Pop from Out &rarr; <span class="highlight">Returns 2</span>. Out: []
+</pre></div></div></section>
+<!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class MyQueue {
+    stack&lt;int&gt; in, out;
+    void shift() {
+        if (out.empty()) {
+            while (!in.empty()) { out.push(in.top()); in.pop(); }
+        }
+    }
+public:
+    void push(int x) { in.push(x); }
+    int pop() { shift(); int t = out.top(); out.pop(); return t; }
+    int peek() { shift(); return out.top(); }
+    bool empty() { return in.empty() &amp;&amp; out.empty(); }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class MyQueue:
+    def __init__(self):
+        self.in_st, self.out_st = [], []
+    def push(self, x): self.in_st.append(x)
+    def shift(self):
+        if not self.out_st:
+            while self.in_st: self.out_st.append(self.in_st.pop())
+    def pop(self):
+        self.shift(); return self.out_st.pop()
+    def peek(self):
+        self.shift(); return self.out_st[-1]
+    def empty(self):
+        return not self.in_st and not self.out_st</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

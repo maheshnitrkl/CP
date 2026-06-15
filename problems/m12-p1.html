@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DFS Traversal - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-12-graphs.html" class="navbar__link">&#8592; Back to Module 12: Graphs</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-12-graphs.html">Module 12: Graphs</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">DFS Traversal</span></div>
+      <h1 class="problem-header__title">DFS Traversal</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://practice.geeksforgeeks.org/problems/depth-first-traversal-for-a-graph/1" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; Problem Link</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given a connected undirected graph, perform a Depth First Search (DFS) traversal starting from vertex 0.</p></div>
+    </section>
+
+    <!-- 2. Logic & Core Concept -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128218;</span> Logic & Core Concept</h2>
+      <div class="math-block">
+        <p>Depth First Search (DFS) is a fundamental graph traversal algorithm. The concept is simple: <strong>go deep before going wide.</strong></p>
+        <p>Starting from a given vertex, you explore as far as possible along each branch before backtracking. To prevent infinite loops in graphs with cycles, we must keep track of which vertices have already been visited.</p>
+        <div style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-sm); margin-top:1rem;">
+          <strong>Key Components:</strong>
+          <ul style="margin-left: 1.5rem; margin-top: 0.5rem; color:var(--text-secondary);">
+            <li><strong>Visited Array:</strong> A boolean array to track nodes we've seen.</li>
+            <li><strong>Stack/Call Stack:</strong> To remember where to backtrack when a path ends.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression</h2>
+      
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Recursive DFS (Standard)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">We use the system's call stack to traverse the graph recursively. When we visit a node, we mark it as visited, then recursively call DFS on all its unvisited neighbors.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> dfs(node, visited, adj, result):<br>&nbsp;&nbsp;visited[node] = true<br>&nbsp;&nbsp;result.append(node)<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>for</span> neighbor <span class='keyword'>in</span> adj[node]:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> not visited[neighbor]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dfs(neighbor, visited, adj, result)</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(V + E)</span>
+            <span class="cx-badge cx-badge--space">Space: O(V)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Very concise and easy to write.</li><li>Standard way to write DFS in competitive programming.</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Can cause stack overflow for extremely deep graphs (rarely an issue within standard constraints).</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why explore alternatives?</div><div class="why-optimize__body">If recursion depth is a hard constraint (e.g. strict system limits), an explicit stack avoids call stack overflows.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Iterative DFS (Explicit Stack)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">We simulate the recursion stack using our own data structure. Note that to match the exact traversal order of recursive DFS (which processes neighbors from left to right), we would need to push neighbors to the stack in <strong>reverse</strong> order.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> dfs_iterative(start_node, adj):<br>&nbsp;&nbsp;stack = [start_node]<br>&nbsp;&nbsp;visited = array of false<br>&nbsp;&nbsp;result = []<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>while</span> stack is not empty:<br>&nbsp;&nbsp;&nbsp;&nbsp;curr = stack.pop()<br>&nbsp;&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> not visited[curr]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;visited[curr] = true<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result.append(curr)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='comment'>// Push neighbors in reverse order to match recursive DFS</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> i from len(adj[curr])-1 down to 0:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;neighbor = adj[curr][i]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> not visited[neighbor]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stack.push(neighbor)<br>&nbsp;&nbsp;<span class='keyword'>return</span> result</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(V + E)</span>
+            <span class="cx-badge cx-badge--space">Space: O(V)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>No risk of call stack overflow.</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Slightly more code.</li><li>Managing traversal order (reversing neighbors) is prone to bugs.</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr class="row--optimal"><td>Recursive DFS</td><td><code>O(V + E)</code></td><td><code>O(V)</code></td><td>Cleanest & Standard</td></tr>
+          <tr class="row--better"><td>Iterative DFS</td><td><code>O(V + E)</code></td><td><code>O(V)</code></td><td>Good alternative if stack limited</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">&#10024;</span> Interactive DFS Visualization</h2>
+      <div class="visualizer" id="dfs-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step">Next Step</button>
+          <button class="btn btn--outline" id="btn-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; margin: 2rem 0; flex-wrap: wrap; justify-content: center; align-items:flex-start;">
+          <!-- Graph Display -->
+          <div style="position: relative; width: 300px; height: 300px; background:var(--bg-elevated); border:1px solid var(--border-primary); border-radius:var(--radius-md);">
+            <!-- Edges (SVG) -->
+            <svg style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1;">
+              <!-- 0-1, 0-2, 1-3, 1-4, 2-5 -->
+              <line id="e-0-1" x1="150" y1="50" x2="80" y2="120" stroke="var(--text-secondary)" stroke-width="3" />
+              <line id="e-0-2" x1="150" y1="50" x2="220" y2="120" stroke="var(--text-secondary)" stroke-width="3" />
+              <line id="e-1-3" x1="80" y1="120" x2="50" y2="220" stroke="var(--text-secondary)" stroke-width="3" />
+              <line id="e-1-4" x1="80" y1="120" x2="130" y2="220" stroke="var(--text-secondary)" stroke-width="3" />
+              <line id="e-2-5" x1="220" y1="120" x2="220" y2="220" stroke="var(--text-secondary)" stroke-width="3" />
+            </svg>
+            
+            <!-- Nodes -->
+            <div class="g-node" id="n-0" style="position:absolute; top:30px; left:130px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s;">0</div>
+            <div class="g-node" id="n-1" style="position:absolute; top:100px; left:60px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s;">1</div>
+            <div class="g-node" id="n-2" style="position:absolute; top:100px; left:200px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s;">2</div>
+            <div class="g-node" id="n-3" style="position:absolute; top:200px; left:30px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s;">3</div>
+            <div class="g-node" id="n-4" style="position:absolute; top:200px; left:110px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s;">4</div>
+            <div class="g-node" id="n-5" style="position:absolute; top:200px; left:200px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s;">5</div>
+          </div>
+          
+          <!-- Call Stack & Output -->
+          <div style="display: flex; flex-direction: column; gap: 1rem; width: 250px;">
+            <div style="background: var(--bg-elevated); padding: 1rem; border: 1px solid var(--border-primary); border-radius: var(--radius-md);">
+              <h3 style="margin-bottom: 0.5rem; font-size:1rem;">Call Stack</h3>
+              <div id="call-stack" style="display:flex; flex-direction:column-reverse; gap:0.25rem; font-family:monospace; min-height:120px;">
+                <!-- Stack frames go here -->
+              </div>
+            </div>
+            
+            <div style="background: var(--bg-elevated); padding: 1rem; border: 1px solid var(--border-primary); border-radius: var(--radius-md);">
+              <h3 style="margin-bottom: 0.5rem; font-size:1rem;">DFS Traversal</h3>
+              <div id="dfs-output" style="font-size: 1.2rem; font-weight: bold; color: var(--accent-green); font-family: monospace; letter-spacing: 2px;">
+                []
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="visualizer__log" id="viz-log">
+          Click "Next Step" to start DFS from node 0.
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const btnStep = document.getElementById("btn-step");
+          const btnReset = document.getElementById("btn-reset");
+          const log = document.getElementById("viz-log");
+          const outputList = document.getElementById("dfs-output");
+          const callStackEl = document.getElementById("call-stack");
+          
+          // Adjacency List:
+          // 0: [1, 2]
+          // 1: [0, 3, 4]
+          // 2: [0, 5]
+          // 3: [1]
+          // 4: [1]
+          // 5: [2]
+          
+          // DFS sequence from 0:
+          // call 0
+          //   visit 0
+          //   call 1
+          //     visit 1
+          //     call 3
+          //       visit 3
+          //       backtrack 3 -> 1
+          //     call 4
+          //       visit 4
+          //       backtrack 4 -> 1
+          //     backtrack 1 -> 0
+          //   call 2
+          //     visit 2
+          //     call 5
+          //       visit 5
+          //       backtrack 5 -> 2
+          //     backtrack 2 -> 0
+          //   backtrack 0 -> done
+          
+          const steps = [
+            { type: 'call', node: 0, stack: [0], result: [0], msg: "Call dfs(0). Node 0 is marked visited." },
+            { type: 'edge', e: 'e-0-1', msg: "Check neighbors of 0. First unvisited is 1." },
+            { type: 'call', node: 1, stack: [0, 1], result: [0, 1], msg: "Call dfs(1). Node 1 is marked visited." },
+            { type: 'edge', e: 'e-1-3', msg: "Check neighbors of 1. First unvisited is 3." },
+            { type: 'call', node: 3, stack: [0, 1, 3], result: [0, 1, 3], msg: "Call dfs(3). Node 3 is marked visited." },
+            { type: 'back', node: 3, stack: [0, 1], msg: "Node 3 has no unvisited neighbors. Backtrack to 1." },
+            { type: 'edge', e: 'e-1-4', msg: "Check next unvisited neighbor of 1: it's 4." },
+            { type: 'call', node: 4, stack: [0, 1, 4], result: [0, 1, 3, 4], msg: "Call dfs(4). Node 4 is marked visited." },
+            { type: 'back', node: 4, stack: [0, 1], msg: "Node 4 has no unvisited neighbors. Backtrack to 1." },
+            { type: 'back', node: 1, stack: [0], msg: "Node 1 has no more unvisited neighbors. Backtrack to 0." },
+            { type: 'edge', e: 'e-0-2', msg: "Check next unvisited neighbor of 0: it's 2." },
+            { type: 'call', node: 2, stack: [0, 2], result: [0, 1, 3, 4, 2], msg: "Call dfs(2). Node 2 is marked visited." },
+            { type: 'edge', e: 'e-2-5', msg: "Check neighbors of 2. First unvisited is 5." },
+            { type: 'call', node: 5, stack: [0, 2, 5], result: [0, 1, 3, 4, 2, 5], msg: "Call dfs(5). Node 5 is marked visited." },
+            { type: 'back', node: 5, stack: [0, 2], msg: "Node 5 has no unvisited neighbors. Backtrack to 2." },
+            { type: 'back', node: 2, stack: [0], msg: "Node 2 has no more unvisited neighbors. Backtrack to 0." },
+            { type: 'back', node: 0, stack: [], msg: "Node 0 has no more unvisited neighbors. Traversal complete!" },
+          ];
+
+          let stepIdx = 0;
+          let currentResult = [];
+
+          function resetViz() {
+            for(let i=0; i<=5; i++) {
+              const node = document.getElementById(`n-${i}`);
+              node.style.background = "var(--bg-main)";
+              node.style.borderColor = "var(--border-primary)";
+              node.style.color = "var(--text-primary)";
+              node.style.boxShadow = "none";
+            }
+            for(const e of ['e-0-1', 'e-0-2', 'e-1-3', 'e-1-4', 'e-2-5']) {
+              document.getElementById(e).setAttribute('stroke', "var(--text-secondary)");
+            }
+            outputList.innerHTML = "[]";
+            callStackEl.innerHTML = "";
+            currentResult = [];
+          }
+
+          function init() {
+            stepIdx = 0;
+            resetViz();
+            log.innerHTML = "Click \"Next Step\" to start DFS from node 0.";
+            btnStep.disabled = false;
+          }
+
+          function renderStack(stack) {
+            callStackEl.innerHTML = "";
+            for (let i = 0; i < stack.length; i++) {
+              const frame = document.createElement("div");
+              frame.style.padding = "4px 8px";
+              frame.style.background = i === stack.length - 1 ? "var(--accent-orange)" : "var(--bg-main)";
+              frame.style.color = i === stack.length - 1 ? "#fff" : "var(--text-primary)";
+              frame.style.border = "1px solid var(--border-primary)";
+              frame.style.borderRadius = "4px";
+              frame.innerText = `dfs(${stack[i]})`;
+              callStackEl.appendChild(frame);
+            }
+          }
+
+          btnStep.addEventListener("click", () => {
+            if (stepIdx >= steps.length) return;
+            
+            // clear edge highlights
+            for(const e of ['e-0-1', 'e-0-2', 'e-1-3', 'e-1-4', 'e-2-5']) {
+              document.getElementById(e).setAttribute('stroke', "var(--text-secondary)");
+            }
+            
+            const step = steps[stepIdx];
+            
+            if (step.type === 'call') {
+              const nodeEl = document.getElementById(`n-${step.node}`);
+              nodeEl.style.background = "var(--accent-green-dim)";
+              nodeEl.style.borderColor = "var(--accent-green)";
+              nodeEl.style.color = "var(--accent-green)";
+              currentResult = step.result;
+              outputList.innerHTML = `[${currentResult.join(", ")}]`;
+              renderStack(step.stack);
+            } else if (step.type === 'edge') {
+              document.getElementById(step.e).setAttribute('stroke', "var(--accent-orange)");
+            } else if (step.type === 'back') {
+              const nodeEl = document.getElementById(`n-${step.node}`);
+              // Highlight it differently when finished
+              nodeEl.style.background = "var(--bg-elevated)";
+              nodeEl.style.color = "var(--text-secondary)";
+              nodeEl.style.borderColor = "var(--text-secondary)";
+              renderStack(step.stack);
+            }
+            
+            log.innerHTML = step.msg;
+            
+            stepIdx++;
+            if (stepIdx >= steps.length) {
+              btnStep.disabled = true;
+            }
+          });
+
+          btnReset.addEventListener("click", init);
+        });
+      </script>
+    </section>
+
+    <!-- 5. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++ (Recursive)</button><button class="code-block__tab" data-lang="python">Python (Recursive)</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+private:
+    void dfs(int node, vector&lt;int&gt; adj[], vector&lt;bool&gt;&amp; visited, vector&lt;int&gt;&amp; result) {
+        // Mark the current node as visited and add it to result
+        visited[node] = true;
+        result.push_back(node);
+        
+        // Traverse all its neighbors
+        for (int neighbor : adj[node]) {
+            if (!visited[neighbor]) {
+                dfs(neighbor, adj, visited, result);
+            }
+        }
+    }
+    
+public:
+    // Function to return a list containing the DFS traversal of the graph.
+    vector&lt;int&gt; dfsOfGraph(int V, vector&lt;int&gt; adj[]) {
+        vector&lt;int&gt; result;
+        vector&lt;bool&gt; visited(V, false);
+        
+        // Start DFS from node 0
+        dfs(0, adj, visited, result);
+        
+        return result;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    # Function to return a list containing the DFS traversal of the graph.
+    def dfsOfGraph(self, V: int, adj: List[List[int]]) -> List[int]:
+        result = []
+        visited = [False] * V
+        
+        def dfs(node):
+            # Mark the current node as visited and add it to result
+            visited[node] = True
+            result.append(node)
+            
+            # Traverse all its neighbors
+            for neighbor in adj[node]:
+                if not visited[neighbor]:
+                    dfs(neighbor)
+                    
+        # Start DFS from node 0
+        dfs(0)
+        
+        return result</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <footer class="footer" style="margin-top: 4rem; padding: 2rem 0; text-align: center; color: var(--text-tertiary); border-top: 1px solid var(--border-primary);">
+    <p>CP-II Lab &copy; 2026. Built for learning.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

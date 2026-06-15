@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merge Two Sorted Lists - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-06-linked-list-1.html" class="navbar__link">&#8592; Back to Module 06: Linked List Part 1</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-06-linked-list-1.html">Module 06: Linked List Part 1</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Merge Two Sorted Lists</span></div>
+      <h1 class="problem-header__title">Merge Two Sorted Lists</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/merge-two-sorted-lists/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Merge two sorted linked lists into one sorted list by splicing together the nodes.</p><p><strong>Example:</strong> <code>1&rarr;2&rarr;4</code> + <code>1&rarr;3&rarr;4</code> &rarr; <code>1&rarr;1&rarr;2&rarr;3&rarr;4&rarr;4</code></p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Collect, Sort, Rebuild</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Extract all values from both lists, sort them, create a new list.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> mergeTwoLists(l1, l2):<br>&nbsp;&nbsp;arr = collectAll(l1) + collectAll(l2)<br>&nbsp;&nbsp;sort(arr)<br>&nbsp;&nbsp;<span class='keyword'>return</span> buildList(arr)</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n log n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Simple</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Ignores that both lists are already sorted</li><li>O(n log n) sorting is wasteful</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">Both lists are already sorted! We can merge in O(n) by comparing heads.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Iterative Merge with Dummy Node</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Use a dummy head node. Compare current nodes of both lists, attach the smaller one to the merged list. Advance that list's pointer.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> mergeTwoLists(l1, l2):<br>&nbsp;&nbsp;dummy = ListNode(0)<br>&nbsp;&nbsp;tail = dummy<br>&nbsp;&nbsp;<span class='keyword'>while</span> l1 AND l2:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> l1.val &le; l2.val:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tail.next = l1; l1 = l1.next<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>else</span>:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tail.next = l2; l2 = l2.next<br>&nbsp;&nbsp;&nbsp;&nbsp;tail = tail.next<br>&nbsp;&nbsp;tail.next = l1 or l2 <span class='comment'>// attach remaining</span><br>&nbsp;&nbsp;<span class='keyword'>return</span> dummy.next</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n + m)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(n+m) time</li><li>In-place splicing, no new nodes</li><li>Classic two-pointer merge</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Need to handle remaining nodes</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Merge</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 2rem; margin: 3rem 0; min-height: 200px; padding: 0 1rem;" id="ll-container">
+            <div style="display: flex; align-items: center; gap: 1rem; position: relative;">
+                <div style="width: 60px; font-family: var(--font-mono); color: var(--text-secondary);">List 1:</div>
+                <div id="list1-cont" style="display: flex; gap: 1rem; align-items: center; min-height: 50px;"></div>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 1rem; position: relative;">
+                <div style="width: 60px; font-family: var(--font-mono); color: var(--text-secondary);">List 2:</div>
+                <div id="list2-cont" style="display: flex; gap: 1rem; align-items: center; min-height: 50px;"></div>
+            </div>
+            
+            <div style="border-top: 1px dashed var(--border-primary); margin: 1rem 0;"></div>
+            
+            <div style="display: flex; align-items: center; gap: 1rem; position: relative;">
+                <div style="width: 60px; font-family: var(--font-mono); color: var(--text-secondary);">Result:</div>
+                <div id="result-cont" style="display: flex; gap: 1rem; align-items: center; min-height: 50px; flex-wrap: wrap;"></div>
+            </div>
+        </div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Step Merge' to start zipping the lists together.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const l1_vals = [1, 2, 4];
+          const l2_vals = [1, 3, 4];
+          
+          let p1 = 0;
+          let p2 = 0;
+          
+          let result = [];
+          let isDone = false;
+          
+          const l1Cont = document.getElementById('list1-cont');
+          const l2Cont = document.getElementById('list2-cont');
+          const resCont = document.getElementById('result-cont');
+          const log = document.getElementById('search-log');
+
+          function init() {
+              p1 = 0;
+              p2 = 0;
+              result = [];
+              isDone = false;
+              render();
+          }
+
+          function createNode(val, highlightColor = null) {
+              const node = document.createElement('div');
+              node.className = 'array-item';
+              node.style.width = '40px';
+              node.style.height = '40px';
+              node.style.display = 'flex';
+              node.style.alignItems = 'center';
+              node.style.justifyContent = 'center';
+              node.style.background = highlightColor || 'var(--bg-secondary)';
+              if(highlightColor) {
+                  node.style.color = 'black';
+                  node.style.fontWeight = 'bold';
+              }
+              node.style.border = '2px solid var(--border-primary)';
+              node.style.borderRadius = '8px';
+              node.textContent = val;
+              return node;
+          }
+
+          function createArrow() {
+              const arrow = document.createElement('div');
+              arrow.innerHTML = '&#8594;';
+              arrow.style.fontSize = '1.5rem';
+              arrow.style.color = 'var(--text-secondary)';
+              return arrow;
+          }
+
+          function renderList(vals, ptrIdx, container, label, highlightColor) {
+              container.innerHTML = '';
+              for(let i = ptrIdx; i < vals.length; i++) {
+                  const wrap = document.createElement('div');
+                  wrap.style.display = 'flex';
+                  wrap.style.alignItems = 'center';
+                  wrap.style.gap = '1rem';
+                  
+                  const node = createNode(vals[i], (i === ptrIdx) ? highlightColor : null);
+                  node.style.position = 'relative';
+                  
+                  if (i === ptrIdx) {
+                      const lbl = document.createElement('div');
+                      lbl.textContent = label;
+                      lbl.style.position = 'absolute';
+                      lbl.style.top = '-25px';
+                      lbl.style.left = '50%';
+                      lbl.style.transform = 'translateX(-50%)';
+                      lbl.style.color = highlightColor;
+                      lbl.style.fontWeight = 'bold';
+                      lbl.style.fontSize = '12px';
+                      node.appendChild(lbl);
+                  }
+                  
+                  wrap.appendChild(node);
+                  
+                  if (i < vals.length - 1) {
+                      wrap.appendChild(createArrow());
+                  }
+                  container.appendChild(wrap);
+              }
+              
+              if (ptrIdx === vals.length) {
+                  const nullNode = document.createElement('div');
+                  nullNode.textContent = 'null';
+                  nullNode.style.fontFamily = 'var(--font-mono)';
+                  nullNode.style.color = 'var(--text-secondary)';
+                  nullNode.style.position = 'relative';
+                  
+                  const lbl = document.createElement('div');
+                  lbl.textContent = label;
+                  lbl.style.position = 'absolute';
+                  lbl.style.top = '-25px';
+                  lbl.style.left = '50%';
+                  lbl.style.transform = 'translateX(-50%)';
+                  lbl.style.color = highlightColor;
+                  lbl.style.fontWeight = 'bold';
+                  lbl.style.fontSize = '12px';
+                  nullNode.appendChild(lbl);
+                  
+                  container.appendChild(nullNode);
+              }
+          }
+
+          function render() {
+              renderList(l1_vals, p1, l1Cont, 'p1', 'var(--accent-blue)');
+              renderList(l2_vals, p2, l2Cont, 'p2', 'var(--accent-orange)');
+              
+              resCont.innerHTML = '';
+              
+              // Dummy node
+              const dummyWrap = document.createElement('div');
+              dummyWrap.style.display = 'flex';
+              dummyWrap.style.alignItems = 'center';
+              dummyWrap.style.gap = '1rem';
+              const dummyNode = createNode('D');
+              dummyNode.style.position = 'relative';
+              const dLbl = document.createElement('div');
+              dLbl.textContent = 'dummy';
+              dLbl.style.position = 'absolute';
+              dLbl.style.bottom = '-25px';
+              dLbl.style.left = '50%';
+              dLbl.style.transform = 'translateX(-50%)';
+              dLbl.style.color = 'var(--text-secondary)';
+              dLbl.style.fontSize = '12px';
+              dummyNode.appendChild(dLbl);
+              dummyWrap.appendChild(dummyNode);
+              
+              if(result.length > 0) dummyWrap.appendChild(createArrow());
+              resCont.appendChild(dummyWrap);
+              
+              result.forEach((val, i) => {
+                  const wrap = document.createElement('div');
+                  wrap.style.display = 'flex';
+                  wrap.style.alignItems = 'center';
+                  wrap.style.gap = '1rem';
+                  
+                  const node = createNode(val, 'var(--accent-green)');
+                  wrap.appendChild(node);
+                  
+                  if (i < result.length - 1) {
+                      wrap.appendChild(createArrow());
+                  } else if (isDone) {
+                      wrap.appendChild(createArrow());
+                      const n = document.createElement('div');
+                      n.textContent = 'null';
+                      n.style.fontFamily = 'var(--font-mono)';
+                      n.style.color = 'var(--text-secondary)';
+                      wrap.appendChild(n);
+                  }
+                  resCont.appendChild(wrap);
+              });
+              
+              if (!isDone && result.length > 0) {
+                  const tailLbl = document.createElement('div');
+                  tailLbl.textContent = 'curr';
+                  tailLbl.style.position = 'absolute';
+                  tailLbl.style.bottom = '-25px';
+                  tailLbl.style.left = '50%';
+                  tailLbl.style.transform = 'translateX(-50%)';
+                  tailLbl.style.color = 'var(--accent-green)';
+                  tailLbl.style.fontWeight = 'bold';
+                  tailLbl.style.fontSize = '12px';
+                  
+                  // attach to last node
+                  const lastWrap = resCont.children[resCont.children.length - 1];
+                  const lastNode = lastWrap.children[0];
+                  lastNode.style.position = 'relative';
+                  lastNode.appendChild(tailLbl);
+              }
+          }
+
+          function step() {
+              if (isDone) {
+                  log.innerHTML = `🎉 <strong>Merge Complete!</strong> Return <code>dummy.next</code>.`;
+                  return;
+              }
+              
+              if (p1 === l1_vals.length && p2 === l2_vals.length) {
+                  isDone = true;
+                  log.innerHTML = `Both lists exhausted. Merge complete.`;
+                  render();
+                  return;
+              }
+              
+              if (p1 === l1_vals.length) {
+                  let v = l2_vals[p2];
+                  log.innerHTML = `<code>list1</code> is empty. Appending remaining <code>list2</code> node (<strong>${v}</strong>). <code>p2++</code>.`;
+                  result.push(v);
+                  p2++;
+              } else if (p2 === l2_vals.length) {
+                  let v = l1_vals[p1];
+                  log.innerHTML = `<code>list2</code> is empty. Appending remaining <code>list1</code> node (<strong>${v}</strong>). <code>p1++</code>.`;
+                  result.push(v);
+                  p1++;
+              } else {
+                  let v1 = l1_vals[p1];
+                  let v2 = l2_vals[p2];
+                  
+                  if (v1 <= v2) {
+                      log.innerHTML = `<code>${v1} &le; ${v2}</code>. Appending <code>list1</code> node (<strong>${v1}</strong>). <code>p1++</code>.`;
+                      result.push(v1);
+                      p1++;
+                  } else {
+                      log.innerHTML = `<code>${v1} > ${v2}</code>. Appending <code>list2</code> node (<strong>${v2}</strong>). <code>p2++</code>.`;
+                      result.push(v2);
+                      p2++;
+                  }
+              }
+              
+              if(p1 === l1_vals.length && p2 === l2_vals.length) {
+                  isDone = true;
+                  log.innerHTML += ` Both lists are now empty. <strong>Merge complete!</strong>`;
+              }
+              
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              init();
+              log.innerHTML = "Click 'Step Merge' to start zipping the lists together.";
+          });
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'>
+  <div class='walkthrough-step__desc'>Trace: l1 = [1, 2, 4], l2 = [1, 3, 4]</div>
+  <div class='math-block' style='text-align:left;font-size:0.85rem;'><pre style='color:var(--text-secondary);'>
+Initialize: dummy = ListNode(0), tail = dummy
+
+Step 1: l1(1) &le; l2(1)
+  tail.next = l1 (1)
+  tail moves to 1 (from l1), l1 moves to 2
+
+Step 2: l1(2) > l2(1)
+  tail.next = l2 (1)
+  tail moves to 1 (from l2), l2 moves to 3
+
+Step 3: l1(2) &le; l2(3)
+  tail.next = l1 (2)
+  tail moves to 2, l1 moves to 4
+
+Step 4: l1(4) > l2(3)
+  tail.next = l2 (3)
+  tail moves to 3, l2 moves to 4
+
+Step 5: l1(4) &le; l2(4)
+  tail.next = l1 (4)
+  tail moves to 4 (from l1), l1 moves to null
+
+Loop ends (l1 is null).
+Attach remaining: tail.next = l2 (which is 4)
+
+<span class='highlight'>Result: dummy.next &rarr; 1 &rarr; 1 &rarr; 2 &rarr; 3 &rarr; 4 &rarr; 4</span></pre></div></div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Collect + Sort</td><td><code>O(n log n)</code></td><td><code>O(n)</code></td><td>Ignores sorted property</td></tr>
+<tr class="row--optimal"><td>Iterative Merge</td><td><code>O(n+m)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        ListNode dummy(0), *tail = &amp;dummy;
+        while (l1 &amp;&amp; l2) {
+            if (l1-&gt;val &lt;= l2-&gt;val) { tail-&gt;next = l1; l1 = l1-&gt;next; }
+            else { tail-&gt;next = l2; l2 = l2-&gt;next; }
+            tail = tail-&gt;next;
+        }
+        tail-&gt;next = l1 ? l1 : l2;
+        return dummy.next;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def mergeTwoLists(self, l1, l2):
+        dummy = tail = ListNode(0)
+        while l1 and l2:
+            if l1.val &lt;= l2.val:
+                tail.next = l1; l1 = l1.next
+            else:
+                tail.next = l2; l2 = l2.next
+            tail = tail.next
+        tail.next = l1 or l2
+        return dummy.next</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

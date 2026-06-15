@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Competitive Programming Lab II — Master algorithms and data structures with interactive visualizations, theory, and optimized solutions. Covering Number Theory, Searching, Sorting, Recursion, Linked Lists, Stacks, Queues, Hashing, DP, Trees, and Graphs.">
+  <meta name="keywords" content="competitive programming, algorithms, data structures, DSA, sorting, searching, dynamic programming, trees, graphs, linked list">
+  <title>CP-II Lab — Competitive Programming Lab II</title>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <!-- Prism.js for syntax highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body class="bg-grid">
+
+  <!-- ====== Navigation ====== -->
+  <nav class="navbar" id="navbar">
+    <div class="navbar__inner">
+      <a href="index.html" class="navbar__brand">
+        <span class="navbar__brand-icon">⚡</span>
+        <span>CP-II Lab</span>
+      </a>
+
+      <div class="navbar__nav" id="nav-menu">
+        <a href="#modules" class="navbar__link active">📚 Modules</a>
+        <a href="#objectives" class="navbar__link">🎯 Objectives</a>
+        <a href="#resources" class="navbar__link">📖 Resources</a>
+      </div>
+
+      <div class="navbar__actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
+        <button class="navbar__hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ====== Hero Section ====== -->
+  <section class="hero" id="hero">
+    <div class="hero__bg-effects">
+      <div class="hero__orb hero__orb--1"></div>
+      <div class="hero__orb hero__orb--2"></div>
+      <div class="hero__orb hero__orb--3"></div>
+    </div>
+
+    <div class="hero__content">
+      <div class="hero__badge">
+        <span class="pulse-dot"></span>
+        Competitive Programming Lab – II
+      </div>
+
+      <h1 class="hero__title">
+        Master <span class="text-gradient">Algorithms</span> &<br>
+        <span class="text-gradient">Data Structures</span>
+      </h1>
+
+      <p class="hero__subtitle">
+        Interactive visualizations, in-depth theory, and optimized solutions for
+        every problem. From Number Theory to Graph Algorithms — learn, practice, and excel.
+      </p>
+
+      <div class="hero__actions">
+        <a href="#modules" class="btn btn--primary btn--lg">
+          🚀 Start Learning
+        </a>
+        <a href="#objectives" class="btn btn--secondary btn--lg">
+          📋 Course Outline
+        </a>
+      </div>
+
+      <div class="hero__stats">
+        <div class="hero__stat">
+          <div class="hero__stat-value">12</div>
+          <div class="hero__stat-label">Lab Modules</div>
+        </div>
+        <div class="hero__stat">
+          <div class="hero__stat-value">79+</div>
+          <div class="hero__stat-label">Problems</div>
+        </div>
+        <div class="hero__stat">
+          <div class="hero__stat-value">5</div>
+          <div class="hero__stat-label">Sorting Algorithms</div>
+        </div>
+        <div class="hero__stat">
+          <div class="hero__stat-value">∞</div>
+          <div class="hero__stat-label">Practice Potential</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Progress Bar ====== -->
+  <section class="section" style="padding: var(--space-8) 0 0;">
+    <div class="container">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-3);">
+        <span class="progress-label" style="font-size: var(--fs-sm); color: var(--text-tertiary);">0/12 modules completed (0%)</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-bar__fill" style="width: 0%;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Search ====== -->
+  <section style="padding: var(--space-8) 0 0;">
+    <div class="container">
+      <div class="search-box" style="max-width: 500px; margin: 0 auto;">
+        <span class="search-box__icon">🔍</span>
+        <input type="text" class="search-box__input" id="module-search" placeholder="Search modules... (e.g., sorting, binary search, DP)">
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Modules Grid ====== -->
+  <section class="section" id="modules">
+    <div class="container">
+      <div class="section__header reveal">
+        <span class="section__label">📚 Lab Modules</span>
+        <h2 class="section__title">Choose Your <span class="text-gradient">Learning Path</span></h2>
+        <p class="section__desc">12 carefully structured modules covering essential algorithms and data structures for competitive programming.</p>
+      </div>
+
+      <div class="modules-grid stagger" id="modules-grid">
+
+        <!-- Module 1 -->
+        <a href="modules/module-01-number-theory.html" class="module-card reveal" data-module="1" data-accent="cyan">
+          <div class="module-card__icon">🔢</div>
+          <div class="module-card__number">01</div>
+          <h3 class="module-card__title">Number Theory</h3>
+          <p class="module-card__desc">Explore prime numbers, factorization, Sieve of Eratosthenes, GCD, and modular arithmetic fundamentals.</p>
+          <div class="module-card__tags">
+            <span class="module-card__tag" style="--tag-color: var(--accent-cyan); --tag-bg: var(--accent-cyan-dim);">Primes</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-purple); --tag-bg: var(--accent-purple-dim);">Factorization</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-green); --tag-bg: var(--accent-green-dim);">GCD</span>
+          </div>
+          <div class="module-card__footer">
+            <span class="module-card__problems"><strong>6</strong> problems</span>
+            <span class="module-card__arrow">→</span>
+          </div>
+        </a>
+
+        <!-- Module 2 -->
+        <a href="modules/module-02-bit-manipulation.html" class="module-card reveal" data-module="2" data-accent="purple">
+          <div class="module-card__icon">💻</div>
+          <div class="module-card__number">02</div>
+          <h3 class="module-card__title">Bit Manipulation</h3>
+          <p class="module-card__desc">Master bitwise operations, set/clear bits, power of 2, XOR tricks, and bit-level problem solving.</p>
+          <div class="module-card__tags">
+            <span class="module-card__tag" style="--tag-color: var(--accent-purple); --tag-bg: var(--accent-purple-dim);">Bitwise</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-cyan); --tag-bg: var(--accent-cyan-dim);">XOR</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-orange); --tag-bg: var(--accent-orange-dim);">Binary</span>
+          </div>
+          <div class="module-card__footer">
+            <span class="module-card__problems"><strong>6</strong> problems</span>
+            <span class="module-card__arrow">→</span>
+          </div>
+        </a>
+
+        <!-- Module 3 -->
+        <a href="modules/module-03-searching.html" class="module-card reveal" data-module="3" data-accent="green">
+          <div class="module-card__icon">🔍</div>
+          <div class="module-card__number">03</div>
+          <h3 class="module-card__title">Searching</h3>
+          <p class="module-card__desc">Linear and Binary Search techniques, searching in rotated arrays, peak elements, and 2D matrices.</p>
+          <div class="module-card__tags">
+            <span class="module-card__tag" style="--tag-color: var(--accent-green); --tag-bg: var(--accent-green-dim);">Linear</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-cyan); --tag-bg: var(--accent-cyan-dim);">Binary Search</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-yellow); --tag-bg: var(--accent-yellow-dim);">2D Matrix</span>
+          </div>
+          <div class="module-card__footer">
+            <span class="module-card__problems"><strong>6</strong> problems</span>
+            <span class="module-card__arrow">→</span>
+          </div>
+        </a>
+
+        <!-- Module 4 -->
+        <a href="modules/module-04-sorting.html" class="module-card reveal" data-module="4" data-accent="orange">
+          <div class="module-card__icon">📊</div>
+          <div class="module-card__number">04</div>
+          <h3 class="module-card__title">Sorting</h3>
+          <p class="module-card__desc">Visualize and implement Bubble, Insertion, Quick, Merge, and Counting Sort with real problem applications.</p>
+          <div class="module-card__tags">
+            <span class="module-card__tag" style="--tag-color: var(--accent-orange); --tag-bg: var(--accent-orange-dim);">Quick Sort</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-red); --tag-bg: var(--accent-red-dim);">Merge Sort</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-green); --tag-bg: var(--accent-green-dim);">Counting</span>
+          </div>
+          <div class="module-card__footer">
+            <span class="module-card__problems"><strong>6</strong> problems</span>
+            <span class="module-card__arrow">→</span>
+          </div>
+        </a>
+
+        <!-- Module 5 -->
+        <a href="modules/module-05-recursion-backtracking.html" class="module-card reveal" data-module="5" data-accent="purple">
+          <div class="module-card__icon">🔄</div>
+          <div class="module-card__number">05</div>
+          <h3 class="module-card__title">Recursion & Backtracking</h3>
+          <p class="module-card__desc">Generate subsets, permutations, solve N-Queens, and palindrome partitioning using systematic backtracking.</p>
+          <div class="module-card__tags">
+            <span class="module-card__tag" style="--tag-color: var(--accent-purple); --tag-bg: var(--accent-purple-dim);">Subsets</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-pink); --tag-bg: var(--accent-pink-dim);">Permutations</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-cyan); --tag-bg: var(--accent-cyan-dim);">N-Queens</span>
+          </div>
+          <div class="module-card__footer">
+            <span class="module-card__problems"><strong>6</strong> problems</span>
+            <span class="module-card__arrow">→</span>
+          </div>
+        </a>
+
+        <!-- Module 6 -->
+        <a href="modules/module-06-linked-list-1.html" class="module-card reveal" data-module="6" data-accent="blue">
+          <div class="module-card__icon">🔗</div>
+          <div class="module-card__number">06</div>
+          <h3 class="module-card__title">Linked List — Part 1</h3>
+          <p class="module-card__desc">Singly, Doubly, and Circular linked lists. Find middle, delete nodes, reverse, and check palindromes.</p>
+          <div class="module-card__tags">
+            <span class="module-card__tag" style="--tag-color: var(--accent-blue); --tag-bg: var(--accent-blue-dim);">Singly</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-purple); --tag-bg: var(--accent-purple-dim);">Doubly</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-green); --tag-bg: var(--accent-green-dim);">Circular</span>
+          </div>
+          <div class="module-card__footer">
+            <span class="module-card__problems"><strong>6</strong> problems</span>
+            <span class="module-card__arrow">→</span>
+          </div>
+        </a>
+
+        <!-- Module 7 -->
+        <a href="modules/module-07-linked-list-2.html" class="module-card reveal" data-module="7" data-accent="blue">
+          <div class="module-card__icon">⛓️</div>
+          <div class="module-card__number">07</div>
+          <h3 class="module-card__title">Linked List — Part 2</h3>
+          <p class="module-card__desc">Advanced operations: sort, remove duplicates, merge sorted lists, find intersections, and detect cycles.</p>
+          <div class="module-card__tags">
+            <span class="module-card__tag" style="--tag-color: var(--accent-blue); --tag-bg: var(--accent-blue-dim);">Sort List</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-orange); --tag-bg: var(--accent-orange-dim);">Merge</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-red); --tag-bg: var(--accent-red-dim);">Cycle Detection</span>
+          </div>
+          <div class="module-card__footer">
+            <span class="module-card__problems"><strong>6</strong> problems</span>
+            <span class="module-card__arrow">→</span>
+          </div>
+        </a>
+
+        <!-- Module 8 -->
+        <a href="modules/module-08-stack-queue.html" class="module-card reveal" data-module="8" data-accent="green">
+          <div class="module-card__icon">📚</div>
+          <div class="module-card__number">08</div>
+          <h3 class="module-card__title">Stack & Queue</h3>
+          <p class="module-card__desc">Evaluate expressions, design Min Stack, solve monotonic stack problems, and implement using other structures.</p>
+          <div class="module-card__tags">
+            <span class="module-card__tag" style="--tag-color: var(--accent-green); --tag-bg: var(--accent-green-dim);">Monotonic Stack</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-cyan); --tag-bg: var(--accent-cyan-dim);">Queue</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-yellow); --tag-bg: var(--accent-yellow-dim);">Design</span>
+          </div>
+          <div class="module-card__footer">
+            <span class="module-card__problems"><strong>8</strong> problems</span>
+            <span class="module-card__arrow">→</span>
+          </div>
+        </a>
+
+        <!-- Module 9 -->
+        <a href="modules/module-09-hashing.html" class="module-card reveal" data-module="9" data-accent="cyan">
+          <div class="module-card__icon">#️⃣</div>
+          <div class="module-card__number">09</div>
+          <h3 class="module-card__title">Hashing</h3>
+          <p class="module-card__desc">Hash maps and sets for finding duplicates, grouping anagrams, character frequency, and isomorphic strings.</p>
+          <div class="module-card__tags">
+            <span class="module-card__tag" style="--tag-color: var(--accent-cyan); --tag-bg: var(--accent-cyan-dim);">HashMap</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-purple); --tag-bg: var(--accent-purple-dim);">Frequency</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-green); --tag-bg: var(--accent-green-dim);">Anagrams</span>
+          </div>
+          <div class="module-card__footer">
+            <span class="module-card__problems"><strong>6</strong> problems</span>
+            <span class="module-card__arrow">→</span>
+          </div>
+        </a>
+
+        <!-- Module 10 -->
+        <a href="modules/module-10-dp.html" class="module-card reveal" data-module="10" data-accent="orange">
+          <div class="module-card__icon">🧩</div>
+          <div class="module-card__number">10</div>
+          <h3 class="module-card__title">Dynamic Programming</h3>
+          <p class="module-card__desc">Linear DP, 2D DP, and Grid DP. Climbing Stairs, House Robber, Knapsack, LIS, and path optimization.</p>
+          <div class="module-card__tags">
+            <span class="module-card__tag" style="--tag-color: var(--accent-orange); --tag-bg: var(--accent-orange-dim);">Linear DP</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-red); --tag-bg: var(--accent-red-dim);">Knapsack</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-purple); --tag-bg: var(--accent-purple-dim);">LIS</span>
+          </div>
+          <div class="module-card__footer">
+            <span class="module-card__problems"><strong>10</strong> problems</span>
+            <span class="module-card__arrow">→</span>
+          </div>
+        </a>
+
+        <!-- Module 11 -->
+        <a href="modules/module-11-trees.html" class="module-card reveal" data-module="11" data-accent="green">
+          <div class="module-card__icon">🌳</div>
+          <div class="module-card__number">11</div>
+          <h3 class="module-card__title">Trees</h3>
+          <p class="module-card__desc">Binary tree traversals (pre/in/post), depth, diameter, right side view, and path sum problems.</p>
+          <div class="module-card__tags">
+            <span class="module-card__tag" style="--tag-color: var(--accent-green); --tag-bg: var(--accent-green-dim);">Traversals</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-cyan); --tag-bg: var(--accent-cyan-dim);">Depth</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-yellow); --tag-bg: var(--accent-yellow-dim);">Path Sum</span>
+          </div>
+          <div class="module-card__footer">
+            <span class="module-card__problems"><strong>7</strong> problems</span>
+            <span class="module-card__arrow">→</span>
+          </div>
+        </a>
+
+        <!-- Module 12 -->
+        <a href="modules/module-12-graphs.html" class="module-card reveal" data-module="12" data-accent="purple">
+          <div class="module-card__icon">🕸️</div>
+          <div class="module-card__number">12</div>
+          <h3 class="module-card__title">Graphs</h3>
+          <p class="module-card__desc">DFS, BFS, Topological Sort, path finding, cycle detection, and flood fill on graph structures.</p>
+          <div class="module-card__tags">
+            <span class="module-card__tag" style="--tag-color: var(--accent-purple); --tag-bg: var(--accent-purple-dim);">DFS</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-blue); --tag-bg: var(--accent-blue-dim);">BFS</span>
+            <span class="module-card__tag" style="--tag-color: var(--accent-pink); --tag-bg: var(--accent-pink-dim);">Topo Sort</span>
+          </div>
+          <div class="module-card__footer">
+            <span class="module-card__problems"><strong>6</strong> problems</span>
+            <span class="module-card__arrow">→</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Course Objectives ====== -->
+  <section class="section" id="objectives">
+    <div class="container">
+      <div class="section__header reveal">
+        <span class="section__label">🎯 Course Objectives</span>
+        <h2 class="section__title">What You'll <span class="text-gradient">Achieve</span></h2>
+        <p class="section__desc">Build a strong foundation in algorithmic thinking and competitive problem solving.</p>
+      </div>
+
+      <div class="info-cards stagger">
+        <div class="info-card reveal">
+          <div class="info-card__icon">🧮</div>
+          <h3 class="info-card__title">Mathematical Analysis</h3>
+          <p class="info-card__desc">Analyze problems using Number Theory, Bit Manipulation, and mathematical patterns.</p>
+        </div>
+        <div class="info-card reveal">
+          <div class="info-card__icon">🔎</div>
+          <h3 class="info-card__title">Search & Sort Mastery</h3>
+          <p class="info-card__desc">Select and implement the right Sorting/Searching technique for any problem.</p>
+        </div>
+        <div class="info-card reveal">
+          <div class="info-card__icon">📦</div>
+          <h3 class="info-card__title">Linear Data Structures</h3>
+          <p class="info-card__desc">Develop efficient solutions using Stacks, Queues, and Linked Lists.</p>
+        </div>
+        <div class="info-card reveal">
+          <div class="info-card__icon">🌲</div>
+          <h3 class="info-card__title">Non-Linear Structures</h3>
+          <p class="info-card__desc">Master Trees and Graphs with traversal algorithms and path finding.</p>
+        </div>
+        <div class="info-card reveal">
+          <div class="info-card__icon">🧩</div>
+          <h3 class="info-card__title">Dynamic Programming</h3>
+          <p class="info-card__desc">Break complex problems into overlapping subproblems and build optimal solutions.</p>
+        </div>
+        <div class="info-card reveal">
+          <div class="info-card__icon">⚡</div>
+          <h3 class="info-card__title">Optimized Solutions</h3>
+          <p class="info-card__desc">Learn to optimize brute force approaches to achieve the best time and space complexity.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Resources Section ====== -->
+  <section class="section" id="resources" style="padding-bottom: var(--space-8);">
+    <div class="container">
+      <div class="section__header reveal">
+        <span class="section__label">📖 References</span>
+        <h2 class="section__title">Textbooks & <span class="text-gradient">Resources</span></h2>
+      </div>
+
+      <div class="info-cards stagger" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+        <div class="info-card reveal">
+          <div class="info-card__icon">📕</div>
+          <h3 class="info-card__title">Introduction to Algorithms</h3>
+          <p class="info-card__desc">T.H. Cormen et.al. — PHI, New Delhi, 2005 (CLRS)</p>
+        </div>
+        <div class="info-card reveal">
+          <div class="info-card__icon">📗</div>
+          <h3 class="info-card__title">Fundamentals of Computer Algorithms</h3>
+          <p class="info-card__desc">E. Horowitz et.al. — Universities Press, 2008, 2nd Edition</p>
+        </div>
+        <div class="info-card reveal">
+          <div class="info-card__icon">📘</div>
+          <h3 class="info-card__title">Fundamentals of Algorithms</h3>
+          <p class="info-card__desc">G. Brassard & P. Bratley — PHI, New Delhi, 2005</p>
+        </div>
+        <div class="info-card reveal">
+          <div class="info-card__icon">🌐</div>
+          <h3 class="info-card__title">Online Judges</h3>
+          <p class="info-card__desc">
+            <a href="https://leetcode.com/problems/" target="_blank" rel="noopener">LeetCode</a> · 
+            <a href="https://nptel.ac.in/courses/106106131/" target="_blank" rel="noopener">NPTEL</a> · 
+            <a href="https://www.spoj.com/problems" target="_blank" rel="noopener">SPOJ</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== Footer ====== -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__top">
+        <div>
+          <div class="footer__brand">
+            <span class="text-gradient">⚡ CP-II Lab</span>
+          </div>
+          <p class="footer__brand-desc">
+            Competitive Programming Lab – II<br>
+            Common to ECE, EEE, MECH and CIVIL<br>
+            Interactive learning platform for algorithms and data structures.
+          </p>
+        </div>
+        <div>
+          <h4 class="footer__col-title">Modules 1-4</h4>
+          <div class="footer__links">
+            <a href="modules/module-01-number-theory.html" class="footer__link">Number Theory</a>
+            <a href="modules/module-02-bit-manipulation.html" class="footer__link">Bit Manipulation</a>
+            <a href="modules/module-03-searching.html" class="footer__link">Searching</a>
+            <a href="modules/module-04-sorting.html" class="footer__link">Sorting</a>
+          </div>
+        </div>
+        <div>
+          <h4 class="footer__col-title">Modules 5-8</h4>
+          <div class="footer__links">
+            <a href="modules/module-05-recursion-backtracking.html" class="footer__link">Recursion</a>
+            <a href="modules/module-06-linked-list-1.html" class="footer__link">Linked List I</a>
+            <a href="modules/module-07-linked-list-2.html" class="footer__link">Linked List II</a>
+            <a href="modules/module-08-stack-queue.html" class="footer__link">Stack & Queue</a>
+          </div>
+        </div>
+        <div>
+          <h4 class="footer__col-title">Modules 9-12</h4>
+          <div class="footer__links">
+            <a href="modules/module-09-hashing.html" class="footer__link">Hashing</a>
+            <a href="modules/module-10-dp.html" class="footer__link">Dynamic Programming</a>
+            <a href="modules/module-11-trees.html" class="footer__link">Trees</a>
+            <a href="modules/module-12-graphs.html" class="footer__link">Graphs</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>© 2026 CP-II Lab. Built for learning.</span>
+        <span>Common to ECE, EEE, MECH & CIVIL</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scroll to top -->
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
+</body>
+</html>

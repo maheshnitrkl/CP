@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partition Equal Subset Sum - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-10-dp.html" class="navbar__link">&#8592; Back to Module 10: DP</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-10-dp.html">Module 10: DP</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Partition Equal Subset Sum</span></div>
+      <h1 class="problem-header__title">Partition Equal Subset Sum</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/partition-equal-subset-sum/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given an integer array nums, return true if you can partition the array into two subsets such that the sum of the elements in both subsets is equal or false otherwise.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128218;</span> Mathematical Foundation</h2>
+      <div class="math-block">
+        <p>This is a variation of the <strong>0/1 Knapsack</strong> problem. If the total sum of the array is odd, we cannot divide it into two equal integer subsets. So, if <code>sum % 2 != 0</code>, return false immediately.</p>
+        <p>If the sum is even, our goal is to find a subset that adds up exactly to <code>target = sum / 2</code>.</p>
+        <p>Let <code>dp[i][j]</code> be a boolean indicating whether we can make sum <code>j</code> using a subset of the first <code>i</code> items.</p>
+        <ul style="padding-left:1.5rem; margin-top:0.5rem; color:var(--text-secondary);">
+          <li><strong>Exclude item <code>i</code>:</strong> The subset sum remains <code>j</code>. We inherit <code>dp[i-1][j]</code>.</li>
+          <li><strong>Include item <code>i</code>:</strong> If <code>j &ge; nums[i]</code>, the remaining sum we need is <code>j - nums[i]</code>. We check <code>dp[i-1][j - nums[i]]</code>.</li>
+        </ul>
+        <div style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-sm); margin-top:1rem; text-align:center;">
+          <code>dp[i][j] = dp[i-1][j] OR dp[i-1][j - nums[i]]</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+      <div class="approach-card approach-card--brute">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Backtracking (Recursion)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">At each element, we either include it in the subset or exclude it. We recursively check if either path hits exactly <code>target = sum / 2</code>.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> canFindSum(i, currentSum, target, nums):<br>&nbsp;&nbsp;<span class='keyword'>if</span> currentSum == target: <span class='keyword'>return</span> True<br>&nbsp;&nbsp;<span class='keyword'>if</span> currentSum &gt; target or i &ge; len(nums): <span class='keyword'>return</span> False<br>&nbsp;&nbsp;include = canFindSum(i+1, currentSum + nums[i], target)<br>&nbsp;&nbsp;exclude = canFindSum(i+1, currentSum, target)<br>&nbsp;&nbsp;<span class='keyword'>return</span> include or exclude</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(2<sup>n</sup>)</span>
+            <span class="cx-badge cx-badge--space">Space: O(n)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Straightforward logic</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Exponential time</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">We evaluate the same <code>(index, currentSum)</code> state multiple times. We need to memoize these overlapping subproblems.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Top-Down Memoization</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Use a 2D array or hash map <code>memo[index][currentSum]</code> to cache whether a sum is possible from a given index.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> canFind(i, sum_left, memo):<br>&nbsp;&nbsp;<span class='keyword'>if</span> sum_left == 0: <span class='keyword'>return</span> True<br>&nbsp;&nbsp;<span class='keyword'>if</span> i &lt; 0 or sum_left &lt; 0: <span class='keyword'>return</span> False<br>&nbsp;&nbsp;<span class='keyword'>if</span> memo[i][sum_left] exists: <span class='keyword'>return</span> memo[i][sum_left]<br>&nbsp;&nbsp;ans = canFind(i-1, sum_left) or canFind(i-1, sum_left - nums[i])<br>&nbsp;&nbsp;memo[i][sum_left] = ans<br>&nbsp;&nbsp;<span class='keyword'>return</span> ans</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n &times; target)</span>
+            <span class="cx-badge cx-badge--space">Space: O(n &times; target)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Pseudo-polynomial time</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Large memory footprint for recursion + 2D cache</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">A bottom-up 2D DP Table avoids recursion overhead. And we can then optimize space from 2D to 1D.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 3</span></div>
+          <div class="approach-card__title">2D Tabulation (0/1 Knapsack)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Build a 2D boolean array <code>dp[n][target+1]</code> iteratively.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> canPartition(nums):<br>&nbsp;&nbsp;target = sum(nums) / 2<br>&nbsp;&nbsp;dp = 2D array [N][target+1] of False<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> N-1: dp[i][0] = True<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 1 <span class='keyword'>to</span> N-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> j = 1 <span class='keyword'>to</span> target:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> j &ge; nums[i]: dp[i][j] = dp[i-1][j] or dp[i-1][j-nums[i]]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>else</span>: dp[i][j] = dp[i-1][j]<br>&nbsp;&nbsp;<span class='keyword'>return</span> dp[N-1][target]</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n &times; target)</span>
+            <span class="cx-badge cx-badge--space">Space: O(n &times; target)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>No recursion stack</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Still O(n &times; target) memory</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Notice that <code>dp[i]</code> only relies on the previous row <code>dp[i-1]</code>. We can flatten the 2D array into a 1D array.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 4</span></div>
+          <div class="approach-card__title">1D Tabulation (Space Optimized)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Use a single 1D array <code>dp[target+1]</code>. To prevent overwriting data we need for the current iteration, we must iterate <code>j</code> <strong>backwards</strong>.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> canPartition(nums):<br>&nbsp;&nbsp;target = sum(nums) / 2<br>&nbsp;&nbsp;dp = array [target+1] of False<br>&nbsp;&nbsp;dp[0] = True<br>&nbsp;&nbsp;<span class='keyword'>for</span> x <span class='keyword'>in</span> nums:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> j = target <span class='keyword'>down to</span> x:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dp[j] = dp[j] or dp[j - x]<br>&nbsp;&nbsp;<span class='keyword'>return</span> dp[target]</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n &times; target)</span>
+            <span class="cx-badge cx-badge--space">Space: O(target)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Optimal space</li><li>Extremely fast inner loop</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Iteration direction must be strictly backwards</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr class="row--brute"><td>Backtracking</td><td><code>O(2<sup>n</sup>)</code></td><td><code>O(n)</code></td><td>TLE</td></tr>
+          <tr class="row--better"><td>Memoization</td><td><code>O(n &times; target)</code></td><td><code>O(n &times; target)</code></td><td>Better</td></tr>
+          <tr class="row--better"><td>2D Tabulation</td><td><code>O(n &times; target)</code></td><td><code>O(n &times; target)</code></td><td>Better</td></tr>
+          <tr class="row--optimal"><td>1D Tabulation</td><td><code>O(n &times; target)</code></td><td><code>O(target)</code></td><td>Optimal</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">&#10024;</span> Interactive Visualization</h2>
+      <div class="visualizer" id="knapsack-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step-knapsack">Next Number</button>
+          <button class="btn btn--outline" id="btn-reset-knapsack">Reset</button>
+          <span style="color:var(--text-secondary); margin-left:1rem;">Target: <strong>11</strong></span>
+        </div>
+        
+        <div style="margin: 2rem 0; overflow-x: auto;">
+          <div style="display: flex; gap: 4px; padding-bottom: 1rem;" id="knapsack-container">
+            <!-- 1D array blocks generated by JS -->
+          </div>
+        </div>
+
+        <div class="visualizer__log" id="knapsack-log">
+          Click "Next Number" to process <code>nums = [1, 5, 11, 5]</code>. Total Sum = 22, Target = 11.
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const container = document.getElementById("knapsack-container");
+          const log = document.getElementById("knapsack-log");
+          const btnStep = document.getElementById("btn-step-knapsack");
+          const btnReset = document.getElementById("btn-reset-knapsack");
+
+          const nums = [1, 5, 11, 5];
+          const target = 11;
+          let dp = [];
+          let currentStep = -1;
+
+          function init() {
+            dp = Array(target + 1).fill(false);
+            dp[0] = true;
+            currentStep = -1;
+            render();
+            log.innerHTML = `<code>dp</code> array initialized. <code>dp[0] = true</code>. Processing array <code>[1, 5, 11, 5]</code>.`;
+            btnStep.disabled = false;
+          }
+
+          function render() {
+            container.innerHTML = "";
+            for (let i = 0; i <= target; i++) {
+              const cell = document.createElement("div");
+              cell.style.width = "40px";
+              cell.style.height = "60px";
+              cell.style.flexShrink = "0";
+              
+              if (dp[i]) {
+                cell.style.background = "var(--accent-green-dim)";
+                cell.style.border = "2px solid var(--accent-green)";
+              } else {
+                cell.style.background = "var(--bg-elevated)";
+                cell.style.border = "1px solid var(--border-primary)";
+              }
+
+              cell.style.display = "flex";
+              cell.style.flexDirection = "column";
+              cell.style.justifyContent = "center";
+              cell.style.alignItems = "center";
+              cell.style.borderRadius = "var(--radius-sm)";
+              
+              const indexLbl = document.createElement("div");
+              indexLbl.style.fontSize = "0.7rem";
+              indexLbl.style.color = "var(--text-secondary)";
+              indexLbl.textContent = i;
+              
+              const valLbl = document.createElement("div");
+              valLbl.style.fontWeight = "bold";
+              valLbl.style.fontSize = "1rem";
+              valLbl.textContent = dp[i] ? "T" : "F";
+              valLbl.style.color = dp[i] ? "var(--accent-green)" : "var(--text-secondary)";
+
+              cell.appendChild(indexLbl);
+              cell.appendChild(valLbl);
+              container.appendChild(cell);
+            }
+          }
+
+          btnStep.addEventListener("click", () => {
+            currentStep++;
+            if (currentStep < nums.length) {
+              const x = nums[currentStep];
+              let updated = [];
+              
+              // Traverse backwards
+              for (let j = target; j >= x; j--) {
+                if (!dp[j] && dp[j - x]) {
+                  dp[j] = true;
+                  updated.push(j);
+                }
+              }
+              render();
+              
+              if (updated.length > 0) {
+                log.innerHTML = `Processing <code>nums[${currentStep}] = ${x}</code>. Backward pass updated: <code>dp[${updated.join('], dp[')}]</code> to True.`;
+              } else {
+                log.innerHTML = `Processing <code>nums[${currentStep}] = ${x}</code>. No new sums could be formed.`;
+              }
+
+              if (dp[target]) {
+                log.innerHTML += `<br><strong>Target ${target} reached! Array can be partitioned.</strong>`;
+                btnStep.disabled = true;
+              }
+            } else {
+              btnStep.disabled = true;
+              log.innerHTML = `Finished processing all numbers. <code>dp[${target}] = ${dp[target]}</code>.`;
+            }
+          });
+
+          btnReset.addEventListener("click", init);
+
+          init();
+        });
+      </script>
+    </section>
+
+    <!-- 5. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    bool canPartition(vector&lt;int&gt;&amp; nums) {
+        int sum = 0;
+        for (int x : nums) {
+            sum += x;
+        }
+        
+        // If sum is odd, cannot partition into two equal subsets
+        if (sum % 2 != 0) return false;
+        
+        int target = sum / 2;
+        vector&lt;bool&gt; dp(target + 1, false);
+        dp[0] = true; // We can always make sum 0 (by choosing empty subset)
+        
+        for (int x : nums) {
+            // Traverse backwards to avoid using the same item multiple times
+            for (int j = target; j &gt;= x; j--) {
+                if (dp[j - x]) {
+                    dp[j] = true;
+                }
+            }
+        }
+        
+        return dp[target];
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def canPartition(self, nums: List[int]) -> bool:
+        total = sum(nums)
+        
+        # If sum is odd, cannot partition into two equal subsets
+        if total % 2 != 0:
+            return False
+            
+        target = total // 2
+        dp = [False] * (target + 1)
+        dp[0] = True
+        
+        for x in nums:
+            # Traverse backwards to avoid using the same item multiple times
+            for j in range(target, x - 1, -1):
+                if dp[j - x]:
+                    dp[j] = True
+                    
+        return dp[target]</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <footer class="footer" style="margin-top: 4rem; padding: 2rem 0; text-align: center; color: var(--text-tertiary); border-top: 1px solid var(--border-primary);">
+    <p>CP-II Lab &copy; 2026. Built for learning.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

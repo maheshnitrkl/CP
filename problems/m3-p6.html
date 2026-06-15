@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capacity to Ship Packages Within D Days - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-03-searching.html" class="navbar__link">&#8592; Back to Module 03: Searching</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-03-searching.html">Module 03: Searching</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Capacity to Ship Packages Within D Days</span></div>
+      <h1 class="problem-header__title">Capacity to Ship Packages Within D Days</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--hard">Hard</span>
+        <a href="https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given array <code>weights</code> and integer <code>days</code>, find the minimum ship capacity to ship all packages within <code>days</code> days. Packages must be shipped in order.</p><p><strong>Example:</strong> weights = [1,2,3,4,5,6,7,8,9,10], days = 5 &rarr; <code>15</code></p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Search Space: [max(weights), sum(weights)]</div><p style='font-size:0.9rem;margin-top:0.5rem;'>Minimum capacity = max(weights) (must carry heaviest package). Maximum = sum(weights) (ship everything in 1 day). Binary search on this range and validate each candidate with a greedy check.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Try Every Capacity</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Try capacity = max(weights), max+1, max+2, ... until we find one that works within D days.</p>
+        <div class="pseudocode-block"><span class='keyword'>for</span> cap = max(weights) <span class='keyword'>to</span> sum(weights):<br>&nbsp;&nbsp;<span class='keyword'>if</span> canShip(weights, cap, days):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>return</span> cap</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(S &times; n) where S = sum - max</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Simple to understand</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Could try millions of capacities</li><li>Extremely slow for large inputs</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">The feasibility function is monotonic: if capacity C works, C+1 also works. This means we can binary search!</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Binary Search on Answer + Greedy Validation</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Binary search on capacity in [max, sum]. For each candidate, greedily count days needed. If days needed &le; D, try smaller capacity.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> shipWithinDays(weights, days):<br>&nbsp;&nbsp;lo = max(weights), hi = sum(weights)<br>&nbsp;&nbsp;<span class='keyword'>while</span> lo < hi:<br>&nbsp;&nbsp;&nbsp;&nbsp;mid = lo + (hi - lo) / 2<br>&nbsp;&nbsp;&nbsp;&nbsp;needed = 1, current = 0<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> w in weights:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> current + w > mid:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;needed += 1, current = 0<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current += w<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> needed &le; days: hi = mid<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>else</span>: lo = mid + 1<br>&nbsp;&nbsp;<span class='keyword'>return</span> lo</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n &times; log S)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Efficient O(n log S)</li><li>Classic binary search on answer pattern</li><li>Works for any monotonic feasibility problem</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Need to identify that the problem has monotonic structure</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Search</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+          <span style="color:var(--text-secondary); margin-left:1rem;">Days allowed: <strong>5</strong></span>
+        </div>
+        
+        <!-- Capacity range visualizer -->
+        <div style="text-align: center; font-family: var(--font-mono); margin: 1rem 0;">Capacity Range</div>
+        <div class="array-container" id="capacity-array" style="display: flex; gap: 0.1rem; justify-content: center; margin-bottom: 2rem; position: relative; height: 30px;">
+        </div>
+
+        <!-- Bucket packing visualizer -->
+        <div style="text-align: center; font-family: var(--font-mono); margin: 1rem 0;">Packing Simulation for Mid</div>
+        <div class="array-container" id="packing-array" style="display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 2rem; position: relative; min-height: 40px; flex-wrap: wrap;">
+        </div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6;">
+          Click 'Step Search' to start finding the minimum capacity.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const weights = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+          const D = 5;
+          const containerCap = document.getElementById('capacity-array');
+          const containerPack = document.getElementById('packing-array');
+          const log = document.getElementById('search-log');
+          
+          let maxW = Math.max(...weights);
+          let sumW = weights.reduce((a, b) => a + b, 0);
+          
+          let low = maxW, high = sumW, mid = -1;
+          let state = 0; // 0: calc mid, 1: simulate packing
+
+          function render() {
+              containerCap.innerHTML = '';
+              containerPack.innerHTML = '';
+              
+              // Capacity Range
+              containerCap.innerHTML = `
+                <div style="display:flex; width: 100%; max-width: 600px; justify-content: space-between; align-items:center; background: var(--bg-secondary); padding: 0.5rem; border-radius: 4px;">
+                    <div>lo: <strong>${low}</strong></div>
+                    <div style="color:var(--accent-cyan)">mid: <strong>${mid === -1 ? '?' : mid}</strong></div>
+                    <div>hi: <strong>${high}</strong></div>
+                </div>
+              `;
+
+              // Packing simulation
+              if (state === 1 || state === 2) {
+                  let currentSum = 0;
+                  let daysNeeded = 1;
+                  let currentBucket = document.createElement('div');
+                  currentBucket.style.border = '2px solid var(--border-primary)';
+                  currentBucket.style.padding = '0.5rem';
+                  currentBucket.style.display = 'flex';
+                  currentBucket.style.gap = '2px';
+                  currentBucket.style.background = 'rgba(255,255,255,0.05)';
+                  
+                  containerPack.appendChild(currentBucket);
+                  
+                  weights.forEach(w => {
+                      if (currentSum + w > mid) {
+                          daysNeeded++;
+                          currentSum = w;
+                          currentBucket = document.createElement('div');
+                          currentBucket.style.border = '2px solid var(--border-primary)';
+                          currentBucket.style.padding = '0.5rem';
+                          currentBucket.style.display = 'flex';
+                          currentBucket.style.gap = '2px';
+                          currentBucket.style.background = 'rgba(255,255,255,0.05)';
+                          containerPack.appendChild(currentBucket);
+                      } else {
+                          currentSum += w;
+                      }
+                      
+                      const el = document.createElement('div');
+                      el.className = 'array-item';
+                      el.textContent = w;
+                      el.style.width = '25px';
+                      el.style.height = '25px';
+                      el.style.fontSize = '12px';
+                      el.style.display = 'flex';
+                      el.style.alignItems = 'center';
+                      el.style.justifyContent = 'center';
+                      el.style.background = 'var(--accent-purple)';
+                      currentBucket.appendChild(el);
+                  });
+              }
+          }
+
+          function step() {
+              if (low >= high || state === 2) {
+                  log.innerHTML = `Search finished. <code>lo == hi</code>. Minimum capacity needed is <strong>${low}</strong>.`;
+                  state = 2;
+                  render();
+                  return;
+              }
+              
+              if (state === 0) {
+                  mid = Math.floor((low + high) / 2);
+                  log.innerHTML = `Calculated Mid Capacity: <code>(${low} + ${high}) / 2 = ${mid}</code>. Let's see how many days it takes if we can ship <strong>${mid}</strong> weight per day.`;
+                  state = 1;
+              } else if (state === 1) {
+                  let currentSum = 0;
+                  let daysNeeded = 1;
+                  weights.forEach(w => {
+                      if (currentSum + w > mid) {
+                          daysNeeded++;
+                          currentSum = w;
+                      } else {
+                          currentSum += w;
+                      }
+                  });
+                  
+                  if (daysNeeded <= D) {
+                      log.innerHTML = `It took <strong>${daysNeeded}</strong> days, which is &lt;= allowed (${D}). This capacity works! But can we do smaller? <code>high = mid = ${mid}</code>.`;
+                      high = mid;
+                  } else {
+                      log.innerHTML = `It took <strong>${daysNeeded}</strong> days, which is &gt; allowed (${D}). This capacity is too small! <code>low = mid + 1 = ${mid+1}</code>.`;
+                      low = mid + 1;
+                  }
+                  mid = -1;
+                  state = 0;
+              }
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              low = maxW; high = sumW; mid = -1; state = 0;
+              log.innerHTML = "Click 'Step Search' to start finding the minimum capacity.";
+              render();
+          });
+          render();
+      });
+      </script>
+    </section>
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: weights = [1,2,3,4,5,6,7,8,9,10], days = 5</div><div class='math-block' style='text-align:left;font-size:0.9rem;'>lo=10, hi=55<br>mid=32: Can ship in 2 days &le; 5 &rarr; hi=32<br>mid=21: Can ship in 3 days &le; 5 &rarr; hi=21<br>mid=15: Can ship in 5 days &le; 5 &rarr; hi=15<br>mid=12: Needs 6 days > 5 &rarr; lo=13<br>mid=14: Needs 6 days > 5 &rarr; lo=15<br>lo == hi == <span class='highlight'>15</span>. Answer: 15</div></div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Try All Capacities</td><td><code>O(S &times; n)</code></td><td><code>O(1)</code></td><td>Far too slow</td></tr>
+<tr class="row--optimal"><td>Binary Search + Greedy</td><td><code>O(n log S)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    int shipWithinDays(vector&lt;int&gt;&amp; weights, int days) {
+        int lo = *max_element(weights.begin(), weights.end());
+        int hi = accumulate(weights.begin(), weights.end(), 0);
+        while (lo &lt; hi) {
+            int mid = lo + (hi - lo) / 2;
+            int needed = 1, current = 0;
+            for (int w : weights) {
+                if (current + w &gt; mid) { needed++; current = 0; }
+                current += w;
+            }
+            if (needed &lt;= days) hi = mid;
+            else lo = mid + 1;
+        }
+        return lo;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def shipWithinDays(self, weights, days):
+        lo, hi = max(weights), sum(weights)
+        while lo &lt; hi:
+            mid = (lo + hi) // 2
+            needed, current = 1, 0
+            for w in weights:
+                if current + w &gt; mid:
+                    needed += 1; current = 0
+                current += w
+            if needed &lt;= days: hi = mid
+            else: lo = mid + 1
+        return lo</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

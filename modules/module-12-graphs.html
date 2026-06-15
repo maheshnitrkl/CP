@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="Module 12: Graphs — CP-II Lab">
+  <title>Module 12: Graphs — CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/components.css"><link rel="stylesheet" href="../css/module.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">⚡</span><span>CP-II Lab</span></a><div class="navbar__nav" id="nav-menu"><a href="../index.html" class="navbar__link">📚 All Modules</a><a href="#theory" class="navbar__link">📖 Theory</a><a href="#problems" class="navbar__link">💡 Problems</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button><button class="navbar__hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button></div></div></nav>
+  <div class="module-page">
+    <section class="module-hero"><div class="module-hero__bg"><div class="module-hero__orb module-hero__orb--1" style="background:var(--accent-purple);"></div><div class="module-hero__orb module-hero__orb--2" style="background:var(--accent-blue);"></div></div>
+      <div class="container"><div class="module-hero__content">
+        <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">›</span><span class="breadcrumb__current">Module 12</span></div>
+        <span class="module-hero__number">🕸️ Module 12</span>
+        <h1 class="module-hero__title">Graphs <span class="text-gradient"></span></h1>
+        <p class="module-hero__desc">Master DFS and BFS traversals, topological sorting, path finding, and flood fill on graph structures.</p>
+        <div class="module-hero__meta"><span class="module-hero__meta-item"><span class="icon">📝</span> 6 Problems</span><span class="module-hero__meta-item"><span class="icon">⏱️</span> ~4 hours</span><span class="module-hero__meta-item"><span class="icon">📊</span> Medium to Hard</span></div>
+      </div></div></section>
+    <div class="module-layout">
+      <aside class="module-sidebar"><nav class="toc"><div class="toc__title">Contents</div><div class="toc__list"><a href="#theory" class="toc__link active">📖 Theory</a><a href="#problems" class="toc__link">💡 Problems</a><a href="#p1" class="toc__link toc__link--sub">DFS Traversal</a><a href="#p2" class="toc__link toc__link--sub">Find if Path Exists in Graph</a><a href="#p3" class="toc__link toc__link--sub">Keys and Rooms</a><a href="#p4" class="toc__link toc__link--sub">Open the Lock</a><a href="#p5" class="toc__link toc__link--sub">Jump Game III</a><a href="#p6" class="toc__link toc__link--sub">Course Schedule</a></div></nav></aside>
+      <main class="module-main">
+        <section class="module-section" id="theory"><h2 class="module-section__title"><span class="icon">📖</span> Theory</h2><div class="theory-block"><h3 class="theory-block__title">🕸️ Graph Fundamentals</h3><div class="theory-block__content"><p>A <strong>graph</strong> consists of vertices (nodes) and edges connecting them. Graphs can be directed/undirected, weighted/unweighted.</p><p><strong>Representations:</strong></p><ul style="list-style:disc;padding-left:1.5rem;"><li><strong>Adjacency List:</strong> Each node stores a list of its neighbors. Space: O(V+E). Preferred for sparse graphs.</li><li><strong>Adjacency Matrix:</strong> 2D matrix where matrix[i][j] = 1 if edge exists. Space: O(V²). Good for dense graphs.</li></ul><table class="complexity-table"><thead><tr><th>Algorithm</th><th>Time</th><th>Space</th><th>Use Case</th></tr></thead><tbody><tr><td><strong>DFS</strong></td><td><code>O(V+E)</code></td><td><code>O(V)</code></td><td>Path finding, cycle detection, connected components</td></tr><tr><td><strong>BFS</strong></td><td><code>O(V+E)</code></td><td><code>O(V)</code></td><td>Shortest path (unweighted), level order</td></tr><tr><td><strong>Topological Sort</strong></td><td><code>O(V+E)</code></td><td><code>O(V)</code></td><td>DAG ordering, dependency resolution</td></tr></tbody></table><div class="callout callout--tip"><div class="callout__title">💡 DFS vs BFS</div><div class="callout__body"><strong>DFS:</strong> Uses stack (or recursion). Goes deep before backtracking. Good for: exhaustive search, cycle detection, topological sort.<br><strong>BFS:</strong> Uses queue. Explores level by level. Good for: shortest path in unweighted graphs, level-order traversal.</div></div></div></div></section>
+        <section class="module-section" id="visualization">
+          <h2 class="module-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+
+<div class="visualizer" id="graph-viz">
+  <div class="visualizer__controls">
+    <button class="btn btn--primary" id="btn-bfs">Start BFS</button>
+    <button class="btn btn--primary" id="btn-dfs">Start DFS</button>
+    <button class="btn btn--outline" id="btn-graph-reset" style="margin-left:1rem;">Reset</button>
+  </div>
+  
+  <div id="graph-container" style="position: relative; width: 300px; height: 200px; margin: 2rem auto;">
+    <!-- Nodes -->
+    <div class="g-node" id="gn-0" style="position:absolute; top:80px; left:20px; width:40px; height:40px; border-radius:50%; background:var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2;">0</div>
+    <div class="g-node" id="gn-1" style="position:absolute; top:20px; left:120px; width:40px; height:40px; border-radius:50%; background:var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2;">1</div>
+    <div class="g-node" id="gn-2" style="position:absolute; top:140px; left:120px; width:40px; height:40px; border-radius:50%; background:var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2;">2</div>
+    <div class="g-node" id="gn-3" style="position:absolute; top:80px; left:220px; width:40px; height:40px; border-radius:50%; background:var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2;">3</div>
+    
+    <!-- Lines (approximate via CSS) -->
+    <div style="position:absolute; top:60px; left:40px; width:100px; height:2px; background:var(--text-secondary); transform:rotate(-30deg); z-index:1;"></div>
+    <div style="position:absolute; top:130px; left:40px; width:100px; height:2px; background:var(--text-secondary); transform:rotate(30deg); z-index:1;"></div>
+    <div style="position:absolute; top:60px; left:140px; width:100px; height:2px; background:var(--text-secondary); transform:rotate(30deg); z-index:1;"></div>
+    <div style="position:absolute; top:130px; left:140px; width:100px; height:2px; background:var(--text-secondary); transform:rotate(-30deg); z-index:1;"></div>
+  </div>
+  
+  <div class="visualizer__log" id="graph-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); text-align:center; font-size: 1.5rem;">
+    Visited: []
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const log = document.getElementById('graph-log');
+    
+    function resetColors() {
+        for(let i=0; i<=3; i++) {
+            document.getElementById(`gn-${i}`).style.background = 'var(--border-primary)';
+            document.getElementById(`gn-${i}`).style.color = 'var(--text-primary)';
+        }
+        log.innerHTML = "Visited: []";
+    }
+
+    async function animateTraversal(order) {
+        resetColors();
+        let result = [];
+        for (let i = 0; i < order.length; i++) {
+            const node = order[i];
+            const el = document.getElementById(`gn-${node}`);
+            el.style.background = 'var(--accent-orange)';
+            el.style.color = '#fff';
+            result.push(node);
+            log.innerHTML = `Visited: [ ${result.join(', ')} ]`;
+            await new Promise(r => setTimeout(r, 800));
+        }
+    }
+
+    // Graph: 0-1, 0-2, 1-3, 2-3
+    document.getElementById('btn-bfs').addEventListener('click', () => {
+        // BFS from 0
+        animateTraversal([0, 1, 2, 3]);
+    });
+    
+    document.getElementById('btn-dfs').addEventListener('click', () => {
+        // DFS from 0 (assume neighbors processed 1 then 2)
+        // 0 -> 1 -> 3. Backtrack. 0 -> 2.
+        animateTraversal([0, 1, 3, 2]);
+    });
+    
+    document.getElementById('btn-graph-reset').addEventListener('click', resetColors);
+});
+</script>
+
+        </section>
+        <section class="module-section" id="problems"><h2 class="module-section__title"><span class="icon">💡</span> Practice Problems</h2><div class="problems-list">
+
+            <!-- Problem 1 -->
+            <a href="../problems/m12-p1.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#1</span>
+                    <h3 class="problem-card__title">DFS Traversal</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 2 -->
+            <a href="../problems/m12-p2.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#2</span>
+                    <h3 class="problem-card__title">Find if Path Exists in Graph</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 3 -->
+            <a href="../problems/m12-p3.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#3</span>
+                    <h3 class="problem-card__title">Keys and Rooms</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 4 -->
+            <a href="../problems/m12-p4.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#4</span>
+                    <h3 class="problem-card__title">Open the Lock</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 5 -->
+            <a href="../problems/m12-p5.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#5</span>
+                    <h3 class="problem-card__title">Jump Game III</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 6 -->
+            <a href="../problems/m12-p6.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#6</span>
+                    <h3 class="problem-card__title">Course Schedule</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            </div>
+        </section>
+        <div class="module-nav"><a href="module-11-trees.html" class="module-nav__btn"><div><span class="module-nav__label">← Previous</span><span class="module-nav__title">Trees</span></div></a><div></div></div>
+      </main>
+    </div>
+  </div>
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script><script src="../js/code-runner.js"></script>
+</body></html>

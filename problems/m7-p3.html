@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Palindrome Linked List - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-07-linked-list-2.html" class="navbar__link">&#8592; Back to Module 07: Linked List Part 2</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-07-linked-list-2.html">Module 07: Linked List Part 2</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Palindrome Linked List</span></div>
+      <h1 class="problem-header__title">Palindrome Linked List</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/palindrome-linked-list/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Determine if a singly linked list is a palindrome.</p><p><strong>Example:</strong> <code>1&rarr;2&rarr;2&rarr;1</code> &rarr; <code>true</code></p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Copy to Array</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Copy all values to an array, then use two pointers to check palindrome.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> isPalindrome(head):<br>&nbsp;&nbsp;arr = toArray(head)<br>&nbsp;&nbsp;<span class='keyword'>return</span> arr == reversed(arr)</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Very simple</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>O(n) extra space</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We can check in-place by reversing the second half.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Reverse Second Half In-Place</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Find the middle (slow/fast). Reverse the second half. Compare both halves node by node.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> isPalindrome(head):<br>&nbsp;&nbsp;mid = findMiddle(head) <span class='comment'>// slow/fast</span><br>&nbsp;&nbsp;secondHalf = reverse(mid)<br>&nbsp;&nbsp;<span class='keyword'>while</span> secondHalf:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> head.val != secondHalf.val: <span class='keyword'>return</span> false<br>&nbsp;&nbsp;&nbsp;&nbsp;head = head.next; secondHalf = secondHalf.next<br>&nbsp;&nbsp;<span class='keyword'>return</span> true</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(1) space</li><li>Combines two techniques: find middle + reverse</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Modifies the list (can restore afterwards)</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Next Step</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; justify-content: center; margin: 4rem 0; min-height: 100px; position: relative;" id="ll-container">
+            <!-- Nodes will be injected here -->
+        </div>
+
+        <div style="text-align: center; margin: 1rem 0; font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-secondary);" id="phase-indicator">
+            <strong>Phase 1:</strong> Find middle (slow/fast pointers)
+        </div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Next Step' to start finding the middle.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const values = [1, 2, 2, 1];
+          // next mapping
+          let nextMap = [1, 2, 3, null];
+          
+          let phase = 1; 
+          let stepCount = 0;
+          let isDone = false;
+          
+          // Pointers
+          let slow = 0, fast = 0;
+          let prev = null, curr = 2;
+          let p1 = 0, p2 = 3;
+          
+          const llCont = document.getElementById('ll-container');
+          const log = document.getElementById('search-log');
+          const phaseInd = document.getElementById('phase-indicator');
+
+          function init() {
+              phase = 1;
+              stepCount = 0;
+              isDone = false;
+              nextMap = [1, 2, 3, null];
+              slow = 0; fast = 0;
+              prev = null; curr = 2;
+              p1 = 0; p2 = 3;
+              phaseInd.innerHTML = `<strong>Phase 1:</strong> Find middle (slow/fast pointers)`;
+              render();
+          }
+
+          function render() {
+              llCont.innerHTML = '';
+              
+              // We'll draw them side by side. If nextMap[i] == i+1, right arrow.
+              // If nextMap[i] == i-1, left arrow.
+              // If nextMap[i] == null, no arrow.
+              
+              const containerFlex = document.createElement('div');
+              containerFlex.style.display = 'flex';
+              containerFlex.style.alignItems = 'center';
+              containerFlex.style.gap = '2rem'; // More gap to put arrows manually
+              
+              values.forEach((val, i) => {
+                  const nodeWrapper = document.createElement('div');
+                  nodeWrapper.style.position = 'relative';
+                  
+                  const node = document.createElement('div');
+                  node.className = 'array-item';
+                  node.style.width = '40px';
+                  node.style.height = '40px';
+                  node.style.display = 'flex';
+                  node.style.alignItems = 'center';
+                  node.style.justifyContent = 'center';
+                  node.style.background = 'var(--bg-secondary)';
+                  node.style.border = '2px solid var(--border-primary)';
+                  node.style.borderRadius = '8px';
+                  node.style.position = 'relative';
+                  node.textContent = val;
+                  
+                  // Pointers
+                  let lbls = [];
+                  if (phase === 1) {
+                      if (slow === i) lbls.push('<span style="color:var(--accent-purple)">slow</span>');
+                      if (fast === i) lbls.push('<span style="color:var(--accent-orange)">fast</span>');
+                  } else if (phase === 2) {
+                      if (prev === i) lbls.push('<span style="color:var(--accent-orange)">prev</span>');
+                      if (curr === i) lbls.push('<span style="color:var(--accent-purple)">curr</span>');
+                  } else if (phase === 3) {
+                      if (p1 === i) lbls.push('<span style="color:var(--accent-blue)">p1</span>');
+                      if (p2 === i) lbls.push('<span style="color:var(--accent-purple)">p2</span>');
+                  }
+                  
+                  if (lbls.length > 0) {
+                      const lblEl = document.createElement('div');
+                      lblEl.innerHTML = lbls.join('<br>');
+                      lblEl.style.position = 'absolute';
+                      lblEl.style.top = '-40px';
+                      lblEl.style.left = '50%';
+                      lblEl.style.transform = 'translateX(-50%)';
+                      lblEl.style.fontWeight = 'bold';
+                      lblEl.style.fontSize = '12px';
+                      lblEl.style.whiteSpace = 'nowrap';
+                      lblEl.style.textAlign = 'center';
+                      node.appendChild(lblEl);
+                  }
+                  
+                  // Draw arrow
+                  let target = nextMap[i];
+                  if (target !== null) {
+                      const arrow = document.createElement('div');
+                      arrow.style.position = 'absolute';
+                      arrow.style.top = '10px';
+                      arrow.style.fontSize = '1.5rem';
+                      arrow.style.color = 'var(--text-secondary)';
+                      
+                      if (target === i + 1) {
+                          // points right
+                          arrow.innerHTML = '&#8594;';
+                          arrow.style.left = '45px';
+                      } else if (target === i - 1) {
+                          // points left
+                          arrow.innerHTML = '&#8592;';
+                          arrow.style.right = '45px';
+                      }
+                      node.appendChild(arrow);
+                  }
+                  
+                  nodeWrapper.appendChild(node);
+                  containerFlex.appendChild(nodeWrapper);
+              });
+              
+              llCont.appendChild(containerFlex);
+          }
+
+          function step() {
+              if (isDone) {
+                  log.innerHTML = `🎉 <strong>Palindrome Verified!</strong> Return <code>true</code>.`;
+                  return;
+              }
+              
+              if (phase === 1) {
+                  if (stepCount === 0) {
+                      slow = 1;
+                      fast = 2;
+                      log.innerHTML = `<code>slow</code> moves 1 step. <code>fast</code> moves 2 steps.`;
+                      stepCount++;
+                  } else if (stepCount === 1) {
+                      slow = 2;
+                      fast = null;
+                      phaseInd.innerHTML = `<strong>Phase 2:</strong> Reverse second half`;
+                      log.innerHTML = `<code>fast</code> reached end. <code>slow</code> is at middle (index 2). <strong>Phase 1 Complete!</strong>`;
+                      phase = 2;
+                      stepCount = 0;
+                  }
+              } else if (phase === 2) {
+                  if (stepCount === 0) {
+                      // curr = 2, prev = null
+                      let nextTemp = nextMap[curr]; // 3
+                      nextMap[curr] = prev; // 2 -> null
+                      prev = curr; // prev = 2
+                      curr = nextTemp; // curr = 3
+                      log.innerHTML = `Reverse node at index 2. Point it to <code>null</code>.`;
+                      stepCount++;
+                  } else if (stepCount === 1) {
+                      // curr = 3, prev = 2
+                      let nextTemp = nextMap[curr]; // null
+                      nextMap[curr] = prev; // 3 -> 2
+                      prev = curr; // prev = 3
+                      curr = nextTemp; // curr = null
+                      phaseInd.innerHTML = `<strong>Phase 3:</strong> Compare halves`;
+                      log.innerHTML = `Reverse node at index 3. Point it to index 2. <code>curr</code> is null. <strong>Phase 2 Complete!</strong>`;
+                      phase = 3;
+                      stepCount = 0;
+                  }
+              } else if (phase === 3) {
+                  if (stepCount === 0) {
+                      log.innerHTML = `Compare <code>p1</code> (val: 1) and <code>p2</code> (val: 1). They match! Move both.`;
+                      p1 = 1;
+                      p2 = 2;
+                      stepCount++;
+                  } else if (stepCount === 1) {
+                      log.innerHTML = `Compare <code>p1</code> (val: 2) and <code>p2</code> (val: 2). They match! Move both.`;
+                      p1 = 2;
+                      p2 = null;
+                      stepCount++;
+                  } else if (stepCount === 2) {
+                      isDone = true;
+                      log.innerHTML = `<code>p2</code> reached <code>null</code>. All nodes matched! <strong>Palindrome Verified!</strong>`;
+                  }
+              }
+              
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              init();
+              log.innerHTML = "Click 'Next Step' to start finding the middle.";
+          });
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Array Copy</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Extra space</td></tr>
+<tr class="row--optimal"><td>Reverse Second Half</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    bool isPalindrome(ListNode* head) {
+        ListNode *slow = head, *fast = head;
+        while (fast &amp;&amp; fast-&gt;next) { slow = slow-&gt;next; fast = fast-&gt;next-&gt;next; }
+        ListNode *rev = nullptr, *curr = slow;
+        while (curr) { ListNode *nxt = curr-&gt;next; curr-&gt;next = rev; rev = curr; curr = nxt; }
+        while (rev) {
+            if (head-&gt;val != rev-&gt;val) return false;
+            head = head-&gt;next; rev = rev-&gt;next;
+        }
+        return true;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def isPalindrome(self, head):
+        slow = fast = head
+        while fast and fast.next:
+            slow = slow.next; fast = fast.next.next
+        prev = None
+        while slow:
+            nxt = slow.next; slow.next = prev; prev = slow; slow = nxt
+        while prev:
+            if head.val != prev.val: return False
+            head = head.next; prev = prev.next
+        return True</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

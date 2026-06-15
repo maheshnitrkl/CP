@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sort Colors - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-04-sorting.html" class="navbar__link">&#8592; Back to Module 04: Sorting</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-04-sorting.html">Module 04: Sorting</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Sort Colors</span></div>
+      <h1 class="problem-header__title">Sort Colors</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/sort-colors/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given an array with values 0, 1, and 2 (representing red, white, blue), sort them <strong>in-place</strong> so that same colors are adjacent in order 0, 1, 2.</p><p><strong>Example:</strong> <code>[2,0,2,1,1,0]</code> &rarr; <code>[0,0,1,1,2,2]</code></p><p><strong>Constraint:</strong> One-pass algorithm using O(1) extra space.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Dutch National Flag Problem (Dijkstra, 1976)</div><p style='font-size:0.9rem;margin-top:0.5rem;'>Three pointers partition the array into four regions: [0..low-1] = 0s, [low..mid-1] = 1s, [mid..high] = unprocessed, [high+1..n-1] = 2s.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Count & Overwrite</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Count occurrences of 0, 1, 2. Then overwrite the array with the correct counts.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> sortColors(nums):<br>&nbsp;&nbsp;c0 = count(0), c1 = count(1), c2 = count(2)<br>&nbsp;&nbsp;fill nums with c0 zeros, c1 ones, c2 twos</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Simple two-pass solution</li><li>Easy to understand</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Two passes through the array</li><li>Not a true in-place sorting algorithm</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">Can we do it in a single pass? The Dutch National Flag algorithm achieves this.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Dutch National Flag (3-Way Partition)</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Use three pointers: low, mid, high. Process mid pointer: if 0, swap with low and advance both. If 1, just advance mid. If 2, swap with high and decrement high.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> sortColors(nums):<br>&nbsp;&nbsp;low = 0, mid = 0, high = n-1<br>&nbsp;&nbsp;<span class='keyword'>while</span> mid &le; high:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> nums[mid] == 0:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;swap(nums[low], nums[mid])<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;low++; mid++<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>elif</span> nums[mid] == 1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mid++ <span class='comment'>// 1 is in correct region</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>else</span>: <span class='comment'>// nums[mid] == 2</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;swap(nums[mid], nums[high])<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;high-- <span class='comment'>// don't advance mid! swapped value unknown</span></div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Single pass</li><li>True in-place</li><li>Classic algorithm by Dijkstra</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Three-pointer logic can be tricky</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Sort</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        <div class="array-container" id="search-array" style="display: flex; gap: 0.5rem; justify-content: center; margin: 2rem 0; position: relative; height: 100px; align-items: center;">
+        </div>
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6;">
+          Click 'Step Sort' to begin partitioning.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const originalArr = [2, 0, 2, 1, 1, 0];
+          let arr = [...originalArr];
+          let low = 0, mid = 0, high = arr.length - 1;
+          let state = 0; // 0: sorting, 1: done
+          
+          const container = document.getElementById('search-array');
+          const log = document.getElementById('search-log');
+
+          function getColor(val) {
+              if (val === 0) return 'var(--accent-red)';
+              if (val === 1) return 'white';
+              return 'var(--accent-cyan)'; // Blue-ish
+          }
+          
+          function getTextColor(val) {
+              if (val === 1) return 'black';
+              return 'white';
+          }
+
+          function render() {
+              container.innerHTML = '';
+              
+              arr.forEach((val, i) => {
+                  const el = document.createElement('div');
+                  el.className = 'array-item';
+                  el.style.width = '40px';
+                  el.style.height = '40px';
+                  el.style.display = 'flex';
+                  el.style.alignItems = 'center';
+                  el.style.justifyContent = 'center';
+                  el.style.background = getColor(val);
+                  el.style.color = getTextColor(val);
+                  el.textContent = val;
+                  
+                  let labels = [];
+                  if (i === low) labels.push('L');
+                  if (i === mid) labels.push('M');
+                  if (i === high) labels.push('H');
+                  
+                  if (labels.length > 0) {
+                      const labelEl = document.createElement('div');
+                      labelEl.textContent = labels.join(',');
+                      labelEl.style.position = 'absolute';
+                      labelEl.style.bottom = '-25px';
+                      labelEl.style.fontSize = '12px';
+                      labelEl.style.color = 'var(--accent-orange)';
+                      labelEl.style.fontWeight = 'bold';
+                      el.appendChild(labelEl);
+                  }
+                  
+                  container.appendChild(el);
+              });
+          }
+
+          function step() {
+              if (state === 1 || mid > high) {
+                  log.innerHTML = `🎉 Array sorted! All 0s, 1s, and 2s are grouped.`;
+                  state = 1;
+                  render();
+                  return;
+              }
+              
+              if (arr[mid] === 0) {
+                  log.innerHTML = `<code>arr[mid] == 0</code>. Swap <code>arr[low]</code> and <code>arr[mid]</code>. Increment both <code>low</code> and <code>mid</code>.`;
+                  let temp = arr[low];
+                  arr[low] = arr[mid];
+                  arr[mid] = temp;
+                  low++;
+                  mid++;
+              } else if (arr[mid] === 1) {
+                  log.innerHTML = `<code>arr[mid] == 1</code>. This is in the right place (middle). Increment <code>mid</code>.`;
+                  mid++;
+              } else {
+                  log.innerHTML = `<code>arr[mid] == 2</code>. Swap <code>arr[mid]</code> and <code>arr[high]</code>. Decrement <code>high</code>.`;
+                  let temp = arr[high];
+                  arr[high] = arr[mid];
+                  arr[mid] = temp;
+                  high--;
+              }
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              arr = [...originalArr];
+              low = 0; mid = 0; high = arr.length - 1; state = 0;
+              log.innerHTML = "Click 'Step Sort' to begin partitioning.";
+              render();
+          });
+          render();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: [2, 0, 2, 1, 1, 0]</div><div class='math-block' style='text-align:left;font-size:0.9rem;'>low=0, mid=0, high=5<br>nums[0]=2: swap(0,5)&rarr;[<span class='highlight'>0</span>,0,2,1,1,<span class='highlight'>2</span>], high=4<br>nums[0]=0: swap(0,0)&rarr;[0,0,2,1,1,2], low=1, mid=1<br>nums[1]=0: swap(1,1)&rarr;[0,0,2,1,1,2], low=2, mid=2<br>nums[2]=2: swap(2,4)&rarr;[0,0,<span class='highlight'>1</span>,1,<span class='highlight'>2</span>,2], high=3<br>nums[2]=1: mid=3<br>nums[3]=1: mid=4<br>mid(4) > high(3) &rarr; DONE! [0,0,1,1,2,2]</div></div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Count & Overwrite</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Two passes</td></tr>
+<tr class="row--optimal"><td>Dutch National Flag</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Optimal &mdash; single pass</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    void sortColors(vector&lt;int&gt;&amp; nums) {
+        int low = 0, mid = 0, high = nums.size() - 1;
+        while (mid &lt;= high) {
+            if (nums[mid] == 0) swap(nums[low++], nums[mid++]);
+            else if (nums[mid] == 1) mid++;
+            else swap(nums[mid], nums[high--]);
+        }
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def sortColors(self, nums):
+        low, mid, high = 0, 0, len(nums) - 1
+        while mid &lt;= high:
+            if nums[mid] == 0:
+                nums[low], nums[mid] = nums[mid], nums[low]
+                low += 1; mid += 1
+            elif nums[mid] == 1:
+                mid += 1
+            else:
+                nums[mid], nums[high] = nums[high], nums[mid]
+                high -= 1</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

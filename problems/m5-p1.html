@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subsets - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-05-recursion-backtracking.html" class="navbar__link">&#8592; Back to Module 05: Recursion & Backtracking</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-05-recursion-backtracking.html">Module 05: Recursion & Backtracking</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Subsets</span></div>
+      <h1 class="problem-header__title">Subsets</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/subsets/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given an integer array <code>nums</code> of <strong>unique</strong> elements, return all possible subsets (the power set). The solution set must not contain duplicate subsets.</p><p><strong>Example:</strong> <code>nums = [1,2,3]</code> &rarr; <code>[[], [1], [2], [3], [1,2], [1,3], [2,3], [1,2,3]]</code></p><p><strong>Key Insight:</strong> For n elements, there are exactly 2<sup>n</sup> subsets (each element is either included or excluded).</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>|Power Set| = 2<sup>n</sup></div><p style='font-size:0.9rem;margin-top:0.5rem;'>Each element has 2 choices: <strong>include</strong> or <strong>exclude</strong>. With n elements, total subsets = 2 &times; 2 &times; ... &times; 2 = 2<sup>n</sup>.</p><p style='font-size:0.85rem;'>This creates a binary decision tree of depth n. Each leaf represents one complete subset.</p><div class='formula' style='margin-top:1rem;'>Bit Masking: Integer i from 0 to 2<sup>n</sup>-1 encodes a subset</div><p style='font-size:0.85rem;'>Bit j of i being 1 means element j is included. Example: i=5 (101) &rarr; include elements at index 0 and 2.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Iterative (Cascading)</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Start with an empty set. For each number, take all existing subsets and create new ones by adding the current number.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> subsets(nums):<br>&nbsp;&nbsp;result = [[]] <span class='comment'>// start with empty set</span><br>&nbsp;&nbsp;<span class='keyword'>for</span> num in nums:<br>&nbsp;&nbsp;&nbsp;&nbsp;newSubsets = []<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> subset in result:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;newSubsets.append(subset + [num])<br>&nbsp;&nbsp;&nbsp;&nbsp;result.extend(newSubsets)<br>&nbsp;&nbsp;<span class='keyword'>return</span> result</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n &times; 2<sup>n</sup>)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n &times; 2<sup>n</sup>)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>No recursion needed</li><li>Easy to understand iteratively</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Creates many intermediate copies</li><li>Hard to extend to constrained variants (Subsets II)</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">While this works, it's hard to adapt for problems with constraints (e.g., no duplicates, combination sum). Backtracking provides a universal template.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Backtracking (Include/Exclude Tree)</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Build a binary decision tree. At each level (element), decide to include or exclude it. When we reach the end, we have a complete subset.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> subsets(nums):<br>&nbsp;&nbsp;result = []<br>&nbsp;&nbsp;<span class='keyword'>function</span> <span class='highlight'>backtrack</span>(start, current):<br>&nbsp;&nbsp;&nbsp;&nbsp;result.append(copy(current)) <span class='comment'>// every node is a valid subset</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> i = start <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current.append(nums[i]) <span class='comment'>// CHOOSE</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='highlight'>backtrack</span>(i + 1, current) <span class='comment'>// EXPLORE</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current.pop() <span class='comment'>// UN-CHOOSE (backtrack!)</span><br>&nbsp;&nbsp;backtrack(0, [])<br>&nbsp;&nbsp;<span class='keyword'>return</span> result</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n &times; 2<sup>n</sup>)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n) recursion depth</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Universal template for subset/permutation/combination problems</li><li>Easy to add constraints (skip duplicates, prune)</li><li>Elegant recursive structure</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Requires understanding of recursion</li><li>Stack depth = n</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--better">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 3</span></div>
+        <div class="approach-card__title">Bit Masking</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Each integer from 0 to 2<sup>n</sup>-1 represents a subset. If bit j is set in integer i, include nums[j].</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> subsets(nums):<br>&nbsp;&nbsp;n = len(nums)<br>&nbsp;&nbsp;result = []<br>&nbsp;&nbsp;<span class='keyword'>for</span> mask = 0 <span class='keyword'>to</span> 2<sup>n</sup> - 1:<br>&nbsp;&nbsp;&nbsp;&nbsp;subset = []<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> j = 0 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> mask &amp; (1 &lt;&lt; j):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;subset.append(nums[j])<br>&nbsp;&nbsp;&nbsp;&nbsp;result.append(subset)<br>&nbsp;&nbsp;<span class='keyword'>return</span> result</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n &times; 2<sup>n</sup>)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n &times; 2<sup>n</sup>)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Very concise</li><li>No recursion</li><li>Maps naturally to binary representation</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Limited to n &le; ~20 (integer size)</li><li>Can't easily add constraints</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Recursion</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; justify-content: center; margin: 2rem 0;">
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">nums</div>
+                <div id="nums-array" style="display: flex; gap: 0.5rem;"></div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">Current Path</div>
+                <div id="path-array" style="display: flex; gap: 0.5rem; min-width: 60px; min-height: 40px; border: 2px dashed var(--border-primary); padding: 4px; border-radius: 4px;"></div>
+            </div>
+        </div>
+
+        <div style="text-align: center; font-family: var(--font-mono); margin: 1rem 0;">Result Sets</div>
+        <div id="result-sets" style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; min-height: 40px;"></div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Step Recursion' to begin exploring subsets.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const arr = [1, 2, 3];
+          
+          let callStack = []; // stores {index, path, state} state=0(start), 1(exclude done), 2(include done)
+          let currentPath = [];
+          let results = [];
+          let isDone = false;
+          
+          const numsCont = document.getElementById('nums-array');
+          const pathCont = document.getElementById('path-array');
+          const resCont = document.getElementById('result-sets');
+          const log = document.getElementById('search-log');
+
+          function init() {
+              callStack = [{index: 0, path: [], state: 0}];
+              currentPath = [];
+              results = [];
+              isDone = false;
+              render();
+          }
+
+          function render() {
+              numsCont.innerHTML = '';
+              const topCall = callStack.length > 0 ? callStack[callStack.length - 1] : {index: arr.length};
+              
+              arr.forEach((val, i) => {
+                  const el = document.createElement('div');
+                  el.className = 'array-item';
+                  el.style.width = '30px';
+                  el.style.height = '30px';
+                  el.style.display = 'flex';
+                  el.style.alignItems = 'center';
+                  el.style.justifyContent = 'center';
+                  el.style.background = (i === topCall.index) ? 'var(--accent-purple)' : 'var(--bg-secondary)';
+                  el.style.opacity = (i < topCall.index) ? '0.3' : '1';
+                  el.textContent = val;
+                  numsCont.appendChild(el);
+              });
+
+              pathCont.innerHTML = '';
+              currentPath.forEach(val => {
+                  const el = document.createElement('div');
+                  el.style.width = '30px';
+                  el.style.height = '30px';
+                  el.style.display = 'flex';
+                  el.style.alignItems = 'center';
+                  el.style.justifyContent = 'center';
+                  el.style.background = 'var(--accent-green)';
+                  el.style.color = 'black';
+                  el.style.fontWeight = 'bold';
+                  el.style.borderRadius = '4px';
+                  el.textContent = val;
+                  pathCont.appendChild(el);
+              });
+              if(currentPath.length === 0) pathCont.textContent = "∅";
+
+              resCont.innerHTML = '';
+              results.forEach(res => {
+                  const el = document.createElement('div');
+                  el.style.background = 'var(--bg-secondary)';
+                  el.style.border = '1px solid var(--border-primary)';
+                  el.style.padding = '0.2rem 0.5rem';
+                  el.style.borderRadius = '4px';
+                  el.style.fontFamily = 'var(--font-mono)';
+                  el.textContent = '[' + res.join(',') + ']';
+                  resCont.appendChild(el);
+              });
+          }
+
+          function step() {
+              if (isDone || callStack.length === 0) {
+                  log.innerHTML = `🎉 Recursion complete! Found <strong>${results.length}</strong> subsets.`;
+                  isDone = true;
+                  return;
+              }
+              
+              let top = callStack[callStack.length - 1];
+              
+              if (top.index === arr.length) {
+                  log.innerHTML = `Base case reached (index ${arr.length}). Adding path <strong>[${currentPath.join(',')}]</strong> to results and returning.`;
+                  results.push([...currentPath]);
+                  callStack.pop();
+                  render();
+                  return;
+              }
+              
+              if (top.state === 0) {
+                  // Going to exclude
+                  log.innerHTML = `At index <strong>${top.index}</strong> (val <strong>${arr[top.index]}</strong>). <strong>Branch 1: Exclude</strong> it.`;
+                  top.state = 1;
+                  callStack.push({index: top.index + 1, path: [...currentPath], state: 0});
+              } else if (top.state === 1) {
+                  // Exclude returned, going to include
+                  log.innerHTML = `Back at index <strong>${top.index}</strong>. <strong>Branch 2: Include</strong> <strong>${arr[top.index]}</strong>.`;
+                  currentPath.push(arr[top.index]);
+                  top.state = 2;
+                  callStack.push({index: top.index + 1, path: [...currentPath], state: 0});
+              } else if (top.state === 2) {
+                  // Include returned, backtracking
+                  log.innerHTML = `Both branches at index <strong>${top.index}</strong> done. <strong>Backtracking</strong> (popping <strong>${arr[top.index]}</strong> from path).`;
+                  currentPath.pop();
+                  callStack.pop();
+              }
+              
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              init();
+              log.innerHTML = "Click 'Step Recursion' to begin exploring subsets.";
+          });
+          init();
+      });
+      </script>
+    </section><section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128268;</span> Logic Flow Diagram</h2><div class='flowchart'><div class='flow-node flow-node--start'>backtrack(start=0, current=[])</div><div class='flow-arrow'></div><div class='flow-node flow-node--process'>Add copy of current to result</div><div class='flow-arrow'></div><div class='flow-node flow-node--process' style='background:rgba(245,158,11,0.1);border:2px solid #f59e0b;'>For each i from start to n-1</div><div class='flow-arrow'></div><div class='flow-node flow-node--process'>current.append(nums[i]) &mdash; CHOOSE</div><div class='flow-arrow'></div><div class='flow-node flow-node--process' style='background:rgba(139,92,246,0.1);border:2px solid var(--accent-purple);'>backtrack(i+1, current) &mdash; EXPLORE</div><div class='flow-arrow'></div><div class='flow-node flow-node--process' style='background:rgba(239,68,68,0.1);border:2px solid #ef4444;'>current.pop() &mdash; UN-CHOOSE</div><div class='flow-arrow'></div><div class='flow-node flow-node--end'>Return to caller (loop continues)</div></div></section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Decision Tree for nums = [1, 2, 3]</div><div class='math-block' style='text-align:left;font-size:0.85rem;'><pre style='color:var(--text-secondary);'>
+backtrack(0, [])     &rarr; add []
+  include 1: backtrack(1, [1])    &rarr; add [1]
+    include 2: backtrack(2, [1,2])  &rarr; add [1,2]
+      include 3: backtrack(3, [1,2,3]) &rarr; add [1,2,3]
+    include 3: backtrack(3, [1,3])  &rarr; add [1,3]
+  include 2: backtrack(2, [2])    &rarr; add [2]
+    include 3: backtrack(3, [2,3])  &rarr; add [2,3]
+  include 3: backtrack(3, [3])    &rarr; add [3]
+
+<span class='highlight'>Total: 8 subsets = 2^3</span></pre></div></div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Iterative Cascading</td><td><code>O(n&times;2<sup>n</sup>)</code></td><td><code>O(n&times;2<sup>n</sup>)</code></td><td>Simple but inflexible</td></tr>
+<tr class="row--optimal"><td>Backtracking</td><td><code>O(n&times;2<sup>n</sup>)</code></td><td><code>O(n)</code></td><td>Optimal &mdash; universal template</td></tr>
+<tr><td>Bit Masking</td><td><code>O(n&times;2<sup>n</sup>)</code></td><td><code>O(n&times;2<sup>n</sup>)</code></td><td>Concise but limited to small n</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    vector&lt;vector&lt;int&gt;&gt; subsets(vector&lt;int&gt;&amp; nums) {
+        vector&lt;vector&lt;int&gt;&gt; result;
+        vector&lt;int&gt; current;
+        backtrack(nums, 0, current, result);
+        return result;
+    }
+    void backtrack(vector&lt;int&gt;&amp; nums, int start,
+                   vector&lt;int&gt;&amp; current, vector&lt;vector&lt;int&gt;&gt;&amp; result) {
+        result.push_back(current);  // every node is a valid subset
+        for (int i = start; i &lt; nums.size(); i++) {
+            current.push_back(nums[i]);    // CHOOSE
+            backtrack(nums, i + 1, current, result);  // EXPLORE
+            current.pop_back();            // UN-CHOOSE
+        }
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def subsets(self, nums):
+        result = []
+        def backtrack(start, current):
+            result.append(current[:])  # every node is a valid subset
+            for i in range(start, len(nums)):
+                current.append(nums[i])    # CHOOSE
+                backtrack(i + 1, current)  # EXPLORE
+                current.pop()              # UN-CHOOSE
+        backtrack(0, [])
+        return result</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

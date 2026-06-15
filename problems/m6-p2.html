@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Middle of the Linked List - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-06-linked-list-1.html" class="navbar__link">&#8592; Back to Module 06: Linked List Part 1</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-06-linked-list-1.html">Module 06: Linked List Part 1</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Middle of the Linked List</span></div>
+      <h1 class="problem-header__title">Middle of the Linked List</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/middle-of-the-linked-list/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Return the middle node of a linked list. If two middle nodes, return the second one.</p><p><strong>Example:</strong> <code>1&rarr;2&rarr;3&rarr;4&rarr;5</code> &rarr; node 3</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Slow/Fast Pointer Technique (Tortoise & Hare)</div><p style='font-size:0.9rem;margin-top:0.5rem;'>Slow moves 1 step, fast moves 2 steps. When fast reaches the end, slow is at the middle. This works because slow covers half the distance of fast.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Count, Then Traverse</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">First pass: count nodes (n). Second pass: traverse to node n/2.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> middleNode(head):<br>&nbsp;&nbsp;count = countNodes(head) <span class='comment'>// pass 1</span><br>&nbsp;&nbsp;mid = count / 2<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> mid-1: head = head.next <span class='comment'>// pass 2</span><br>&nbsp;&nbsp;<span class='keyword'>return</span> head</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Simple logic</li><li>Two passes</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Two passes through the list</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">Slow/Fast pointers find the middle in a single pass.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Slow & Fast Pointers</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Slow advances 1 step, fast advances 2 steps. When fast reaches the end, slow is at the middle.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> middleNode(head):<br>&nbsp;&nbsp;slow = fast = head<br>&nbsp;&nbsp;<span class='keyword'>while</span> fast != null AND fast.next != null:<br>&nbsp;&nbsp;&nbsp;&nbsp;slow = slow.next<br>&nbsp;&nbsp;&nbsp;&nbsp;fast = fast.next.next<br>&nbsp;&nbsp;<span class='keyword'>return</span> slow</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Single pass</li><li>No need to know length</li><li>Elegant</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Slightly less intuitive</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Pointers</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; justify-content: center; margin: 3rem 0; min-height: 100px; align-items: center; position: relative;" id="ll-container">
+            <!-- Nodes will be injected here -->
+        </div>
+
+        <div style="display: flex; gap: 2rem; justify-content: center; margin: 1rem 0; font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-secondary);">
+            <div><span style="color: var(--accent-purple); font-weight: bold;">slow 🐢</span></div>
+            <div><span style="color: var(--accent-orange); font-weight: bold;">fast 🐇</span></div>
+        </div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Step Pointers' to advance slow and fast pointers.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const values = [1, 2, 3, 4, 5, 6]; // Let's use 6 elements to show even length logic
+          
+          let slow = 0;
+          let fast = 0;
+          
+          let state = 0; // 0: fast first step, 1: fast second step, 2: slow step
+          let isDone = false;
+          
+          const llCont = document.getElementById('ll-container');
+          const log = document.getElementById('search-log');
+
+          function init() {
+              slow = 0;
+              fast = 0;
+              state = 0;
+              isDone = false;
+              render();
+          }
+
+          function render() {
+              llCont.innerHTML = '';
+              
+              values.forEach((val, i) => {
+                  const nodeWrapper = document.createElement('div');
+                  nodeWrapper.style.display = 'flex';
+                  nodeWrapper.style.alignItems = 'center';
+                  nodeWrapper.style.gap = '1rem';
+                  
+                  const node = document.createElement('div');
+                  node.className = 'array-item';
+                  node.style.width = '40px';
+                  node.style.height = '40px';
+                  node.style.display = 'flex';
+                  node.style.alignItems = 'center';
+                  node.style.justifyContent = 'center';
+                  node.style.background = 'var(--bg-secondary)';
+                  node.style.border = '2px solid var(--border-primary)';
+                  node.style.borderRadius = '8px';
+                  node.style.position = 'relative';
+                  node.textContent = val;
+                  
+                  if(isDone && i === slow) {
+                      node.style.background = 'var(--accent-green)';
+                      node.style.color = 'black';
+                      node.style.fontWeight = 'bold';
+                  }
+                  
+                  // Pointers
+                  if (slow === i) {
+                      const lblEl = document.createElement('div');
+                      lblEl.innerHTML = '<span style="color:var(--accent-purple)">slow 🐢</span>';
+                      lblEl.style.position = 'absolute';
+                      lblEl.style.top = '-25px';
+                      lblEl.style.left = '50%';
+                      lblEl.style.transform = 'translateX(-50%)';
+                      lblEl.style.fontWeight = 'bold';
+                      lblEl.style.fontSize = '12px';
+                      lblEl.style.whiteSpace = 'nowrap';
+                      node.appendChild(lblEl);
+                  }
+                  if (fast === i) {
+                      const lblEl2 = document.createElement('div');
+                      lblEl2.innerHTML = '<span style="color:var(--accent-orange)">fast 🐇</span>';
+                      lblEl2.style.position = 'absolute';
+                      lblEl2.style.bottom = '-25px';
+                      lblEl2.style.left = '50%';
+                      lblEl2.style.transform = 'translateX(-50%)';
+                      lblEl2.style.fontWeight = 'bold';
+                      lblEl2.style.fontSize = '12px';
+                      lblEl2.style.whiteSpace = 'nowrap';
+                      node.appendChild(lblEl2);
+                  }
+                  
+                  nodeWrapper.appendChild(node);
+                  
+                  if (i < values.length - 1) {
+                      const arrow = document.createElement('div');
+                      arrow.innerHTML = '&#8594;';
+                      arrow.style.fontSize = '1.5rem';
+                      arrow.style.color = 'var(--text-secondary)';
+                      nodeWrapper.appendChild(arrow);
+                  }
+                  
+                  llCont.appendChild(nodeWrapper);
+              });
+              
+              // End NULL
+              const endArrow = document.createElement('div');
+              endArrow.innerHTML = '&#8594;';
+              endArrow.style.fontSize = '1.5rem';
+              endArrow.style.color = 'var(--text-secondary)';
+              
+              const nullNext = document.createElement('div');
+              nullNext.textContent = 'null';
+              nullNext.style.fontFamily = 'var(--font-mono)';
+              nullNext.style.color = 'var(--text-secondary)';
+              nullNext.style.position = 'relative';
+              
+              if (fast === values.length) {
+                  const lblEl2 = document.createElement('div');
+                  lblEl2.innerHTML = '<span style="color:var(--accent-orange)">fast 🐇</span>';
+                  lblEl2.style.position = 'absolute';
+                  lblEl2.style.bottom = '-25px';
+                  lblEl2.style.left = '50%';
+                  lblEl2.style.transform = 'translateX(-50%)';
+                  lblEl2.style.fontWeight = 'bold';
+                  lblEl2.style.fontSize = '12px';
+                  lblEl2.style.whiteSpace = 'nowrap';
+                  nullNext.appendChild(lblEl2);
+              }
+              
+              llCont.appendChild(endArrow);
+              llCont.appendChild(nullNext);
+          }
+
+          function step() {
+              if (isDone) {
+                  log.innerHTML = `🎉 The Middle Node is <strong>${values[slow]}</strong>! Reset to try again.`;
+                  return;
+              }
+              
+              if (fast === values.length || fast === values.length - 1 && state === 0) {
+                  isDone = true;
+                  log.innerHTML = `<code>fast</code> pointer has reached the end! <code>slow</code> pointer is exactly at the middle: <strong>${values[slow]}</strong>.`;
+                  render();
+                  return;
+              }
+              
+              if (state === 0) {
+                  fast++;
+                  log.innerHTML = `Step 1: <code>fast</code> pointer moves 1 step forward to Node ${values[fast]}.`;
+                  state = 1;
+              } else if (state === 1) {
+                  fast++;
+                  log.innerHTML = `Step 2: <code>fast</code> pointer moves a 2nd step to Node ${fast < values.length ? values[fast] : 'null'}.`;
+                  state = 2;
+              } else if (state === 2) {
+                  slow++;
+                  log.innerHTML = `Step 3: <code>slow</code> pointer moves 1 step forward to Node ${values[slow]}.`;
+                  state = 0;
+              }
+              
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              init();
+              log.innerHTML = "Click 'Step Pointers' to advance slow and fast pointers.";
+          });
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'>
+  <div class='walkthrough-step__desc'>Trace: 1 &rarr; 2 &rarr; 3 &rarr; 4 &rarr; 5</div>
+  <div class='math-block' style='text-align:left;font-size:0.85rem;'><pre style='color:var(--text-secondary);'>
+Initialize: slow = 1, fast = 1
+
+Step 1:
+  slow moves to 2
+  fast moves to 3
+
+Step 2:
+  slow moves to 3
+  fast moves to 5
+
+Step 3:
+  fast.next is null. Loop ends.
+
+<span class='highlight'>Result: slow is at node 3 (the middle).</span></pre></div></div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Count + Traverse</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Two passes</td></tr>
+<tr class="row--optimal"><td>Slow/Fast Pointers</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Optimal &mdash; single pass</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    ListNode* middleNode(ListNode* head) {
+        ListNode* slow = head, *fast = head;
+        while (fast &amp;&amp; fast-&gt;next) {
+            slow = slow-&gt;next;
+            fast = fast-&gt;next-&gt;next;
+        }
+        return slow;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def middleNode(self, head):
+        slow = fast = head
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+        return slow</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

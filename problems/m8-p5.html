@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Implement Stack using Queues - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-08-stack-queue.html" class="navbar__link">&#8592; Back to Module 08: Stack & Queue</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-08-stack-queue.html">Module 08: Stack & Queue</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Implement Stack using Queues</span></div>
+      <h1 class="problem-header__title">Implement Stack using Queues</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/implement-stack-using-queues/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Implement a last-in-first-out (LIFO) stack using only two queues.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Two Queues (Push O(1), Pop O(n))</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">To push, just enqueue to q1. To pop, dequeue all elements except the last one from q1 and push them to q2. The last element is the popped element. Then swap q1 and q2.</p>
+        <div class="pseudocode-block"><span class='keyword'>class</span> MyStack:<br>&nbsp;&nbsp;q1 = Queue(), q2 = Queue()<br>&nbsp;&nbsp;<span class='keyword'>function</span> push(x): q1.enqueue(x)<br>&nbsp;&nbsp;<span class='keyword'>function</span> pop():<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>while</span> q1.size() > 1: q2.enqueue(q1.dequeue())<br>&nbsp;&nbsp;&nbsp;&nbsp;res = q1.dequeue()<br>&nbsp;&nbsp;&nbsp;&nbsp;swap(q1, q2)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>return</span> res</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: Push: O(1), Pop: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Fast Push</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Slow Pop</li><li>Requires 2 Queues</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">We can shift the O(n) cost to Push instead of Pop, or even better, eliminate the second queue entirely.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--better">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Two Queues (Push O(n), Pop O(1))</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">To push x, enqueue it to q2. Then transfer all elements from q1 to q2. Finally, swap q1 and q2. This ensures q1 is always ordered like a stack.</p>
+        <div class="pseudocode-block"><span class='keyword'>class</span> MyStack:<br>&nbsp;&nbsp;q1 = Queue(), q2 = Queue()<br>&nbsp;&nbsp;<span class='keyword'>function</span> push(x):<br>&nbsp;&nbsp;&nbsp;&nbsp;q2.enqueue(x)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>while</span> not q1.empty(): q2.enqueue(q1.dequeue())<br>&nbsp;&nbsp;&nbsp;&nbsp;swap(q1, q2)<br>&nbsp;&nbsp;<span class='keyword'>function</span> pop(): <span class='keyword'>return</span> q1.dequeue()</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: Push: O(n), Pop: O(1)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Fast Pop</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Slow Push</li><li>Still requires 2 Queues</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">We can achieve the same logic using just one queue by rotating elements.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 3</span></div>
+        <div class="approach-card__title">One Queue (Push O(n), Pop O(1))</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">When pushing x, enqueue it, then dequeue all previous elements and re-enqueue them behind x.</p>
+        <div class="pseudocode-block"><span class='keyword'>class</span> MyStack:<br>&nbsp;&nbsp;q = Queue()<br>&nbsp;&nbsp;<span class='keyword'>function</span> push(x):<br>&nbsp;&nbsp;&nbsp;&nbsp;q.enqueue(x)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> q.size() - 2:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;q.enqueue(q.dequeue()) <span class='comment'>// rotate</span><br>&nbsp;&nbsp;<span class='keyword'>function</span> pop(): <span class='keyword'>return</span> q.dequeue()</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: Push: O(n), Pop: O(1)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Uses only 1 queue</li><li>Pop is O(1)</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Push is O(n)</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- Approach Comparison Table -->
+    <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Push Time</th><th>Pop Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr class="row--brute"><td>Two Queues (Fast Push)</td><td><code>O(1)</code></td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Naive</td></tr>
+        <tr class="row--better"><td>Two Queues (Fast Pop)</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td><code>O(n)</code></td><td>Better</td></tr>
+        <tr class="row--optimal"><td>One Queue</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td><code>O(n)</code></td><td>Optimal</td></tr>
+      </tbody>
+    </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="queue-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step">Step Push(x)</button>
+          <button class="btn btn--outline" id="btn-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; align-items: center; margin: 2rem 0;">
+            <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 1rem;">Queue (Front &larr; &rarr; Back)</div>
+            <div id="q-container" style="display: flex; gap: 0.5rem; height: 60px; padding: 0.5rem; border: 2px dashed var(--border-primary); border-radius: 8px; min-width: 300px; align-items: center; justify-content: flex-start; overflow: hidden;"></div>
+        </div>
+
+        <div class="visualizer__log" id="viz-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6;">
+          Click 'Step Push(x)' to simulate stack pushes using queue rotation.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const ops = [1, 2, 3];
+          let q = [];
+          let opIdx = 0;
+          let rotateCount = 0;
+          let state = 0; // 0: enqueue, 1: rotate
+          let isDone = false;
+          
+          const qCont = document.getElementById('q-container');
+          const log = document.getElementById('viz-log');
+
+          function init() {
+              q = [];
+              opIdx = 0;
+              rotateCount = 0;
+              state = 0;
+              isDone = false;
+              render();
+              log.innerHTML = "Click 'Step Push(x)' to simulate stack pushes using queue rotation.";
+          }
+
+          function createBox(val, isNew) {
+              const el = document.createElement('div');
+              el.style.minWidth = '40px';
+              el.style.height = '40px';
+              el.style.display = 'flex';
+              el.style.alignItems = 'center';
+              el.style.justifyContent = 'center';
+              el.style.background = isNew ? 'var(--accent-purple)' : 'var(--bg-secondary)';
+              if (isNew) el.style.color = 'black';
+              el.style.border = '2px solid var(--border-primary)';
+              el.style.borderRadius = '8px';
+              el.textContent = val;
+              el.style.transition = 'all 0.3s ease';
+              return el;
+          }
+
+          function render() {
+              qCont.innerHTML = '';
+              q.forEach((val, i) => {
+                  qCont.appendChild(createBox(val, state === 1 && i === q.length - 1));
+              });
+          }
+
+          function step() {
+              if (isDone) return;
+              if (opIdx >= ops.length && state === 0) {
+                  log.innerHTML = `🎉 <strong>Pushes Complete!</strong> Front of queue is now the top of stack: <strong>${q[0]}</strong>.`;
+                  isDone = true;
+                  return;
+              }
+              
+              const val = ops[opIdx];
+              if (state === 0) {
+                  q.push(val);
+                  log.innerHTML = `<code>enqueue(${val})</code>. Queue: [${q.join(', ')}].<br>Need to rotate ${q.length - 1} times.`;
+                  rotateCount = q.length - 1;
+                  if (rotateCount > 0) state = 1;
+                  else { opIdx++; state = 0; }
+              } else if (state === 1) {
+                  const front = q.shift();
+                  q.push(front);
+                  rotateCount--;
+                  log.innerHTML = `Rotated: dequeued <code>${front}</code> and enqueued it.<br>Queue: [${q.join(', ')}]. ${rotateCount} rotations left.`;
+                  if (rotateCount === 0) {
+                      opIdx++;
+                      state = 0;
+                  }
+              }
+              
+              render();
+          }
+
+          document.getElementById('btn-step').addEventListener('click', step);
+          document.getElementById('btn-reset').addEventListener('click', init);
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: push(1), push(2), push(3)</div><div class='math-block' style='text-align:left;font-size:0.9rem;'>
+<pre style="color:var(--text-secondary)">
+1. push(1):
+   Enqueue 1. Q = [1]. Rotations = 0.
+   Stack is [1] (Top is 1).
+
+2. push(2):
+   Enqueue 2. Q = [1, 2].
+   Rotate 1 time: Dequeue 1, Enqueue 1. Q = [2, 1].
+   Stack is [1, 2] (Top is 2).
+
+3. push(3):
+   Enqueue 3. Q = [2, 1, 3].
+   Rotate 2 times: 
+     - Dequeue 2, Enqueue 2 &rarr; Q = [1, 3, 2]
+     - Dequeue 1, Enqueue 1 &rarr; Q = [3, 2, 1]
+   Stack is [1, 2, 3] (Top is 3).
+
+<span class="highlight">Result: Queue perfectly mimics LIFO Stack.</span>
+</pre></div></div></section>
+<!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class MyStack {
+    queue&lt;int&gt; q;
+public:
+    void push(int x) {
+        q.push(x);
+        for(int i = 0; i &lt; q.size() - 1; i++) {
+            q.push(q.front()); q.pop();
+        }
+    }
+    int pop() { int t = q.front(); q.pop(); return t; }
+    int top() { return q.front(); }
+    bool empty() { return q.empty(); }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">from collections import deque
+class MyStack:
+    def __init__(self):
+        self.q = deque()
+    def push(self, x):
+        self.q.append(x)
+        for _ in range(len(self.q) - 1):
+            self.q.append(self.q.popleft())
+    def pop(self): return self.q.popleft()
+    def top(self): return self.q[0]
+    def empty(self): return not self.q</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

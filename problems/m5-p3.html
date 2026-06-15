@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Permutations II - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-05-recursion-backtracking.html" class="navbar__link">&#8592; Back to Module 05: Recursion & Backtracking</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-05-recursion-backtracking.html">Module 05: Recursion & Backtracking</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Permutations II</span></div>
+      <h1 class="problem-header__title">Permutations II</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/permutations-ii/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given a collection of numbers that <strong>might contain duplicates</strong>, return all unique permutations.</p><p><strong>Example:</strong> <code>[1,1,2]</code> &rarr; <code>[[1,1,2],[1,2,1],[2,1,1]]</code></p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Unique Permutations = n! / (k<sub>1</sub>! &times; k<sub>2</sub>! &times; ... &times; k<sub>m</sub>!)</div><p style='font-size:0.9rem;margin-top:0.5rem;'>Where k<sub>i</sub> is the count of each distinct element. For [1,1,2]: 3! / (2! &times; 1!) = 3.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Generate All + Set Filter</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Generate all n! permutations, use a set to filter duplicates.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> permuteUnique(nums):<br>&nbsp;&nbsp;allPerms = generateAll(nums)<br>&nbsp;&nbsp;<span class='keyword'>return</span> removeDuplicates(allPerms)</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n &times; n!)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n &times; n!)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Simple logic</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Generates many duplicates just to throw them away</li><li>Wastes time and memory</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We're generating duplicates and filtering. Better to <em>avoid generating duplicates</em> in the first place.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Sort + Skip Duplicates in Backtracking</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Sort the array first. During backtracking, skip nums[i] if it equals nums[i-1] and nums[i-1] wasn't used at the same recursion level.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> permuteUnique(nums):<br>&nbsp;&nbsp;sort(nums) <span class='comment'>// KEY: sort first!</span><br>&nbsp;&nbsp;result = [], used = [false] * n<br>&nbsp;&nbsp;<span class='keyword'>function</span> backtrack(current):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> len(current) == n:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result.append(copy(current)); <span class='keyword'>return</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> used[i]: <span class='keyword'>continue</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='highlight'><span class='keyword'>if</span> i > 0 AND nums[i] == nums[i-1] AND !used[i-1]:</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>continue</span> <span class='comment'>// skip duplicate!</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;used[i] = true; current.append(nums[i])<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backtrack(current)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current.pop(); used[i] = false<br>&nbsp;&nbsp;backtrack([]); <span class='keyword'>return</span> result</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n &times; n!)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>No duplicate generation</li><li>Pruning eliminates entire subtrees</li><li>Same template as Permutations I with one extra line</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Must sort first</li><li>The duplicate-skip condition can be tricky to understand</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Permutations</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap;">
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">Current Array</div>
+                <div id="nums-array" style="display: flex; gap: 0.5rem; position: relative; height: 60px;"></div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">Seen Set (Current Level)</div>
+                <div id="seen-set" style="display: flex; gap: 0.5rem; min-width: 60px; min-height: 40px; border: 2px dashed var(--border-primary); padding: 4px; border-radius: 4px;"></div>
+            </div>
+        </div>
+
+        <div style="text-align: center; font-family: var(--font-mono); margin: 1rem 0;">Result Permutations</div>
+        <div id="result-sets" style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; min-height: 40px;"></div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Step Permutations' to begin backtracking.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          let arr = [1, 1, 2];
+          
+          let callStack = []; 
+          let results = [];
+          let isDone = false;
+          
+          const numsCont = document.getElementById('nums-array');
+          const seenCont = document.getElementById('seen-set');
+          const resCont = document.getElementById('result-sets');
+          const log = document.getElementById('search-log');
+
+          function init() {
+              arr = [1, 1, 2];
+              callStack = [{start: 0, i: 0, state: 0, seen: new Set()}];
+              results = [];
+              isDone = false;
+              render();
+          }
+
+          function render(swapI = -1, swapJ = -1) {
+              numsCont.innerHTML = '';
+              seenCont.innerHTML = '';
+              const topCall = callStack.length > 0 ? callStack[callStack.length - 1] : {start: arr.length, i: arr.length, seen: new Set()};
+              
+              arr.forEach((val, idx) => {
+                  const el = document.createElement('div');
+                  el.className = 'array-item';
+                  el.style.width = '40px';
+                  el.style.height = '40px';
+                  el.style.display = 'flex';
+                  el.style.alignItems = 'center';
+                  el.style.justifyContent = 'center';
+                  el.style.background = 'var(--bg-secondary)';
+                  
+                  if (idx < topCall.start) el.style.background = 'var(--accent-green)';
+                  if (idx === swapI || idx === swapJ) {
+                      el.style.background = 'var(--accent-purple)';
+                      el.style.transform = 'translateY(-5px)';
+                  }
+                  
+                  el.textContent = val;
+                  
+                  let labels = [];
+                  if (idx === topCall.start) labels.push('start');
+                  if (idx === topCall.i) labels.push('i');
+                  
+                  if (labels.length > 0) {
+                      const labelEl = document.createElement('div');
+                      labelEl.textContent = labels.join(',');
+                      labelEl.style.position = 'absolute';
+                      labelEl.style.bottom = '-20px';
+                      labelEl.style.fontSize = '12px';
+                      labelEl.style.color = 'var(--accent-orange)';
+                      labelEl.style.fontWeight = 'bold';
+                      el.appendChild(labelEl);
+                  }
+                  
+                  numsCont.appendChild(el);
+              });
+
+              Array.from(topCall.seen).forEach(val => {
+                  const el = document.createElement('div');
+                  el.style.width = '30px';
+                  el.style.height = '30px';
+                  el.style.display = 'flex';
+                  el.style.alignItems = 'center';
+                  el.style.justifyContent = 'center';
+                  el.style.background = 'var(--accent-red)';
+                  el.style.color = 'white';
+                  el.style.fontWeight = 'bold';
+                  el.style.borderRadius = '4px';
+                  el.textContent = val;
+                  seenCont.appendChild(el);
+              });
+
+              resCont.innerHTML = '';
+              results.forEach(res => {
+                  const el = document.createElement('div');
+                  el.style.background = 'var(--bg-secondary)';
+                  el.style.border = '1px solid var(--border-primary)';
+                  el.style.padding = '0.2rem 0.5rem';
+                  el.style.borderRadius = '4px';
+                  el.style.fontFamily = 'var(--font-mono)';
+                  el.textContent = '[' + res.join(',') + ']';
+                  resCont.appendChild(el);
+              });
+          }
+
+          function step() {
+              if (isDone || callStack.length === 0) {
+                  log.innerHTML = `🎉 Recursion complete! Found <strong>${results.length}</strong> unique permutations.`;
+                  isDone = true;
+                  render();
+                  return;
+              }
+              
+              let top = callStack[callStack.length - 1];
+              
+              if (top.start === arr.length) {
+                  log.innerHTML = `Base case! Found valid permutation: <strong>[${arr.join(',')}]</strong>.`;
+                  results.push([...arr]);
+                  callStack.pop();
+                  render();
+                  return;
+              }
+              
+              if (top.i >= arr.length) {
+                  log.innerHTML = `Finished all loop iterations for level <code>start=${top.start}</code>. Returning.`;
+                  callStack.pop();
+                  render();
+                  return;
+              }
+              
+              if (top.state === 0) {
+                  let i = top.i;
+                  let start = top.start;
+                  
+                  if (top.seen.has(arr[i])) {
+                      log.innerHTML = `Element <strong>${arr[i]}</strong> is already in the Seen Set! <strong>Pruning branch.</strong> Skipping loop <code>i=${i}</code>.`;
+                      top.i++;
+                      render(start, i);
+                      return;
+                  }
+                  
+                  top.seen.add(arr[i]);
+                  log.innerHTML = `Level <code>start=${start}</code>, loop <code>i=${i}</code>. <strong>Swap</strong> <code>arr[${start}]</code> and <code>arr[${i}]</code>. Recursing...`;
+                  
+                  [arr[start], arr[i]] = [arr[i], arr[start]];
+                  top.state = 1;
+                  
+                  callStack.push({start: start + 1, i: start + 1, state: 0, seen: new Set()});
+                  
+                  render(start, i);
+              } else if (top.state === 1) {
+                  let i = top.i;
+                  let start = top.start;
+                  log.innerHTML = `Returned to level <code>start=${start}</code>, loop <code>i=${i}</code>. <strong>Un-swap</strong> <code>arr[${start}]</code> and <code>arr[${i}]</code>.`;
+                  
+                  [arr[start], arr[i]] = [arr[i], arr[start]];
+                  
+                  top.i++;
+                  top.state = 0;
+                  
+                  render(start, i);
+              }
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              init();
+              log.innerHTML = "Click 'Step Permutations' to begin backtracking.";
+          });
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Why does the skip condition work? nums = [1, 1, 2] (sorted)</div><div class='math-block' style='text-align:left;font-size:0.9rem;'>When building permutations at the same recursion level:<br><br>i=0: use nums[0]=1 &rarr; OK, explore<br>i=1: nums[1]=1 == nums[0]=1, and used[0]=false &rarr; <span class='highlight'>SKIP!</span><br>&nbsp;&nbsp;&nbsp;&nbsp;(If we don't skip, we'd generate the same subtrees as i=0)<br>i=2: use nums[2]=2 &rarr; OK, explore<br><br>The rule: "If the previous identical element wasn't used at this level, skip" ensures that among identical elements, we always pick the <em>leftmost unused one first</em>. This guarantees each unique permutation is generated exactly once.</div></div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Generate All + Filter</td><td><code>O(n&times;n!)</code></td><td><code>O(n&times;n!)</code></td><td>Wasteful</td></tr>
+<tr class="row--optimal"><td>Sort + Skip Duplicates</td><td><code>O(n&times;n!/&prod;k!)</code></td><td><code>O(n)</code></td><td>Optimal &mdash; no duplicates generated</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    vector&lt;vector&lt;int&gt;&gt; permuteUnique(vector&lt;int&gt;&amp; nums) {
+        sort(nums.begin(), nums.end());
+        vector&lt;vector&lt;int&gt;&gt; result;
+        vector&lt;int&gt; current;
+        vector&lt;bool&gt; used(nums.size(), false);
+        backtrack(nums, used, current, result);
+        return result;
+    }
+    void backtrack(vector&lt;int&gt;&amp; nums, vector&lt;bool&gt;&amp; used,
+                   vector&lt;int&gt;&amp; cur, vector&lt;vector&lt;int&gt;&gt;&amp; res) {
+        if (cur.size() == nums.size()) { res.push_back(cur); return; }
+        for (int i = 0; i &lt; nums.size(); i++) {
+            if (used[i]) continue;
+            if (i &gt; 0 &amp;&amp; nums[i] == nums[i-1] &amp;&amp; !used[i-1]) continue;
+            used[i] = true; cur.push_back(nums[i]);
+            backtrack(nums, used, cur, res);
+            cur.pop_back(); used[i] = false;
+        }
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def permuteUnique(self, nums):
+        nums.sort()
+        result, used = [], [False] * len(nums)
+        def backtrack(current):
+            if len(current) == len(nums):
+                result.append(current[:]); return
+            for i in range(len(nums)):
+                if used[i]: continue
+                if i &gt; 0 and nums[i] == nums[i-1] and not used[i-1]: continue
+                used[i] = True; current.append(nums[i])
+                backtrack(current)
+                current.pop(); used[i] = False
+        backtrack([])
+        return result</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

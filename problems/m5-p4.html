@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subsets II - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-05-recursion-backtracking.html" class="navbar__link">&#8592; Back to Module 05: Recursion & Backtracking</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-05-recursion-backtracking.html">Module 05: Recursion & Backtracking</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Subsets II</span></div>
+      <h1 class="problem-header__title">Subsets II</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/subsets-ii/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given an integer array <code>nums</code> that <strong>may contain duplicates</strong>, return all possible unique subsets.</p><p><strong>Example:</strong> <code>[1,2,2]</code> &rarr; <code>[[], [1], [1,2], [1,2,2], [2], [2,2]]</code></p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><p style='font-size:0.9rem;'>Without duplicates: 2<sup>n</sup> subsets. With duplicates, some subsets are identical. We must avoid generating them.</p><div class='formula'>Rule: At each recursion level, skip nums[i] if nums[i] == nums[i-1] and i &gt; start</div><p style='font-size:0.85rem;'>This ensures that among consecutive identical elements, we only use the first one to begin a new branch at each level.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Generate All + Deduplicate</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Generate all 2<sup>n</sup> subsets, sort each, put in a set to remove duplicates.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> subsetsWithDup(nums):<br>&nbsp;&nbsp;allSubsets = generateAllSubsets(nums)<br>&nbsp;&nbsp;uniqueSet = Set()<br>&nbsp;&nbsp;<span class='keyword'>for</span> s in allSubsets:<br>&nbsp;&nbsp;&nbsp;&nbsp;uniqueSet.add(sort(s))<br>&nbsp;&nbsp;<span class='keyword'>return</span> list(uniqueSet)</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n &times; 2<sup>n</sup> &times; log n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n &times; 2<sup>n</sup>)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Simple to understand</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Sorting each subset is expensive</li><li>Set comparison is expensive</li><li>Generates then throws away duplicates</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">Just like Permutations II, we should avoid generating duplicates rather than filtering them.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Sort + Skip at Same Level</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Sort the array. During backtracking, if nums[i] == nums[i-1] and i > start, skip it (prevents picking the same element twice at the same decision level).</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> subsetsWithDup(nums):<br>&nbsp;&nbsp;sort(nums)<br>&nbsp;&nbsp;result = []<br>&nbsp;&nbsp;<span class='keyword'>function</span> backtrack(start, current):<br>&nbsp;&nbsp;&nbsp;&nbsp;result.append(copy(current))<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> i = start <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='highlight'><span class='keyword'>if</span> i > start AND nums[i] == nums[i-1]: continue</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current.append(nums[i])<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backtrack(i + 1, current)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current.pop()<br>&nbsp;&nbsp;backtrack(0, []); <span class='keyword'>return</span> result</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n &times; 2<sup>n</sup>)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>No duplicate subsets generated</li><li>One extra line vs Subsets I</li><li>Efficient pruning</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Must sort first</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Recursion</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; justify-content: center; margin: 2rem 0;">
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">Sorted nums</div>
+                <div id="nums-array" style="display: flex; gap: 0.5rem;"></div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">Current Path</div>
+                <div id="path-array" style="display: flex; gap: 0.5rem; min-width: 60px; min-height: 40px; border: 2px dashed var(--border-primary); padding: 4px; border-radius: 4px;"></div>
+            </div>
+        </div>
+
+        <div style="text-align: center; font-family: var(--font-mono); margin: 1rem 0;">Result Sets</div>
+        <div id="result-sets" style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; min-height: 40px;"></div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Step Recursion' to begin exploring subsets.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const arr = [1, 2, 2];
+          
+          // Using the looping method for subsets to make it easier to show deduplication
+          // backtrack(start, currentPath)
+          let callStack = []; 
+          let currentPath = [];
+          let results = [];
+          let isDone = false;
+          
+          const numsCont = document.getElementById('nums-array');
+          const pathCont = document.getElementById('path-array');
+          const resCont = document.getElementById('result-sets');
+          const log = document.getElementById('search-log');
+
+          function init() {
+              callStack = [{start: 0, i: 0, state: 0}]; 
+              // state: 0 (about to process i), 1 (back from recurse i)
+              currentPath = [];
+              results = [[]]; // Add empty set initially
+              isDone = false;
+              render();
+          }
+
+          function render(highlightI = -1, isPruned = false) {
+              numsCont.innerHTML = '';
+              const topCall = callStack.length > 0 ? callStack[callStack.length - 1] : {start: arr.length};
+              
+              arr.forEach((val, i) => {
+                  const el = document.createElement('div');
+                  el.className = 'array-item';
+                  el.style.width = '30px';
+                  el.style.height = '30px';
+                  el.style.display = 'flex';
+                  el.style.alignItems = 'center';
+                  el.style.justifyContent = 'center';
+                  el.style.background = 'var(--bg-secondary)';
+                  
+                  if (i === highlightI) {
+                      el.style.background = isPruned ? 'var(--accent-red)' : 'var(--accent-purple)';
+                      el.style.transform = 'translateY(-5px)';
+                  }
+                  
+                  el.textContent = val;
+                  numsCont.appendChild(el);
+              });
+
+              pathCont.innerHTML = '';
+              currentPath.forEach(val => {
+                  const el = document.createElement('div');
+                  el.style.width = '30px';
+                  el.style.height = '30px';
+                  el.style.display = 'flex';
+                  el.style.alignItems = 'center';
+                  el.style.justifyContent = 'center';
+                  el.style.background = 'var(--accent-green)';
+                  el.style.color = 'black';
+                  el.style.fontWeight = 'bold';
+                  el.style.borderRadius = '4px';
+                  el.textContent = val;
+                  pathCont.appendChild(el);
+              });
+              if(currentPath.length === 0) pathCont.textContent = "∅";
+
+              resCont.innerHTML = '';
+              results.forEach(res => {
+                  const el = document.createElement('div');
+                  el.style.background = 'var(--bg-secondary)';
+                  el.style.border = '1px solid var(--border-primary)';
+                  el.style.padding = '0.2rem 0.5rem';
+                  el.style.borderRadius = '4px';
+                  el.style.fontFamily = 'var(--font-mono)';
+                  el.textContent = '[' + res.join(',') + ']';
+                  resCont.appendChild(el);
+              });
+          }
+
+          function step() {
+              if (isDone || callStack.length === 0) {
+                  log.innerHTML = `🎉 Recursion complete! Found <strong>${results.length}</strong> unique subsets.`;
+                  isDone = true;
+                  render();
+                  return;
+              }
+              
+              let top = callStack[callStack.length - 1];
+              
+              if (top.i >= arr.length) {
+                  log.innerHTML = `Finished loop for level <code>start=${top.start}</code>. Returning.`;
+                  callStack.pop();
+                  render();
+                  return;
+              }
+              
+              if (top.state === 0) {
+                  let i = top.i;
+                  
+                  if (i > top.start && arr[i] === arr[i-1]) {
+                      log.innerHTML = `Element at index ${i} is <strong>${arr[i]}</strong>, which is identical to previous. <strong>Pruning branch</strong> to avoid duplicate subset!`;
+                      top.i++;
+                      render(i, true);
+                  } else {
+                      log.innerHTML = `Level <code>start=${top.start}</code>, processing index <code>i=${i}</code> (val <strong>${arr[i]}</strong>). Adding to path and results. Recursing...`;
+                      currentPath.push(arr[i]);
+                      results.push([...currentPath]);
+                      
+                      top.state = 1;
+                      callStack.push({start: i + 1, i: i + 1, state: 0});
+                      render(i, false);
+                  }
+              } else if (top.state === 1) {
+                  let i = top.i;
+                  log.innerHTML = `Returned to level <code>start=${top.start}</code>, loop <code>i=${i}</code>. <strong>Backtracking</strong> (popping <strong>${arr[i]}</strong>).`;
+                  currentPath.pop();
+                  
+                  top.i++;
+                  top.state = 0;
+                  render();
+              }
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              init();
+              log.innerHTML = "Click 'Step Recursion' to begin exploring subsets.";
+          });
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Generate + Deduplicate</td><td><code>O(n&times;2<sup>n</sup>&times;log n)</code></td><td><code>O(n&times;2<sup>n</sup>)</code></td><td>Wasteful</td></tr>
+<tr class="row--optimal"><td>Sort + Skip Duplicates</td><td><code>O(n&times;2<sup>n</sup>)</code></td><td><code>O(n)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    vector&lt;vector&lt;int&gt;&gt; subsetsWithDup(vector&lt;int&gt;&amp; nums) {
+        sort(nums.begin(), nums.end());
+        vector&lt;vector&lt;int&gt;&gt; result;
+        vector&lt;int&gt; current;
+        backtrack(nums, 0, current, result);
+        return result;
+    }
+    void backtrack(vector&lt;int&gt;&amp; nums, int start,
+                   vector&lt;int&gt;&amp; cur, vector&lt;vector&lt;int&gt;&gt;&amp; res) {
+        res.push_back(cur);
+        for (int i = start; i &lt; nums.size(); i++) {
+            if (i &gt; start &amp;&amp; nums[i] == nums[i-1]) continue; // skip dup
+            cur.push_back(nums[i]);
+            backtrack(nums, i + 1, cur, res);
+            cur.pop_back();
+        }
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def subsetsWithDup(self, nums):
+        nums.sort()
+        result = []
+        def backtrack(start, current):
+            result.append(current[:])
+            for i in range(start, len(nums)):
+                if i &gt; start and nums[i] == nums[i-1]: continue
+                current.append(nums[i])
+                backtrack(i + 1, current)
+                current.pop()
+        backtrack(0, [])
+        return result</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minimum Moves to Equal Array Elements - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-04-sorting.html" class="navbar__link">&#8592; Back to Module 04: Sorting</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-04-sorting.html">Module 04: Sorting</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Minimum Moves to Equal Array Elements</span></div>
+      <h1 class="problem-header__title">Minimum Moves to Equal Array Elements</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/minimum-moves-to-equal-array-elements/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given an integer array <code>nums</code>, return the minimum number of moves to make all elements equal, where each move increments <code>n-1</code> elements by 1.</p><p><strong>Example:</strong> <code>[1,2,3]</code> &rarr; 3 moves. [1,2,3] &rarr; [2,3,3] &rarr; [3,4,3] &rarr; [4,4,4]</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Incrementing (n-1) elements by 1 = Decrementing 1 element by 1</div><p style='font-size:0.9rem;margin-top:0.5rem;'>Instead of thinking about raising n-1 elements, think about lowering 1 element. The minimum moves = total steps to bring everything down to the minimum element.</p><div class='formula' style='margin-top:1rem;'>moves = &Sigma;(nums[i] - min(nums))</div></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Simulation</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Actually simulate the moves: each step, increment all except the maximum. Stop when all equal.</p>
+        <div class="pseudocode-block"><span class='keyword'>while</span> not allEqual(nums):<br>&nbsp;&nbsp;maxIdx = findMax(nums)<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> i != maxIdx: nums[i] += 1<br>&nbsp;&nbsp;moves += 1</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(moves &times; n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Direct simulation of the problem</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Extremely slow for large differences</li><li>Could take millions of iterations</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">The simulation is painfully slow. The math insight: incrementing n-1 is equivalent to decrementing 1. This gives us a closed-form solution.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Mathematical Formula</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Incrementing n-1 elements by 1 is equivalent to decrementing 1 element by 1. So, the answer is the sum of differences from the minimum element.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> minMoves(nums):<br>&nbsp;&nbsp;minVal = min(nums)<br>&nbsp;&nbsp;moves = 0<br>&nbsp;&nbsp;<span class='keyword'>for</span> x in nums:<br>&nbsp;&nbsp;&nbsp;&nbsp;moves += x - minVal<br>&nbsp;&nbsp;<span class='keyword'>return</span> moves<br><br><span class='comment'>// Equivalent: sum(nums) - n * min(nums)</span></div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(n) single pass</li><li>Elegant mathematical insight</li><li>No simulation needed</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Requires the key insight that +1 to (n-1) = -1 to 1</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Decrement</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        <div class="array-container" id="search-array" style="display: flex; gap: 1rem; justify-content: center; margin: 2rem 0; position: relative; height: 120px; align-items: flex-end;">
+        </div>
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; text-align: center;">
+          Moves made: <strong>0</strong>. Click 'Step Decrement' to lower the tallest bar to the minimum element.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const originalArr = [1, 5, 8];
+          let arr = [...originalArr];
+          let minVal = Math.min(...arr);
+          let moves = 0;
+          
+          const container = document.getElementById('search-array');
+          const log = document.getElementById('search-log');
+
+          function render() {
+              container.innerHTML = '';
+              let maxH = Math.max(...originalArr);
+              
+              arr.forEach((val, i) => {
+                  const barCont = document.createElement('div');
+                  barCont.style.display = 'flex';
+                  barCont.style.flexDirection = 'column';
+                  barCont.style.alignItems = 'center';
+                  barCont.style.gap = '0.5rem';
+                  
+                  const el = document.createElement('div');
+                  el.className = 'array-item';
+                  el.style.width = '40px';
+                  el.style.height = Math.max(20, (val / maxH) * 100) + 'px';
+                  el.style.transition = 'height 0.3s ease';
+                  el.style.background = val === minVal ? 'var(--accent-green)' : 'var(--accent-cyan)';
+                  
+                  const valLabel = document.createElement('div');
+                  valLabel.textContent = val;
+                  valLabel.style.fontFamily = 'var(--font-mono)';
+                  valLabel.style.fontWeight = 'bold';
+                  valLabel.style.color = val === minVal ? 'var(--accent-green)' : 'var(--text-primary)';
+                  
+                  barCont.appendChild(el);
+                  barCont.appendChild(valLabel);
+                  container.appendChild(barCont);
+              });
+          }
+
+          function step() {
+              let maxIdx = -1;
+              let maxVal = -1;
+              for(let i=0; i<arr.length; i++) {
+                  if(arr[i] > minVal && arr[i] > maxVal) {
+                      maxVal = arr[i];
+                      maxIdx = i;
+                  }
+              }
+              
+              if (maxIdx === -1) {
+                  log.innerHTML = `🎉 All elements are equal to the minimum! Total moves: <strong>${moves}</strong>.`;
+                  return;
+              }
+              
+              arr[maxIdx]--;
+              moves++;
+              log.innerHTML = `Decremented <strong>${maxVal}</strong> to <strong>${arr[maxIdx]}</strong>. Total Moves: <strong>${moves}</strong>.`;
+              
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              arr = [...originalArr];
+              moves = 0;
+              log.innerHTML = "Moves made: <strong>0</strong>. Click 'Step Decrement' to lower the tallest bar to the minimum element.";
+              render();
+          });
+          render();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Simulation</td><td><code>O(moves &times; n)</code></td><td><code>O(1)</code></td><td>Far too slow</td></tr>
+<tr class="row--optimal"><td>Math Formula</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    int minMoves(vector&lt;int&gt;&amp; nums) {
+        int minVal = *min_element(nums.begin(), nums.end());
+        int moves = 0;
+        for (int x : nums) moves += x - minVal;
+        return moves;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def minMoves(self, nums):
+        min_val = min(nums)
+        return sum(x - min_val for x in nums)</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

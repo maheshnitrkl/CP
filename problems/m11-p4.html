@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maximum Depth of Binary Tree - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-11-trees.html" class="navbar__link">&#8592; Back to Module 11: Trees</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-11-trees.html">Module 11: Trees</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Maximum Depth of Binary Tree</span></div>
+      <h1 class="problem-header__title">Maximum Depth of Binary Tree</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/maximum-depth-of-binary-tree/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given the root of a binary tree, return its maximum depth. A binary tree's maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.</p></div>
+    </section>
+
+    <!-- 2. Logic & Core Concept -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128218;</span> Logic & Core Concept</h2>
+      <div class="math-block">
+        <p>The <strong>maximum depth</strong> of a binary tree is the number of nodes along the longest path from the root node down to the farthest leaf node.</p>
+        <p>This problem can be broken down recursively:</p>
+        <div style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-sm); margin-top:1rem; text-align:center;">
+          <code>Depth(node) = 1 + max( Depth(node.left), Depth(node.right) )</code>
+        </div>
+        <p style="margin-top:1rem;"><strong>Base case:</strong> If the node is <code>null</code>, its depth is <code>0</code>.</p>
+      </div>
+    </section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+      <div class="approach-card approach-card--brute">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Recursion (DFS)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">The most intuitive approach. We ask the left child for its max depth, ask the right child for its max depth, take the maximum of the two, and add 1 for the current node.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> maxDepth(root):<br>&nbsp;&nbsp;<span class='keyword'>if</span> root is null: <span class='keyword'>return</span> 0<br>&nbsp;&nbsp;leftDepth = maxDepth(root.left)<br>&nbsp;&nbsp;rightDepth = maxDepth(root.right)<br>&nbsp;&nbsp;<span class='keyword'>return</span> 1 + max(leftDepth, rightDepth)</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(h)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Shortest and cleanest code</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Call stack usage can be high for skewed trees</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Recursion is generally optimal here, but in production systems with limited call stack sizes, an iterative approach might be preferred.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Iterative DFS (Stack)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">We can simulate the call stack using our own stack data structure. Each item in the stack will store a pair: <code>(node, current_depth)</code>. We update a global max depth as we pop items.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> maxDepthIterativeDFS(root):<br>&nbsp;&nbsp;<span class='keyword'>if</span> root is null: <span class='keyword'>return</span> 0<br>&nbsp;&nbsp;stack = [(root, 1)]<br>&nbsp;&nbsp;max_d = 0<br>&nbsp;&nbsp;<span class='keyword'>while</span> stack is not empty:<br>&nbsp;&nbsp;&nbsp;&nbsp;node, depth = stack.pop()<br>&nbsp;&nbsp;&nbsp;&nbsp;max_d = max(max_d, depth)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> node.left: stack.push((node.left, depth + 1))<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> node.right: stack.push((node.right, depth + 1))<br>&nbsp;&nbsp;<span class='keyword'>return</span> max_d</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(h)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Prevents call stack overflow</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>More verbose than recursion</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">What if the tree is extremely wide rather than deep? DFS might use a lot of memory. We can also use Level Order Traversal (BFS).</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 3</span></div>
+          <div class="approach-card__title">Iterative BFS (Level Order / Queue)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">We process the tree level by level using a Queue. Each time we move to a new level, we increment our depth counter.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> maxDepthBFS(root):<br>&nbsp;&nbsp;<span class='keyword'>if</span> root is null: <span class='keyword'>return</span> 0<br>&nbsp;&nbsp;queue = [root], depth = 0<br>&nbsp;&nbsp;<span class='keyword'>while</span> queue is not empty:<br>&nbsp;&nbsp;&nbsp;&nbsp;levelSize = len(queue)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> i from 0 to levelSize - 1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;node = queue.dequeue()<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> node.left: queue.enqueue(node.left)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> node.right: queue.enqueue(node.right)<br>&nbsp;&nbsp;&nbsp;&nbsp;depth += 1<br>&nbsp;&nbsp;<span class='keyword'>return</span> depth</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(w) (Max width of tree)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Great if the tree is heavily imbalanced to the left or right</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Uses more memory for perfectly balanced trees (width > height)</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr class="row--optimal"><td>Recursion (DFS)</td><td><code>O(n)</code></td><td><code>O(h)</code></td><td>Standard / Cleanest</td></tr>
+          <tr class="row--better"><td>Iterative DFS (Stack)</td><td><code>O(n)</code></td><td><code>O(h)</code></td><td>Good alternative</td></tr>
+          <tr class="row--better"><td>Iterative BFS (Queue)</td><td><code>O(n)</code></td><td><code>O(w)</code></td><td>Good alternative</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">&#10024;</span> Interactive Visualization (Recursive DFS)</h2>
+      <div class="visualizer" id="depth-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step-depth">Next Step</button>
+          <button class="btn btn--outline" id="btn-reset-depth">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; margin: 2rem 0; flex-wrap: wrap; justify-content: center; align-items:center;">
+          <!-- Tree Display -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;" id="depth-tree-canvas">
+            <div>
+              <div class="t-node" id="dn-1" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;position:relative;">
+                3
+                <div class="return-val" id="rv-1" style="position:absolute; top:-25px; color:var(--accent-green); font-size:12px; font-weight:bold; opacity:0; transition:all 0.3s;">ret ?</div>
+              </div>
+            </div>
+            <div style="display:flex; gap: 80px;">
+              <div class="t-node" id="dn-2" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;position:relative;">
+                9
+                <div class="return-val" id="rv-2" style="position:absolute; top:-25px; left:-20px; color:var(--accent-green); font-size:12px; font-weight:bold; opacity:0; transition:all 0.3s;">ret ?</div>
+              </div>
+              <div class="t-node" id="dn-3" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;position:relative;">
+                20
+                <div class="return-val" id="rv-3" style="position:absolute; top:-25px; right:-20px; color:var(--accent-green); font-size:12px; font-weight:bold; opacity:0; transition:all 0.3s;">ret ?</div>
+              </div>
+            </div>
+            <div style="display:flex; gap: 20px; margin-left:130px;">
+              <div class="t-node" id="dn-4" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;position:relative;">
+                15
+                <div class="return-val" id="rv-4" style="position:absolute; top:-25px; left:-20px; color:var(--accent-green); font-size:12px; font-weight:bold; opacity:0; transition:all 0.3s;">ret ?</div>
+              </div>
+              <div class="t-node" id="dn-5" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;position:relative;">
+                7
+                <div class="return-val" id="rv-5" style="position:absolute; top:-25px; right:-20px; color:var(--accent-green); font-size:12px; font-weight:bold; opacity:0; transition:all 0.3s;">ret ?</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Call Stack Display -->
+          <div style="display: flex; flex-direction: column; align-items: center; margin-left: 2rem;">
+            <h4 style="margin-bottom: 0.5rem; color: var(--text-secondary);">Call Stack</h4>
+            <div id="call-stack-container" style="width: 150px; min-height: 150px; border: 2px solid var(--border-primary); border-top: none; border-radius: 0 0 var(--radius-sm) var(--radius-sm); display: flex; flex-direction: column-reverse; justify-content: flex-start; align-items: center; padding: 5px; gap: 5px; background: var(--bg-elevated);">
+            </div>
+          </div>
+        </div>
+
+        <div class="visualizer__log" id="depth-log">
+          Click "Next Step" to call <code>maxDepth(3)</code>.
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const btnStep = document.getElementById("btn-step-depth");
+          const btnReset = document.getElementById("btn-reset-depth");
+          const callStackContainer = document.getElementById("call-stack-container");
+          const log = document.getElementById("depth-log");
+          
+          // Operations sequence
+          // call 1
+          // call 2, ret 1
+          // call 3
+          // call 4, ret 1
+          // call 5, ret 1
+          // ret 3 = 1 + max(1, 1) = 2
+          // ret 1 = 1 + max(1, 2) = 3
+          const steps = [
+            { type: 'call', node: 1, val: 3, msg: "Calling maxDepth on root(3)." },
+            { type: 'call', node: 2, val: 9, msg: "Calling maxDepth on left child(9)." },
+            { type: 'ret', node: 2, val: 9, ret: 1, msg: "Node 9 is a leaf. Returns max(0,0) + 1 = 1." },
+            { type: 'call', node: 3, val: 20, msg: "Calling maxDepth on right child(20)." },
+            { type: 'call', node: 4, val: 15, msg: "Calling maxDepth on left child(15)." },
+            { type: 'ret', node: 4, val: 15, ret: 1, msg: "Node 15 is a leaf. Returns max(0,0) + 1 = 1." },
+            { type: 'call', node: 5, val: 7, msg: "Calling maxDepth on right child(7)." },
+            { type: 'ret', node: 5, val: 7, ret: 1, msg: "Node 7 is a leaf. Returns max(0,0) + 1 = 1." },
+            { type: 'ret', node: 3, val: 20, ret: 2, msg: "Node 20 returns max(1, 1) + 1 = 2." },
+            { type: 'ret', node: 1, val: 3, ret: 3, msg: "Root 3 returns max(1, 2) + 1 = 3. <strong>Done!</strong>" }
+          ];
+
+          let stepIdx = 0;
+          let callStack = [];
+
+          function renderCallStack() {
+            callStackContainer.innerHTML = "";
+            callStack.forEach(val => {
+              const el = document.createElement("div");
+              el.style.width = "100%";
+              el.style.padding = "10px 0";
+              el.style.textAlign = "center";
+              el.style.background = "var(--accent-blue-dim)";
+              el.style.border = "1px solid var(--accent-blue)";
+              el.style.borderRadius = "var(--radius-sm)";
+              el.style.fontWeight = "bold";
+              el.textContent = `maxDepth(${val})`;
+              callStackContainer.appendChild(el);
+            });
+          }
+
+          function resetViz() {
+            for(let i=1; i<=5; i++) {
+              const node = document.getElementById(`dn-${i}`);
+              node.style.background = "var(--bg-elevated)";
+              node.style.borderColor = "var(--border-primary)";
+              node.style.boxShadow = "none";
+              
+              const rv = document.getElementById(`rv-${i}`);
+              rv.style.opacity = "0";
+              rv.textContent = "ret ?";
+            }
+          }
+
+          function init() {
+            stepIdx = 0;
+            callStack = [];
+            resetViz();
+            renderCallStack();
+            log.innerHTML = "Click \"Next Step\" to call <code>maxDepth(3)</code>.";
+            btnStep.disabled = false;
+          }
+
+          btnStep.addEventListener("click", () => {
+            if (stepIdx >= steps.length) return;
+            
+            const step = steps[stepIdx];
+            if (step.type === 'call') {
+              callStack.push(step.val);
+              document.getElementById(`dn-${step.node}`).style.borderColor = "var(--accent-blue)";
+              document.getElementById(`dn-${step.node}`).style.background = "var(--accent-blue-dim)";
+            } else if (step.type === 'ret') {
+              callStack.pop();
+              document.getElementById(`dn-${step.node}`).style.borderColor = "var(--accent-green)";
+              document.getElementById(`dn-${step.node}`).style.background = "var(--bg-elevated)";
+              
+              const rv = document.getElementById(`rv-${step.node}`);
+              rv.textContent = `ret ${step.ret}`;
+              rv.style.opacity = "1";
+            }
+            
+            renderCallStack();
+            log.innerHTML = step.msg;
+            
+            stepIdx++;
+            if (stepIdx >= steps.length) {
+              btnStep.disabled = true;
+            }
+          });
+
+          btnReset.addEventListener("click", init);
+        });
+      </script>
+    </section>
+
+    <!-- 5. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++ (DFS)</button><button class="code-block__tab" data-lang="python">Python (DFS)</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    int maxDepth(TreeNode* root) {
+        // Base case: empty tree has depth 0
+        if (root == nullptr) {
+            return 0;
+        }
+        
+        // Recursively find depth of left and right subtrees
+        int leftDepth = maxDepth(root-&gt;left);
+        int rightDepth = maxDepth(root-&gt;right);
+        
+        // Depth is max of left and right, plus 1 for the current node
+        return 1 + max(leftDepth, rightDepth);
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def maxDepth(self, root: Optional[TreeNode]) -> int:
+        # Base case: empty tree has depth 0
+        if not root:
+            return 0
+            
+        # Recursively find depth of left and right subtrees
+        left_depth = self.maxDepth(root.left)
+        right_depth = self.maxDepth(root.right)
+        
+        # Depth is max of left and right, plus 1 for the current node
+        return 1 + max(left_depth, right_depth)</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <footer class="footer" style="margin-top: 4rem; padding: 2rem 0; text-align: center; color: var(--text-tertiary); border-top: 1px solid var(--border-primary);">
+    <p>CP-II Lab &copy; 2026. Built for learning.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

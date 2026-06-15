@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Temperatures - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-08-stack-queue.html" class="navbar__link">&#8592; Back to Module 08: Stack & Queue</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-08-stack-queue.html">Module 08: Stack & Queue</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Daily Temperatures</span></div>
+      <h1 class="problem-header__title">Daily Temperatures</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/daily-temperatures/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given an array of temperatures, return an array such that answer[i] is the number of days you have to wait after the i<sup>th</sup> day to get a warmer temperature. If none exists, put 0.</p><p><strong>Example:</strong> <code>[73,74,75,71,69,72,76,73]</code> &rarr; <code>[1,1,4,2,1,1,0,0]</code></p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Monotonic Stack</div><p style='font-size:0.9rem;margin-top:0.5rem;'>Maintain a stack of indices corresponding to temperatures in decreasing order. When a warmer day arrives, it resolves the wait time for all colder days currently in the stack.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Nested Loops</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">For each day, scan forward until a warmer day is found.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> dailyTemperatures(T):<br>&nbsp;&nbsp;ans = array of 0s<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> j = i+1 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> T[j] > T[i]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ans[i] = j - i; <span class='keyword'>break</span><br>&nbsp;&nbsp;<span class='keyword'>return</span> ans</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n<sup>2</sup>)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Simple logic</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>O(n^2) is too slow for large inputs</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We re-scan the same temperatures repeatedly. A Monotonic Stack can process each element exactly twice (push and pop) for O(n).</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Monotonic Decreasing Stack</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Iterate through temperatures. While current temp is > temp at stack.top(), pop the stack. The wait time for the popped day is <code>curr_idx - popped_idx</code>. Then push current index.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> dailyTemperatures(T):<br>&nbsp;&nbsp;ans = array of 0s, stack = []<br>&nbsp;&nbsp;<span class='keyword'>for</span> i, t <span class='keyword'>in</span> enumerate(T):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>while</span> stack <span class='keyword'>and</span> t > T[stack.top()]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prev = stack.pop()<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ans[prev] = i - prev<br>&nbsp;&nbsp;&nbsp;&nbsp;stack.push(i)<br>&nbsp;&nbsp;<span class='keyword'>return</span> ans</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(n) time &mdash; each index pushed/popped once</li><li>Classic Monotonic Stack pattern</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Stack stores indices, not values (can be confusing)</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="stack-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step">Step Processing</button>
+          <button class="btn btn--outline" id="btn-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap;">
+            <div style="display: flex; flex-direction: column; gap: 2rem; align-items: center;">
+                <div>
+                    <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem; text-align:center;">Temperatures</div>
+                    <div id="temps-container" style="display: flex; gap: 0.5rem;"></div>
+                </div>
+                <div>
+                    <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem; text-align:center;">Result (Days to Wait)</div>
+                    <div id="res-container" style="display: flex; gap: 0.5rem;"></div>
+                </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">Stack (Indices)</div>
+                <div id="stack-container" style="display: flex; flex-direction: column-reverse; gap: 0.5rem; width: 100px; min-height: 200px; border-bottom: 2px solid var(--border-primary); padding-bottom: 0.5rem;"></div>
+            </div>
+        </div>
+
+        <div class="visualizer__log" id="viz-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Step Processing' to iterate through the temperatures.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const temps = [73, 74, 75, 71, 69, 72, 76, 73];
+          let res = new Array(temps.length).fill(0);
+          let stack = [];
+          let currentIdx = 0;
+          let state = 0; // 0: checking currentIdx, 1: popping stack, 2: pushing currentIdx
+          let isDone = false;
+          
+          const tempsCont = document.getElementById('temps-container');
+          const resCont = document.getElementById('res-container');
+          const stackCont = document.getElementById('stack-container');
+          const log = document.getElementById('viz-log');
+
+          function init() {
+              res = new Array(temps.length).fill(0);
+              stack = [];
+              currentIdx = 0;
+              state = 0;
+              isDone = false;
+              render();
+              log.innerHTML = "Click 'Step Processing' to iterate through the temperatures.";
+          }
+
+          function createBox(val, highlight) {
+              const el = document.createElement('div');
+              el.className = 'array-item';
+              el.style.width = '40px';
+              el.style.height = '40px';
+              el.style.display = 'flex';
+              el.style.alignItems = 'center';
+              el.style.justifyContent = 'center';
+              el.style.border = '2px solid var(--border-primary)';
+              el.style.borderRadius = '8px';
+              el.textContent = val;
+              if (highlight) {
+                  el.style.background = 'var(--accent-purple)';
+                  el.style.color = 'black';
+              } else {
+                  el.style.background = 'var(--bg-secondary)';
+              }
+              return el;
+          }
+
+          function render() {
+              tempsCont.innerHTML = '';
+              resCont.innerHTML = '';
+              temps.forEach((t, i) => {
+                  const isCurrent = i === currentIdx;
+                  tempsCont.appendChild(createBox(t, isCurrent && state !== 1));
+                  
+                  const rBox = createBox(res[i], false);
+                  if (res[i] > 0) {
+                      rBox.style.background = 'var(--accent-green)';
+                      rBox.style.color = 'black';
+                  }
+                  resCont.appendChild(rBox);
+              });
+              
+              stackCont.innerHTML = '';
+              stack.forEach((idx, i) => {
+                  const isTop = i === stack.length - 1;
+                  const el = document.createElement('div');
+                  el.style.width = '100%';
+                  el.style.height = '40px';
+                  el.style.display = 'flex';
+                  el.style.alignItems = 'center';
+                  el.style.justifyContent = 'center';
+                  el.style.background = (isTop && state === 1) ? 'var(--accent-orange)' : 'var(--bg-secondary)';
+                  if (isTop && state === 1) el.style.color = 'black';
+                  el.style.border = '2px solid var(--border-primary)';
+                  el.style.borderRadius = '8px';
+                  el.innerHTML = `<span style="font-size:0.8rem; color:var(--text-secondary)">i=${idx}</span>&nbsp;<b>${temps[idx]}</b>`;
+                  stackCont.appendChild(el);
+              });
+          }
+
+          function step() {
+              if (isDone) return;
+              if (currentIdx >= temps.length) {
+                  log.innerHTML = `🎉 <strong>Processing Complete!</strong>`;
+                  isDone = true;
+                  render();
+                  return;
+              }
+              
+              if (state === 0 || state === 1) {
+                  if (stack.length > 0 && temps[currentIdx] > temps[stack[stack.length - 1]]) {
+                      state = 1;
+                      const prevIdx = stack.pop();
+                      res[prevIdx] = currentIdx - prevIdx;
+                      log.innerHTML = `<code>temps[${currentIdx}] (${temps[currentIdx]}) > temps[${prevIdx}] (${temps[prevIdx]})</code>. Popped index ${prevIdx} from stack. Settled day ${prevIdx} to <strong>${currentIdx - prevIdx}</strong> days.`;
+                  } else {
+                      state = 2; // move to push
+                      step(); // immediately transition visually if we don't pop
+                      return;
+                  }
+              } else if (state === 2) {
+                  stack.push(currentIdx);
+                  log.innerHTML = `Pushed index <strong>${currentIdx}</strong> (Temp: ${temps[currentIdx]}) to stack.`;
+                  currentIdx++;
+                  state = 0;
+              }
+              
+              render();
+          }
+
+          document.getElementById('btn-step').addEventListener('click', step);
+          document.getElementById('btn-reset').addEventListener('click', init);
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: temps = [73, 74, 75, 71, 69, 72]</div><div class='math-block' style='text-align:left;font-size:0.9rem;'>
+<pre style="color:var(--text-secondary)">
+i=0 (73): Stack=[0]. Res=[0,0,0,0,0,0]
+i=1 (74): 74 > temps[0](73). Pop 0. Res[0] = 1-0 = 1. Stack=[1]
+i=2 (75): 75 > temps[1](74). Pop 1. Res[1] = 2-1 = 1. Stack=[2]
+i=3 (71): 71 &lt; 75. Push 3. Stack=[2, 3]
+i=4 (69): 69 &lt; 71. Push 4. Stack=[2, 3, 4]
+i=5 (72): 72 > temps[4](69). Pop 4. Res[4] = 5-4 = 1.
+          72 > temps[3](71). Pop 3. Res[3] = 5-3 = 2.
+          72 &lt; temps[2](75). Push 5. Stack=[2, 5]
+
+<span class="highlight">Final Res: [1, 1, 0, 2, 1, 0]</span>
+</pre></div></div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Nested Loops</td><td><code>O(n<sup>2</sup>)</code></td><td><code>O(1)</code></td><td>Too slow</td></tr>
+<tr class="row--optimal"><td>Monotonic Stack</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    vector&lt;int&gt; dailyTemperatures(vector&lt;int&gt;&amp; T) {
+        vector&lt;int&gt; ans(T.size(), 0);
+        stack&lt;int&gt; st; // stores indices
+        for (int i = 0; i &lt; T.size(); i++) {
+            while (!st.empty() &amp;&amp; T[i] &gt; T[st.top()]) {
+                int prev = st.top(); st.pop();
+                ans[prev] = i - prev;
+            }
+            st.push(i);
+        }
+        return ans;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def dailyTemperatures(self, T):
+        ans = [0] * len(T)
+        stack = []
+        for i, t in enumerate(T):
+            while stack and t &gt; T[stack[-1]]:
+                prev = stack.pop()
+                ans[prev] = i - prev
+            stack.append(i)
+        return ans</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

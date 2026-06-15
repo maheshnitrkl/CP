@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>N-Queens - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-05-recursion-backtracking.html" class="navbar__link">&#8592; Back to Module 05: Recursion & Backtracking</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-05-recursion-backtracking.html">Module 05: Recursion & Backtracking</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">N-Queens</span></div>
+      <h1 class="problem-header__title">N-Queens</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--hard">Hard</span>
+        <a href="https://leetcode.com/problems/n-queens/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Place n queens on an n&times;n chessboard so that no two queens attack each other (no two queens share same row, column, or diagonal). Return all distinct solutions.</p><p><strong>Example (n=4):</strong> Two solutions exist.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Constraint: No two queens on same row, column, or diagonal</div><p style='font-size:0.9rem;margin-top:0.5rem;'>Rows: Place exactly 1 queen per row (guaranteed by our algorithm).</p><p style='font-size:0.85rem;'>Columns: Track used columns in a set.</p><p style='font-size:0.85rem;'>Diagonals: For the &searr; diagonal, all cells have the same (row - col) value. For the &swarr; diagonal, all cells have the same (row + col) value. Track these in sets.</p><div class='formula' style='margin-top:1rem;'>Complexity: O(n!) placements to try</div></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Try All Positions</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Place queens in every possible position on the board and check validity after all n queens are placed.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> solveNQueens(n):<br>&nbsp;&nbsp;<span class='keyword'>for</span> each of n<sup>n</sup> placements:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> isValid(placement):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result.append(placement)</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n<sup>n</sup>)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n<sup>2</sup>)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Exhaustive &mdash; finds all solutions</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>n<sup>n</sup> is astronomically large</li><li>Checks validity only after placing all queens</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We're placing queens in impossible positions. If row 0's queen attacks row 1's queen, there's no point placing queens in rows 2-7. We should check conflicts as we go.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Backtracking Row by Row with Conflict Sets</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Place one queen per row. For each row, try each column. Use sets for columns, forward diagonals (row-col), and backward diagonals (row+col) to check conflicts in O(1). Backtrack immediately on conflict.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> solveNQueens(n):<br>&nbsp;&nbsp;cols = Set(), diag1 = Set(), diag2 = Set()<br>&nbsp;&nbsp;board = n&times;n grid of '..'<br>&nbsp;&nbsp;<span class='keyword'>function</span> backtrack(row):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> row == n: <span class='comment'>// all queens placed!</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result.append(board); <span class='keyword'>return</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> col = 0 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='highlight'><span class='keyword'>if</span> col in cols or (row-col) in diag1 or (row+col) in diag2:</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>continue</span> <span class='comment'>// PRUNE!</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;board[row][col] = 'Q'<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cols.add(col); diag1.add(row-col); diag2.add(row+col)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;backtrack(row + 1)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;board[row][col] = '.' <span class='comment'>// UN-CHOOSE</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cols.remove(col); diag1.remove(row-col); diag2.remove(row+col)<br>&nbsp;&nbsp;backtrack(0)</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n!)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n<sup>2</sup>)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Prunes impossible branches immediately</li><li>O(1) conflict check using sets</li><li>Row-by-row guarantees no row conflicts</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Still exponential for large n</li><li>Requires understanding of diagonal indexing</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step N-Queens</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap; align-items: flex-start;">
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">4x4 Chessboard</div>
+                <div id="chessboard" style="display: grid; grid-template-columns: repeat(4, 50px); grid-template-rows: repeat(4, 50px); border: 2px solid var(--border-primary);"></div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="text-align: center;">
+                    <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">cols</div>
+                    <div id="cols-set" style="display: flex; gap: 0.5rem; min-width: 60px; min-height: 30px; border: 1px dashed var(--border-primary); padding: 4px; border-radius: 4px;"></div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">diag1 (row-col)</div>
+                    <div id="diag1-set" style="display: flex; gap: 0.5rem; min-width: 60px; min-height: 30px; border: 1px dashed var(--border-primary); padding: 4px; border-radius: 4px;"></div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">diag2 (row+col)</div>
+                    <div id="diag2-set" style="display: flex; gap: 0.5rem; min-width: 60px; min-height: 30px; border: 1px dashed var(--border-primary); padding: 4px; border-radius: 4px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; font-family: var(--font-mono); margin: 1rem 0;">Result Boards</div>
+        <div id="result-sets" style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; min-height: 40px;"></div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Step N-Queens' to begin backtracking.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const n = 4;
+          
+          let callStack = []; 
+          // stack item: {row, col, state}
+          // state: 0 (about to check/place), 1 (back from recursion, remove)
+          
+          let cols = new Set();
+          let diag1 = new Set();
+          let diag2 = new Set();
+          let board = Array(n).fill().map(() => Array(n).fill('.'));
+          
+          let results = [];
+          let isDone = false;
+          
+          const boardCont = document.getElementById('chessboard');
+          const colsCont = document.getElementById('cols-set');
+          const diag1Cont = document.getElementById('diag1-set');
+          const diag2Cont = document.getElementById('diag2-set');
+          const resCont = document.getElementById('result-sets');
+          const log = document.getElementById('search-log');
+
+          function init() {
+              callStack = [{row: 0, col: 0, state: 0}];
+              cols = new Set();
+              diag1 = new Set();
+              diag2 = new Set();
+              board = Array(n).fill().map(() => Array(n).fill('.'));
+              results = [];
+              isDone = false;
+              render();
+          }
+
+          function renderSet(set, container, color) {
+              container.innerHTML = '';
+              Array.from(set).forEach(val => {
+                  const el = document.createElement('div');
+                  el.style.width = '25px';
+                  el.style.height = '25px';
+                  el.style.display = 'flex';
+                  el.style.alignItems = 'center';
+                  el.style.justifyContent = 'center';
+                  el.style.background = color;
+                  el.style.color = 'black';
+                  el.style.fontWeight = 'bold';
+                  el.style.borderRadius = '4px';
+                  el.style.fontSize = '12px';
+                  el.textContent = val;
+                  container.appendChild(el);
+              });
+          }
+
+          function render(highlightR = -1, highlightC = -1, isConflict = false) {
+              boardCont.innerHTML = '';
+              for (let r = 0; r < n; r++) {
+                  for (let c = 0; c < n; c++) {
+                      const cell = document.createElement('div');
+                      cell.style.display = 'flex';
+                      cell.style.alignItems = 'center';
+                      cell.style.justifyContent = 'center';
+                      cell.style.fontSize = '1.8rem';
+                      
+                      // Checkerboard pattern
+                      if ((r + c) % 2 === 0) {
+                          cell.style.background = 'var(--bg-secondary)'; // light
+                      } else {
+                          cell.style.background = 'var(--bg-elevated)'; // dark
+                      }
+                      
+                      if (r === highlightR && c === highlightC) {
+                          cell.style.background = isConflict ? 'var(--accent-red)' : 'var(--accent-green)';
+                      }
+                      
+                      if (board[r][c] === 'Q') {
+                          cell.textContent = '♛';
+                          if (r === highlightR && c === highlightC && isConflict) {
+                              cell.textContent = '❌';
+                          }
+                      }
+                      
+                      boardCont.appendChild(cell);
+                  }
+              }
+
+              renderSet(cols, colsCont, 'var(--accent-blue)');
+              renderSet(diag1, diag1Cont, 'var(--accent-purple)');
+              renderSet(diag2, diag2Cont, 'var(--accent-orange)');
+
+              resCont.innerHTML = '';
+              results.forEach((res, i) => {
+                  const wrap = document.createElement('div');
+                  wrap.style.display = 'grid';
+                  wrap.style.gridTemplateColumns = 'repeat(4, 15px)';
+                  wrap.style.gridTemplateRows = 'repeat(4, 15px)';
+                  wrap.style.gap = '1px';
+                  wrap.style.border = '1px solid var(--border-primary)';
+                  wrap.style.padding = '2px';
+                  wrap.style.background = 'var(--bg-secondary)';
+                  
+                  for (let r = 0; r < n; r++) {
+                      for (let c = 0; c < n; c++) {
+                          const minicell = document.createElement('div');
+                          minicell.style.background = res[r][c] === 'Q' ? 'var(--accent-green)' : 'transparent';
+                          wrap.appendChild(minicell);
+                      }
+                  }
+                  resCont.appendChild(wrap);
+              });
+          }
+
+          function step() {
+              if (isDone || callStack.length === 0) {
+                  log.innerHTML = `🎉 Recursion complete! Found <strong>${results.length}</strong> solutions for 4-Queens.`;
+                  isDone = true;
+                  render();
+                  return;
+              }
+              
+              let top = callStack[callStack.length - 1];
+              
+              if (top.row >= n) {
+                  log.innerHTML = `Base case! All 4 rows placed. <strong>Solution Found!</strong> Returning.`;
+                  results.push(board.map(r => [...r]));
+                  callStack.pop();
+                  render();
+                  return;
+              }
+              
+              if (top.col >= n) {
+                  log.innerHTML = `Checked all columns for row <code>${top.row}</code>. <strong>Backtracking</strong> to previous row.`;
+                  callStack.pop();
+                  render();
+                  return;
+              }
+              
+              if (top.state === 0) {
+                  let r = top.row;
+                  let c = top.col;
+                  
+                  let d1 = r - c;
+                  let d2 = r + c;
+                  
+                  if (cols.has(c) || diag1.has(d1) || diag2.has(d2)) {
+                      log.innerHTML = `Trying row=${r}, col=${c}. <strong>Conflict detected!</strong> Pruning branch. Moving to next col.`;
+                      board[r][c] = 'Q'; // temporarily show to illustrate conflict
+                      render(r, c, true);
+                      board[r][c] = '.';
+                      top.col++;
+                  } else {
+                      log.innerHTML = `Trying row=${r}, col=${c}. <strong>Valid placement!</strong> Placing ♛, updating sets, and recursing to row=${r+1}.`;
+                      board[r][c] = 'Q';
+                      cols.add(c);
+                      diag1.add(d1);
+                      diag2.add(d2);
+                      
+                      top.state = 1; // ready to remove when backtracking
+                      callStack.push({row: r + 1, col: 0, state: 0});
+                      
+                      render(r, c, false);
+                  }
+              } else if (top.state === 1) {
+                  let r = top.row;
+                  let c = top.col;
+                  let d1 = r - c;
+                  let d2 = r + c;
+                  
+                  log.innerHTML = `Returned to row=${r}. <strong>Backtracking (Un-Choose)</strong>: Removing ♛ from col=${c} and clearing sets.`;
+                  
+                  board[r][c] = '.';
+                  cols.delete(c);
+                  diag1.delete(d1);
+                  diag2.delete(d2);
+                  
+                  top.col++;
+                  top.state = 0;
+                  
+                  render(r, c, false);
+              }
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              init();
+              log.innerHTML = "Click 'Step N-Queens' to begin backtracking.";
+          });
+          init();
+      });
+      </script>
+    </section><section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128268;</span> Logic Flow Diagram</h2><div class='flowchart'><div class='flow-node flow-node--start'>backtrack(row = 0)</div><div class='flow-arrow'></div><div class='flow-node flow-node--process' style='background:rgba(245,158,11,0.1);border:2px solid #f59e0b;'>row == n?</div><div class='flow-arrow'></div><div class='flow-arrow-label'>NO &rarr; Try each column</div><div class='flow-node flow-node--process' style='background:rgba(239,68,68,0.1);border:2px solid #ef4444;'>Check: col in cols? (row-col) in diag1? (row+col) in diag2?</div><div class='flow-arrow'></div><div class='flow-arrow-label'>No conflict</div><div class='flow-node flow-node--process'>Place Queen, update sets</div><div class='flow-arrow'></div><div class='flow-node flow-node--process' style='background:rgba(139,92,246,0.1);border:2px solid var(--accent-purple);'>backtrack(row + 1)</div><div class='flow-arrow'></div><div class='flow-node flow-node--process' style='background:rgba(239,68,68,0.1);border:2px solid #ef4444;'>Remove Queen, restore sets</div><div class='flow-arrow'></div><div class='flow-node flow-node--end'>Return (try next column)</div></div></section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Try All Positions</td><td><code>O(n<sup>n</sup>)</code></td><td><code>O(n<sup>2</sup>)</code></td><td>Far too slow</td></tr>
+<tr class="row--optimal"><td>Backtracking + Conflict Sets</td><td><code>O(n!)</code></td><td><code>O(n<sup>2</sup>)</code></td><td>Optimal with O(1) conflict check</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    vector&lt;vector&lt;string&gt;&gt; solveNQueens(int n) {
+        vector&lt;vector&lt;string&gt;&gt; result;
+        vector&lt;string&gt; board(n, string(n, '.'));
+        set&lt;int&gt; cols, diag1, diag2;
+        backtrack(0, n, board, cols, diag1, diag2, result);
+        return result;
+    }
+    void backtrack(int row, int n, vector&lt;string&gt;&amp; board,
+                   set&lt;int&gt;&amp; cols, set&lt;int&gt;&amp; d1, set&lt;int&gt;&amp; d2,
+                   vector&lt;vector&lt;string&gt;&gt;&amp; res) {
+        if (row == n) { res.push_back(board); return; }
+        for (int col = 0; col &lt; n; col++) {
+            if (cols.count(col) || d1.count(row-col) || d2.count(row+col))
+                continue;
+            board[row][col] = 'Q';
+            cols.insert(col); d1.insert(row-col); d2.insert(row+col);
+            backtrack(row+1, n, board, cols, d1, d2, res);
+            board[row][col] = '.';
+            cols.erase(col); d1.erase(row-col); d2.erase(row+col);
+        }
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def solveNQueens(self, n):
+        result = []
+        cols, diag1, diag2 = set(), set(), set()
+        board = [['.' for _ in range(n)] for _ in range(n)]
+        
+        def backtrack(row):
+            if row == n:
+                result.append([''.join(r) for r in board])
+                return
+            for col in range(n):
+                if col in cols or (row-col) in diag1 or (row+col) in diag2:
+                    continue
+                board[row][col] = 'Q'
+                cols.add(col); diag1.add(row-col); diag2.add(row+col)
+                backtrack(row + 1)
+                board[row][col] = '.'
+                cols.discard(col); diag1.discard(row-col); diag2.discard(row+col)
+        
+        backtrack(0)
+        return result</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

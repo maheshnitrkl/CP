@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Module 1: Number Theory — Learn prime numbers, factorization, Sieve of Eratosthenes, GCD, and modular arithmetic with interactive visualizations and optimized solutions.">
+  <title>Module 01: Number Theory — CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/module.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body class="bg-dots">
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="navbar__inner">
+      <a href="../index.html" class="navbar__brand">
+        <span class="navbar__brand-icon">⚡</span>
+        <span>CP-II Lab</span>
+      </a>
+      <div class="navbar__nav" id="nav-menu">
+        <a href="../index.html" class="navbar__link">📚 All Modules</a>
+        <a href="#theory" class="navbar__link">📖 Theory</a>
+        <a href="#visualization" class="navbar__link">🎨 Visualize</a>
+        <a href="#problems" class="navbar__link">💡 Problems</a>
+      </div>
+      <div class="navbar__actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
+        <button class="navbar__hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Module Hero -->
+  <div class="module-page">
+    <section class="module-hero">
+      <div class="module-hero__bg">
+        <div class="module-hero__orb module-hero__orb--1" style="background: var(--accent-cyan);"></div>
+        <div class="module-hero__orb module-hero__orb--2" style="background: var(--accent-purple);"></div>
+      </div>
+      <div class="container">
+        <div class="module-hero__content">
+          <div class="breadcrumb">
+            <a href="../index.html">Home</a>
+            <span class="breadcrumb__sep">›</span>
+            <span class="breadcrumb__current">Module 01</span>
+          </div>
+          <span class="module-hero__number">🔢 Module 01</span>
+          <h1 class="module-hero__title">Number <span class="text-gradient">Theory</span></h1>
+          <p class="module-hero__desc">Explore the mathematical foundations of competitive programming — prime numbers, factorization, GCD, and modular arithmetic. These concepts form the backbone of many algorithmic problems.</p>
+          <div class="module-hero__meta">
+            <span class="module-hero__meta-item"><span class="icon">📝</span> 6 Problems</span>
+            <span class="module-hero__meta-item"><span class="icon">⏱️</span> ~3 hours</span>
+            <span class="module-hero__meta-item"><span class="icon">📊</span> Easy to Medium</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Module Layout -->
+    <div class="module-layout">
+      <!-- Sidebar TOC -->
+      <aside class="module-sidebar">
+        <nav class="toc">
+          <div class="toc__title">Contents</div>
+          <div class="toc__list">
+            <a href="#theory" class="toc__link active">📖 Theory</a>
+            <a href="#primes" class="toc__link toc__link--sub">Prime Numbers</a>
+            <a href="#sieve" class="toc__link toc__link--sub">Sieve of Eratosthenes</a>
+            <a href="#factorization" class="toc__link toc__link--sub">Prime Factorization</a>
+            <a href="#gcd" class="toc__link toc__link--sub">GCD & LCM</a>
+            <a href="#visualization" class="toc__link">🎨 Visualization</a>
+            <a href="#problems" class="toc__link">💡 Problems</a>
+            <a href="#p1" class="toc__link toc__link--sub">Class Test</a>
+            <a href="#p2" class="toc__link toc__link--sub">Largest Prime Factor</a>
+            <a href="#p3" class="toc__link toc__link--sub">Integer to Roman</a>
+            <a href="#p4" class="toc__link toc__link--sub">Total Chocolates II</a>
+            <a href="#p5" class="toc__link toc__link--sub">Count Primes</a>
+            <a href="#p6" class="toc__link toc__link--sub">Make them Co-prime</a>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="module-main">
+
+        <!-- ============ THEORY SECTION ============ -->
+        <section class="module-section" id="theory">
+          <h2 class="module-section__title"><span class="icon">📖</span> Theory</h2>
+
+          <!-- Prime Numbers -->
+          <div class="theory-block" id="primes">
+            <h3 class="theory-block__title">🔢 Prime Numbers</h3>
+            <div class="theory-block__content">
+              <p>A <strong>prime number</strong> is a natural number greater than 1 that has no positive divisors other than 1 and itself. Prime numbers are the "building blocks" of natural numbers.</p>
+              <p><strong>Examples:</strong> 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31...</p>
+              <p><strong>Key Properties:</strong></p>
+              <ul>
+                <li><strong>2</strong> is the only even prime number</li>
+                <li>Every prime greater than 3 can be written as <code>6k ± 1</code></li>
+                <li>To check if <code>n</code> is prime, only test divisors up to <code>√n</code></li>
+                <li>There are infinitely many prime numbers (Euclid's theorem)</li>
+              </ul>
+
+              <div class="callout callout--tip">
+                <div class="callout__title">💡 Optimization Tip</div>
+                <div class="callout__body">When checking if a number is prime, only iterate up to √n. If no factor is found, the number is prime. This reduces time complexity from O(n) to O(√n).</div>
+              </div>
+
+              <h4>Primality Test — O(√n)</h4>
+              <div class="code-block">
+                <div class="code-block__header">
+                  <div class="code-block__tabs">
+                    <button class="code-block__tab active" data-lang="cpp">C++</button>
+                    <button class="code-block__tab" data-lang="python">Python</button>
+                  </div>
+                  <button class="code-block__copy">📋 Copy</button>
+                </div>
+                <div class="code-block__body">
+                  <div class="code-block__content active" data-lang="cpp">
+                    <pre><code class="language-cpp">bool isPrime(int n) {
+    if (n <= 1) return false;
+    if (n <= 3) return true;
+    if (n % 2 == 0 || n % 3 == 0) return false;
+    for (int i = 5; i * i <= n; i += 6) {
+        if (n % i == 0 || n % (i + 2) == 0)
+            return false;
+    }
+    return true;
+}</code></pre>
+                  </div>
+                  <div class="code-block__content" data-lang="python">
+                    <pre><code class="language-python">def is_prime(n):
+    if n <= 1:
+        return False
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    i = 5
+    while i * i <= n:
+        if n % i == 0 or n % (i + 2) == 0:
+            return False
+        i += 6
+    return True</code></pre>
+                  </div>
+                </div>
+              </div>
+
+              <div class="approach__complexity">
+                <div class="complexity-badge">
+                  <span class="complexity-badge__label">Time:</span>
+                  <span class="complexity-badge__value">O(√n)</span>
+                </div>
+                <div class="complexity-badge">
+                  <span class="complexity-badge__label">Space:</span>
+                  <span class="complexity-badge__value">O(1)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sieve of Eratosthenes -->
+          <div class="theory-block" id="sieve">
+            <h3 class="theory-block__title">🧮 Sieve of Eratosthenes</h3>
+            <div class="theory-block__content">
+              <p>The <strong>Sieve of Eratosthenes</strong> is the most efficient way to find all primes up to a given limit <code>n</code>. Instead of checking each number individually, it systematically eliminates composite numbers.</p>
+
+              <p><strong>Algorithm Steps:</strong></p>
+              <ol>
+                <li>Create a boolean array of size <code>n+1</code>, initialized to <code>true</code></li>
+                <li>Start from <code>p = 2</code> (the first prime)</li>
+                <li>Mark all multiples of <code>p</code> (starting from <code>p²</code>) as composite</li>
+                <li>Find the next unmarked number and repeat</li>
+                <li>Continue until <code>p² > n</code></li>
+              </ol>
+
+              <div class="formula-box">
+                <span class="label">Time Complexity:</span>
+                O(n · log(log(n)))
+              </div>
+
+              <div class="code-block">
+                <div class="code-block__header">
+                  <div class="code-block__tabs">
+                    <button class="code-block__tab active" data-lang="cpp">C++</button>
+                    <button class="code-block__tab" data-lang="python">Python</button>
+                  </div>
+                  <button class="code-block__copy">📋 Copy</button>
+                </div>
+                <div class="code-block__body">
+                  <div class="code-block__content active" data-lang="cpp">
+                    <pre><code class="language-cpp">vector&lt;bool&gt; sieve(int n) {
+    vector&lt;bool&gt; is_prime(n + 1, true);
+    is_prime[0] = is_prime[1] = false;
+    
+    for (int p = 2; p * p <= n; p++) {
+        if (is_prime[p]) {
+            // Mark multiples of p starting from p²
+            for (int j = p * p; j <= n; j += p) {
+                is_prime[j] = false;
+            }
+        }
+    }
+    return is_prime;
+}
+
+// Usage: Find all primes up to 100
+vector&lt;bool&gt; primes = sieve(100);
+for (int i = 2; i <= 100; i++) {
+    if (primes[i]) cout &lt;&lt; i &lt;&lt; " ";
+}</code></pre>
+                  </div>
+                  <div class="code-block__content" data-lang="python">
+                    <pre><code class="language-python">def sieve_of_eratosthenes(n):
+    is_prime = [True] * (n + 1)
+    is_prime[0] = is_prime[1] = False
+    
+    p = 2
+    while p * p <= n:
+        if is_prime[p]:
+            # Mark multiples of p starting from p²
+            for j in range(p * p, n + 1, p):
+                is_prime[j] = False
+        p += 1
+    
+    return [i for i in range(2, n + 1) if is_prime[i]]
+
+# Usage: Find all primes up to 100
+primes = sieve_of_eratosthenes(100)
+print(primes)</code></pre>
+                  </div>
+                </div>
+              </div>
+
+              <div class="callout callout--important">
+                <div class="callout__title">⚠️ Key Insight</div>
+                <div class="callout__body">Start marking multiples from <code>p²</code> instead of <code>2p</code>, because all smaller multiples of p have already been marked by smaller primes. This is a crucial optimization!</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prime Factorization -->
+          <div class="theory-block" id="factorization">
+            <h3 class="theory-block__title">🔬 Prime Factorization</h3>
+            <div class="theory-block__content">
+              <p>Every integer greater than 1 can be uniquely represented as a product of prime numbers. This is the <strong>Fundamental Theorem of Arithmetic</strong>.</p>
+              <p><strong>Example:</strong> 60 = 2² × 3 × 5</p>
+
+              <div class="code-block">
+                <div class="code-block__header">
+                  <div class="code-block__tabs">
+                    <button class="code-block__tab active" data-lang="cpp">C++</button>
+                    <button class="code-block__tab" data-lang="python">Python</button>
+                  </div>
+                  <button class="code-block__copy">📋 Copy</button>
+                </div>
+                <div class="code-block__body">
+                  <div class="code-block__content active" data-lang="cpp">
+                    <pre><code class="language-cpp">vector&lt;pair&lt;int,int&gt;&gt; primeFactors(int n) {
+    vector&lt;pair&lt;int,int&gt;&gt; factors;
+    
+    // Check for 2
+    int count = 0;
+    while (n % 2 == 0) { count++; n /= 2; }
+    if (count) factors.push_back({2, count});
+    
+    // Check odd factors up to √n
+    for (int i = 3; i * i <= n; i += 2) {
+        count = 0;
+        while (n % i == 0) { count++; n /= i; }
+        if (count) factors.push_back({i, count});
+    }
+    
+    // If n is still > 1, then it's a prime factor
+    if (n > 1) factors.push_back({n, 1});
+    
+    return factors;
+}</code></pre>
+                  </div>
+                  <div class="code-block__content" data-lang="python">
+                    <pre><code class="language-python">def prime_factors(n):
+    factors = []
+    
+    # Check for 2
+    count = 0
+    while n % 2 == 0:
+        count += 1
+        n //= 2
+    if count:
+        factors.append((2, count))
+    
+    # Check odd factors up to √n
+    i = 3
+    while i * i <= n:
+        count = 0
+        while n % i == 0:
+            count += 1
+            n //= i
+        if count:
+            factors.append((i, count))
+        i += 2
+    
+    # If n is still > 1, it's a prime factor
+    if n > 1:
+        factors.append((n, 1))
+    
+    return factors
+
+# Example: prime_factors(60) → [(2, 2), (3, 1), (5, 1)]</code></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- GCD & LCM -->
+          <div class="theory-block" id="gcd">
+            <h3 class="theory-block__title">🔗 GCD & LCM</h3>
+            <div class="theory-block__content">
+              <p><strong>GCD (Greatest Common Divisor)</strong> — the largest number that divides both a and b.</p>
+              <p><strong>LCM (Least Common Multiple)</strong> — the smallest number divisible by both a and b.</p>
+              
+              <div class="formula-box">
+                <span class="label">Key Formula:</span>
+                LCM(a, b) = (a × b) / GCD(a, b)
+              </div>
+
+              <p><strong>Euclidean Algorithm</strong> for GCD:</p>
+              <ul>
+                <li><code>GCD(a, 0) = a</code></li>
+                <li><code>GCD(a, b) = GCD(b, a % b)</code></li>
+              </ul>
+
+              <div class="code-block">
+                <div class="code-block__header">
+                  <div class="code-block__tabs">
+                    <button class="code-block__tab active" data-lang="cpp">C++</button>
+                    <button class="code-block__tab" data-lang="python">Python</button>
+                  </div>
+                  <button class="code-block__copy">📋 Copy</button>
+                </div>
+                <div class="code-block__body">
+                  <div class="code-block__content active" data-lang="cpp">
+                    <pre><code class="language-cpp">// GCD using Euclidean Algorithm
+int gcd(int a, int b) {
+    while (b) {
+        a %= b;
+        swap(a, b);
+    }
+    return a;
+}
+
+// LCM using GCD
+int lcm(int a, int b) {
+    return (a / gcd(a, b)) * b; // divide first to avoid overflow
+}
+
+// Note: C++17 has __gcd(a, b) and C++17 has std::gcd(a, b)</code></pre>
+                  </div>
+                  <div class="code-block__content" data-lang="python">
+                    <pre><code class="language-python">import math
+
+# GCD using Euclidean Algorithm
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+
+# LCM using GCD
+def lcm(a, b):
+    return (a // gcd(a, b)) * b
+
+# Python 3.5+ has math.gcd(a, b)
+# Python 3.9+ has math.lcm(a, b)
+print(math.gcd(12, 8))   # 4
+print(math.lcm(12, 8))   # 24</code></pre>
+                  </div>
+                </div>
+              </div>
+
+              <div class="approach__complexity">
+                <div class="complexity-badge">
+                  <span class="complexity-badge__label">Time:</span>
+                  <span class="complexity-badge__value">O(log(min(a,b)))</span>
+                </div>
+                <div class="complexity-badge">
+                  <span class="complexity-badge__label">Space:</span>
+                  <span class="complexity-badge__value">O(1)</span>
+                </div>
+              </div>
+
+              <h4 style="margin-top: var(--space-6);">Complexity Comparison Table</h4>
+              <table class="complexity-table">
+                <thead>
+                  <tr>
+                    <th>Algorithm</th>
+                    <th>Time Complexity</th>
+                    <th>Space</th>
+                    <th>Use Case</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Primality Test (naive)</td>
+                    <td><code>O(n)</code></td>
+                    <td><code>O(1)</code></td>
+                    <td>Check single number</td>
+                  </tr>
+                  <tr>
+                    <td>Primality Test (optimized)</td>
+                    <td><code>O(√n)</code></td>
+                    <td><code>O(1)</code></td>
+                    <td>Check single number</td>
+                  </tr>
+                  <tr>
+                    <td>Sieve of Eratosthenes</td>
+                    <td><code>O(n·log(log(n)))</code></td>
+                    <td><code>O(n)</code></td>
+                    <td>Find all primes up to n</td>
+                  </tr>
+                  <tr>
+                    <td>Prime Factorization</td>
+                    <td><code>O(√n)</code></td>
+                    <td><code>O(log n)</code></td>
+                    <td>Find factors of n</td>
+                  </tr>
+                  <tr>
+                    <td>Euclidean GCD</td>
+                    <td><code>O(log(min(a,b)))</code></td>
+                    <td><code>O(1)</code></td>
+                    <td>GCD of two numbers</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ VISUALIZATION SECTION ============ -->
+        <section class="module-section" id="visualization">
+          <h2 class="module-section__title"><span class="icon">🎨</span> Interactive Visualization</h2>
+
+          <div class="viz-container">
+            <div class="viz-container__header">
+              <span class="viz-container__title">🧮 Sieve of Eratosthenes</span>
+              <div class="viz-container__controls">
+                <div class="viz-input-group">
+                  <label class="viz-speed" style="font-size: var(--fs-xs);">Limit:</label>
+                  <input type="number" class="viz-input" id="sieve-limit" value="50" min="10" max="100" style="width: 70px;">
+                </div>
+                <button class="viz-btn" id="sieve-start" title="Start">▶</button>
+                <button class="viz-btn" id="sieve-reset" title="Reset">↺</button>
+                <div class="viz-speed">
+                  <span>Speed:</span>
+                  <input type="range" id="sieve-speed" min="1" max="10" value="5">
+                </div>
+              </div>
+            </div>
+            <div class="viz-container__canvas" id="sieve-canvas" style="min-height: 350px; flex-wrap: wrap; align-items: flex-start; align-content: flex-start; gap: 6px; padding: var(--space-6);">
+              <!-- Sieve grid will be generated here -->
+            </div>
+            <div class="viz-container__info" id="sieve-info">
+              Click <strong>▶ Start</strong> to watch the Sieve of Eratosthenes eliminate composite numbers step by step. Green numbers are prime, red are composite.
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ PROBLEMS SECTION ============ -->
+        <section class="module-section" id="problems">
+          <h2 class="module-section__title"><span class="icon">💡</span> Practice Problems</h2>
+
+          <div class="problems-list">
+            <!-- Problem 1 -->
+            <a id="p1" href="../problems/m1-p1.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#1</span>
+                    <h3 class="problem-card__title">Class Test</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+
+            <!-- Problem 2 -->
+            <a id="p2" href="../problems/m1-p2.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#2</span>
+                    <h3 class="problem-card__title">Largest Prime Factor</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+
+            <!-- Problem 3 -->
+            <a id="p3" href="../problems/m1-p3.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#3</span>
+                    <h3 class="problem-card__title">Integer to Roman</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+
+            <!-- Problem 4 -->
+            <a id="p4" href="../problems/m1-p4.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#4</span>
+                    <h3 class="problem-card__title">Total Chocolates II</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+
+            <!-- Problem 5 -->
+            <a id="p5" href="../problems/m1-p5.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#5</span>
+                    <h3 class="problem-card__title">Count Primes</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+
+            <!-- Problem 6 -->
+            <a id="p6" href="../problems/m1-p6.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#6</span>
+                    <h3 class="problem-card__title">Make them Co-prime</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+
+          </div>
+        
+        </section>
+
+        <!-- Module Navigation -->
+        <div class="module-nav">
+          <div></div>
+          <a href="module-02-bit-manipulation.html" class="module-nav__btn module-nav__btn--next">
+            <div>
+              <span class="module-nav__label">Next Module →</span>
+              <span class="module-nav__title">Bit Manipulation</span>
+            </div>
+          </a>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+
+  <!-- Sieve Visualization -->
+  <script>
+    (function() {
+      const canvas = document.getElementById('sieve-canvas');
+      const info = document.getElementById('sieve-info');
+      const startBtn = document.getElementById('sieve-start');
+      const resetBtn = document.getElementById('sieve-reset');
+      const speedSlider = document.getElementById('sieve-speed');
+      const limitInput = document.getElementById('sieve-limit');
+      let running = false;
+      let aborted = false;
+      let currentRunId = 0;
+
+      function createGrid(limit) {
+        canvas.innerHTML = '';
+        for (let i = 2; i <= limit; i++) {
+          const cell = document.createElement('div');
+          cell.id = `sieve-cell-${i}`;
+          cell.textContent = i;
+          cell.style.cssText = `
+            display: flex; align-items: center; justify-content: center;
+            width: 44px; height: 44px; border-radius: 8px;
+            font-family: var(--font-mono); font-size: var(--fs-sm);
+            font-weight: 600; background: var(--bg-elevated);
+            border: 1px solid var(--border-primary); color: var(--text-primary);
+            transition: all 0.3s ease;
+          `;
+          canvas.appendChild(cell);
+        }
+      }
+
+      function sleep(ms) {
+        return new Promise(r => setTimeout(r, ms));
+      }
+
+      async function runSieve() {
+        if (running) return;
+        running = true;
+        aborted = false;
+        let limit = parseInt(limitInput.value);
+        if (isNaN(limit) || limit < 2) limit = 50;
+        if (limit > 500) limit = 500;
+        limitInput.value = limit;
+        
+        const runId = ++currentRunId;
+        createGrid(limit);
+
+        const speed = 11 - parseInt(speedSlider.value);
+        const delay = speed * 60;
+        const isPrime = new Array(limit + 1).fill(true);
+
+        for (let p = 2; p * p <= limit && !aborted; p++) {
+          if (!isPrime[p]) continue;
+
+          // Highlight current prime
+          const primeCell = document.getElementById(`sieve-cell-${p}`);
+          if (primeCell) {
+            primeCell.style.background = 'var(--accent-green-dim)';
+            primeCell.style.borderColor = 'var(--accent-green)';
+            primeCell.style.color = 'var(--accent-green)';
+            primeCell.style.boxShadow = '0 0 12px rgba(52,211,153,0.3)';
+          }
+          info.innerHTML = `Marking multiples of <strong style="color:var(--accent-green)">${p}</strong>...`;
+          await sleep(delay * 2);
+          if (runId !== currentRunId) return;
+
+          for (let j = p * p; j <= limit && !aborted; j += p) {
+            if (isPrime[j]) {
+              isPrime[j] = false;
+              const cell = document.getElementById(`sieve-cell-${j}`);
+              if (cell) {
+                cell.style.background = 'var(--accent-red-dim)';
+                cell.style.borderColor = 'var(--accent-red)';
+                cell.style.color = 'var(--accent-red)';
+                cell.style.opacity = '0.5';
+                cell.style.textDecoration = 'line-through';
+              }
+              info.innerHTML = `Eliminating <strong style="color:var(--accent-red)">${j}</strong> (multiple of ${p})`;
+              await sleep(delay);
+              if (runId !== currentRunId) return;
+            }
+          }
+        }
+
+        if (!aborted) {
+          // Mark remaining primes
+          for (let i = 2; i <= limit; i++) {
+            if (isPrime[i]) {
+              const cell = document.getElementById(`sieve-cell-${i}`);
+              if (cell) {
+                cell.style.background = 'var(--accent-green-dim)';
+                cell.style.borderColor = 'var(--accent-green)';
+                cell.style.color = 'var(--accent-green)';
+                cell.style.boxShadow = '0 0 12px rgba(52,211,153,0.3)';
+              }
+            }
+          }
+          const count = isPrime.filter((v, i) => i >= 2 && v).length;
+          info.innerHTML = `✅ Done! Found <strong style="color:var(--accent-green)">${count} primes</strong> up to ${limit}.`;
+        }
+        if (runId === currentRunId) {
+          running = false;
+        }
+      }
+
+      startBtn.addEventListener('click', runSieve);
+      resetBtn.addEventListener('click', () => {
+        aborted = true;
+        running = false;
+        currentRunId++;
+        let limit = parseInt(limitInput.value);
+        if (isNaN(limit) || limit < 2) limit = 50;
+        if (limit > 500) limit = 500;
+        createGrid(limit);
+        info.innerHTML = 'Click <strong>▶ Start</strong> to watch the Sieve of Eratosthenes eliminate composite numbers step by step.';
+      });
+
+      // Initial grid
+      createGrid(parseInt(limitInput.value) || 50);
+    })();
+  </script>
+</body>
+</html>

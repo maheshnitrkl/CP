@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Module 05: Recursion & Backtracking — CP-II Lab">
+  <title>Module 05: Recursion & Backtracking — CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/module.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">⚡</span><span>CP-II Lab</span></a><div class="navbar__nav" id="nav-menu"><a href="../index.html" class="navbar__link">📚 All Modules</a><a href="#theory" class="navbar__link">📖 Theory</a><a href="#problems" class="navbar__link">💡 Problems</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button><button class="navbar__hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button></div></div></nav>
+
+  <div class="module-page">
+    <section class="module-hero">
+      <div class="module-hero__bg"><div class="module-hero__orb module-hero__orb--1" style="background:var(--accent-purple);"></div><div class="module-hero__orb module-hero__orb--2" style="background:var(--accent-pink);"></div></div>
+      <div class="container"><div class="module-hero__content">
+        <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">›</span><span class="breadcrumb__current">Module 05</span></div>
+        <span class="module-hero__number">🔄 Module 05</span>
+        <h1 class="module-hero__title">Recursion <span class="text-gradient">& Backtracking</span></h1>
+        <p class="module-hero__desc">Generate subsets, permutations, solve N-Queens, and palindrome partitioning using systematic backtracking.</p>
+        <div class="module-hero__meta">
+          <span class="module-hero__meta-item"><span class="icon">📝</span> 6 Problems</span>
+          <span class="module-hero__meta-item"><span class="icon">⏱️</span> ~4 hours</span>
+          <span class="module-hero__meta-item"><span class="icon">📊</span> Medium to Hard</span>
+        </div>
+      </div></div>
+    </section>
+
+    <div class="module-layout">
+      <aside class="module-sidebar"><nav class="toc"><div class="toc__title">Contents</div><div class="toc__list">
+        <a href="#theory" class="toc__link active">📖 Theory</a>
+        <a href="#problems" class="toc__link">💡 Problems</a>
+        <a href="#p1" class="toc__link toc__link--sub">Subsets</a><a href="#p2" class="toc__link toc__link--sub">Permutations</a><a href="#p3" class="toc__link toc__link--sub">Permutations II</a><a href="#p4" class="toc__link toc__link--sub">Subsets II</a><a href="#p5" class="toc__link toc__link--sub">Palindrome Partitioning</a><a href="#p6" class="toc__link toc__link--sub">N-Queens</a>
+      </div></nav></aside>
+
+      <main class="module-main">
+        <section class="module-section" id="theory">
+          <h2 class="module-section__title"><span class="icon">📖</span> Theory</h2>
+
+          <div class="theory-block">
+            <h3 class="theory-block__title">🔄 The Recursion Template</h3>
+            <div class="theory-block__content">
+              <p><strong>Recursion</strong> is a method where the solution to a problem depends on solutions to smaller instances of the same problem. <strong>Backtracking</strong> is an algorithmic technique for solving problems recursively by trying to build a solution incrementally, one piece at a time, removing those solutions that fail to satisfy the constraints.</p>
+              <div class="callout callout--important">
+                <div class="callout__title">⚠️ The 3 Pillars of Recursion</div>
+                <div class="callout__body">
+                  <ol style="margin-left:1.5rem;">
+                    <li><strong>Base Case:</strong> The condition under which the recursion ends. Without this, you get a Stack Overflow!</li>
+                    <li><strong>Action:</strong> What the current function call does (e.g., placing a queen, taking a number).</li>
+                    <li><strong>Recursive Call:</strong> Calling the function on a smaller subset of data.</li>
+                  </ol>
+                </div>
+              </div>
+              <p>For Backtracking, add a 4th pillar: <strong>Undo Action</strong> (removing the queen, popping the number) immediately after the recursive call returns.</p>
+            </div>
+          </div>
+
+        </section>
+        <section class="module-section" id="visualization">
+          <h2 class="module-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+
+<div class="visualizer" id="nqueens-viz">
+  <div class="visualizer__controls">
+    <button class="btn btn--primary" id="btn-nq-step">Step N-Queens</button>
+    <button class="btn btn--outline" id="btn-nq-reset">Reset</button>
+    <span style="color:var(--text-secondary); margin-left:1rem;">Board: <strong>4x4</strong></span>
+  </div>
+  <div id="nq-board" style="display: grid; grid-template-columns: repeat(4, 60px); gap: 2px; justify-content: center; margin: 2rem 0; background: var(--border-primary); border: 2px solid var(--border-primary);">
+    <!-- Cells injected by JS -->
+  </div>
+  <div class="visualizer__log" id="nq-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary);">
+    Click 'Step N-Queens' to begin backtracking.
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const N = 4;
+    const boardEl = document.getElementById('nq-board');
+    const log = document.getElementById('nq-log');
+    
+    // We will precompute the states to animate them easily
+    let states = [];
+    let board = Array.from({length: N}, () => Array(N).fill('.'));
+    let cols = new Set(), d1 = new Set(), d2 = new Set();
+    
+    function solve(row) {
+        if (row === N) {
+            states.push({b: board.map(r => [...r]), msg: "🎉 Solution Found!"});
+            return true; // Stop at first solution for visualization
+        }
+        for (let col = 0; col < N; col++) {
+            states.push({b: board.map(r => [...r]), msg: `Trying row ${row}, col ${col}...`, highlight: [row, col]});
+            if (cols.has(col) || d1.has(row - col) || d2.has(row + col)) {
+                states.push({b: board.map(r => [...r]), msg: `Conflict at row ${row}, col ${col}.`, error: [row, col]});
+                continue;
+            }
+            board[row][col] = 'Q';
+            cols.add(col); d1.add(row - col); d2.add(row + col);
+            states.push({b: board.map(r => [...r]), msg: `Placed Queen at row ${row}, col ${col}.`, highlight: [row, col]});
+            
+            if (solve(row + 1)) return true;
+            
+            board[row][col] = '.';
+            cols.delete(col); d1.delete(row - col); d2.delete(row + col);
+            states.push({b: board.map(r => [...r]), msg: `Backtracking: Removed Queen at row ${row}, col ${col}.`, error: [row, col]});
+        }
+        return false;
+    }
+    
+    solve(0);
+    
+    let currentState = 0;
+
+    function render(stateObj) {
+        boardEl.innerHTML = '';
+        for (let r = 0; r < N; r++) {
+            for (let c = 0; c < N; c++) {
+                const cell = document.createElement('div');
+                cell.style.width = '60px'; cell.style.height = '60px';
+                cell.style.display = 'flex'; cell.style.alignItems = 'center'; cell.style.justifyContent = 'center';
+                cell.style.fontSize = '2rem';
+                
+                // Checkerboard colors
+                cell.style.background = (r + c) % 2 === 0 ? '#eeeeee' : '#aaaaaa';
+                
+                if (stateObj && stateObj.highlight && stateObj.highlight[0] === r && stateObj.highlight[1] === c) {
+                    cell.style.background = 'var(--accent-cyan)';
+                }
+                if (stateObj && stateObj.error && stateObj.error[0] === r && stateObj.error[1] === c) {
+                    cell.style.background = 'var(--accent-red)';
+                }
+                
+                if (stateObj && stateObj.b[r][c] === 'Q') {
+                    cell.textContent = '♛';
+                    cell.style.color = '#000';
+                }
+                boardEl.appendChild(cell);
+            }
+        }
+        if (stateObj) log.innerHTML = stateObj.msg;
+    }
+
+    document.getElementById('btn-nq-step').addEventListener('click', () => {
+        if (currentState < states.length) {
+            render(states[currentState]);
+            currentState++;
+        }
+    });
+
+    document.getElementById('btn-nq-reset').addEventListener('click', () => {
+        currentState = 0;
+        render({b: Array.from({length: N}, () => Array(N).fill('.')), msg: "Click 'Step N-Queens' to begin backtracking."});
+    });
+
+    render({b: Array.from({length: N}, () => Array(N).fill('.')), msg: "Click 'Step N-Queens' to begin backtracking."});
+});
+</script>
+
+        </section>
+
+        <section class="module-section" id="problems">
+          <h2 class="module-section__title"><span class="icon">💡</span> Practice Problems</h2>
+          <div class="problems-list">
+
+            <!-- Problem 1 -->
+            <a href="../problems/m5-p1.html" id="p1" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#1</span>
+                    <h3 class="problem-card__title">Subsets</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 2 -->
+            <a href="../problems/m5-p2.html" id="p2" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#2</span>
+                    <h3 class="problem-card__title">Permutations</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 3 -->
+            <a href="../problems/m5-p3.html" id="p3" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#3</span>
+                    <h3 class="problem-card__title">Permutations II</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 4 -->
+            <a href="../problems/m5-p4.html" id="p4" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#4</span>
+                    <h3 class="problem-card__title">Subsets II</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 5 -->
+            <a href="../problems/m5-p5.html" id="p5" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#5</span>
+                    <h3 class="problem-card__title">Palindrome Partitioning</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 6 -->
+            <a href="../problems/m5-p6.html" id="p6" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#6</span>
+                    <h3 class="problem-card__title">N-Queens</h3>
+                    <span class="badge badge--hard">Hard</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            </div>
+        </section>
+
+        <div class="module-nav">
+          <a href="module-04-sorting.html" class="module-nav__btn"><div><span class="module-nav__label">← Previous Module</span><span class="module-nav__title">Sorting</span></div></a>
+          <a href="module-06-linked-list-1.html" class="module-nav__btn module-nav__btn--next"><div><span class="module-nav__label">Next Module →</span><span class="module-nav__title">Linked List Part 1</span></div></a>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

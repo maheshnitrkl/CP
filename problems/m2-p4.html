@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Position of Set Bit - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-02-bit-manipulation.html" class="navbar__link">&#8592; Back to Module 02: Bit Manipulation</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-02-bit-manipulation.html">Module 02: Bit Manipulation</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Find Position of Set Bit</span></div>
+      <h1 class="problem-header__title">Find Position of Set Bit</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://www.geeksforgeeks.org/find-position-of-the-only-set-bit/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; GFG</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given a number <code>n</code> that has <strong>only one set bit</strong> in its binary representation, find the position of that set bit (1-indexed from the right).</p>
+<p><strong>Example:</strong> <code>n = 16 (10000)</code> &rarr; Position: <strong>5</strong>. <code>n = 2 (10)</code> &rarr; Position: <strong>2</strong>.</p>
+<p>If n is not a power of 2, return <code>-1</code>.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class="math-block">
+  <div class="formula">position = log<sub>2</sub>(n) + 1</div>
+  <p style="font-size:0.9rem;margin-top:0.5rem;">Since n has exactly one set bit, it's a power of 2. The position is simply <code>log<sub>2</sub>(n) + 1</code>.</p>
+  <p style="font-size:0.85rem;">Alternatively, keep right-shifting n until it becomes 0, counting shifts.</p>
+</div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Scan All 32 Bits</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Check each bit position from 0 to 31 to find which bit is set.</p>
+        <div class="pseudocode-block"><span class="keyword">function</span> findPosition(n):<br>
+&nbsp;&nbsp;<span class="keyword">if</span> !isPowerOfTwo(n): <span class="keyword">return</span> -1<br>
+&nbsp;&nbsp;<span class="keyword">for</span> i = 0 <span class="keyword">to</span> 31:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (n >> i) &amp; 1 == 1:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> i + 1<br>
+&nbsp;&nbsp;<span class="keyword">return</span> -1</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(32)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Simple logic</li><li>No math functions needed</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Scans all 32 bits even if answer is at position 1</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We're linearly scanning when we could compute the answer directly with logarithm.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Log Base 2</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Since n is a power of 2, we can directly compute the position using <code>log<sub>2</sub>(n)</code>. In C++ we can also use <code>__builtin_ctz(n)</code> (count trailing zeros) which is a single CPU instruction.</p>
+        <div class="pseudocode-block"><span class="keyword">function</span> findPosition(n):<br>
+&nbsp;&nbsp;<span class="keyword">if</span> n &le; 0 <span class="keyword">OR</span> (n &amp; (n-1)) != 0:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> -1 <span class="comment">// not a power of 2</span><br>
+&nbsp;&nbsp;<span class="keyword">return</span> log2(n) + 1</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(1)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Constant time</li><li>Uses built-in CPU instructions</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>log2 may have floating point precision issues</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Logic Flow Diagram -->
+    
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Scan All Bits</td><td><code>O(32)</code></td><td><code>O(1)</code></td><td>Linear scan</td></tr>
+<tr class="row--optimal"><td>Log Base 2</td><td><code>O(1)</code></td><td><code>O(1)</code></td><td>Optimal &mdash; direct computation</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    int findPosition(int n) {
+        if (n &lt;= 0 || (n &amp; (n - 1)) != 0) return -1;
+        return __builtin_ctz(n) + 1; // count trailing zeros
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def findPosition(self, n):
+        if n &lt;= 0 or (n &amp; (n - 1)) != 0:
+            return -1
+        return n.bit_length()  # position of highest set bit</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

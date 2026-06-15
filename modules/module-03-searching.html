@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Module 03: Searching — CP-II Lab">
+  <title>Module 03: Searching — CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/module.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">⚡</span><span>CP-II Lab</span></a><div class="navbar__nav" id="nav-menu"><a href="../index.html" class="navbar__link">📚 All Modules</a><a href="#theory" class="navbar__link">📖 Theory</a><a href="#problems" class="navbar__link">💡 Problems</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button><button class="navbar__hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button></div></div></nav>
+
+  <div class="module-page">
+    <section class="module-hero">
+      <div class="module-hero__bg"><div class="module-hero__orb module-hero__orb--1" style="background:var(--accent-green);"></div><div class="module-hero__orb module-hero__orb--2" style="background:var(--accent-cyan);"></div></div>
+      <div class="container"><div class="module-hero__content">
+        <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">›</span><span class="breadcrumb__current">Module 03</span></div>
+        <span class="module-hero__number">🔍 Module 03</span>
+        <h1 class="module-hero__title">Searching <span class="text-gradient"></span></h1>
+        <p class="module-hero__desc">Master Linear and Binary Search techniques. Learn to search in sorted, rotated, and 2D arrays with optimal O(log n) approaches.</p>
+        <div class="module-hero__meta">
+          <span class="module-hero__meta-item"><span class="icon">📝</span> 6 Problems</span>
+          <span class="module-hero__meta-item"><span class="icon">⏱️</span> ~3 hours</span>
+          <span class="module-hero__meta-item"><span class="icon">📊</span> Easy to Hard</span>
+        </div>
+      </div></div>
+    </section>
+
+    <div class="module-layout">
+      <aside class="module-sidebar"><nav class="toc"><div class="toc__title">Contents</div><div class="toc__list">
+        <a href="#theory" class="toc__link active">📖 Theory</a>
+        <a href="#problems" class="toc__link">💡 Problems</a>
+        <a href="#p1" class="toc__link toc__link--sub">Find First and Last Position o...</a><a href="#p2" class="toc__link toc__link--sub">Search in Rotated Sorted Array</a><a href="#p3" class="toc__link toc__link--sub">Find Peak Element</a><a href="#p4" class="toc__link toc__link--sub">Single Element in a Sorted Arr...</a><a href="#p5" class="toc__link toc__link--sub">Search a 2D Matrix</a><a href="#p6" class="toc__link toc__link--sub">Capacity to Ship Packages With...</a>
+      </div></nav></aside>
+
+      <main class="module-main">
+        <section class="module-section" id="theory">
+          <h2 class="module-section__title"><span class="icon">📖</span> Theory</h2>
+          
+          <div class="theory-block" id="linear">
+            <h3 class="theory-block__title">📋 Linear Search</h3>
+            <div class="theory-block__content">
+              <p><strong>Linear Search</strong> checks every element sequentially until the target is found or the array ends.</p>
+<p><strong>When to use:</strong> Unsorted arrays, small datasets, or when you need to find all occurrences.</p>
+<div class="formula-box"><span class="label">Time:</span> O(n) — Must check each element</div>
+              <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">int linearSearch(vector&lt;int&gt;&amp; arr, int target) {
+    for (int i = 0; i &lt; arr.size(); i++) {
+        if (arr[i] == target) return i;
+    }
+    return -1; // Not found
+}</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">def linear_search(arr, target):
+    for i, val in enumerate(arr):
+        if val == target:
+            return i
+    return -1  # Not found</code></pre></div></div></div>
+            </div>
+          </div>
+
+          <div class="theory-block" id="binary">
+            <h3 class="theory-block__title">⚡ Binary Search</h3>
+            <div class="theory-block__content">
+              <p><strong>Binary Search</strong> works on <strong>sorted arrays</strong>. Compare the target with the middle element; if not equal, eliminate half the array and repeat.</p>
+<p><strong>Key Requirement:</strong> Array must be sorted!</p>
+<p><strong>Pattern:</strong></p>
+<ol>
+<li>Set <code>low = 0</code>, <code>high = n-1</code></li>
+<li>While <code>low ≤ high</code>: compute <code>mid = low + (high - low) / 2</code></li>
+<li>If <code>arr[mid] == target</code>: found!</li>
+<li>If <code>arr[mid] &lt; target</code>: search right half (<code>low = mid + 1</code>)</li>
+<li>If <code>arr[mid] &gt; target</code>: search left half (<code>high = mid - 1</code>)</li>
+</ol>
+<div class="formula-box"><span class="label">Time:</span> O(log n) — Halving search space each step</div>
+<div class="callout callout--warning"><div class="callout__title">⚠️ Avoid Overflow</div><div class="callout__body">Use <code>mid = low + (high - low) / 2</code> instead of <code>(low + high) / 2</code> to prevent integer overflow!</div></div>
+              <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">int binarySearch(vector&lt;int&gt;&amp; arr, int target) {
+    int low = 0, high = arr.size() - 1;
+    while (low &lt;= high) {
+        int mid = low + (high - low) / 2;
+        if (arr[mid] == target) return mid;
+        else if (arr[mid] &lt; target) low = mid + 1;
+        else high = mid - 1;
+    }
+    return -1; // Not found
+}</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">def binary_search(arr, target):
+    low, high = 0, len(arr) - 1
+    while low &lt;= high:
+        mid = low + (high - low) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] &lt; target:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return -1  # Not found</code></pre></div></div></div>
+            </div>
+          </div>
+        </section>
+        <section class="module-section" id="visualization">
+          <h2 class="module-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+
+<div class="visualizer" id="search-viz">
+  <div class="visualizer__controls">
+    <button class="btn btn--primary" id="btn-search-step">Step Binary Search</button>
+    <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+    <span style="color:var(--text-secondary); margin-left:1rem;">Target: <strong>42</strong></span>
+  </div>
+  <div class="array-container" id="search-array" style="display: flex; gap: 0.5rem; justify-content: center; margin: 2rem 0; position: relative; height: 80px;">
+    <!-- Array elements will be injected here by JS -->
+  </div>
+  <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary);">
+    Click 'Step Binary Search' to begin.
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const arr = [2, 5, 8, 12, 16, 23, 38, 42, 56, 72, 91];
+    const target = 42;
+    const container = document.getElementById('search-array');
+    const log = document.getElementById('search-log');
+    let low = 0, high = arr.length - 1, mid = -1;
+    let state = 0; // 0: calc mid, 1: check target
+
+    function render() {
+        container.innerHTML = '';
+        arr.forEach((val, i) => {
+            const el = document.createElement('div');
+            el.className = 'array-item';
+            el.textContent = val;
+            
+            if (i < low || i > high) el.style.opacity = '0.3';
+            if (i === mid) el.style.background = 'var(--accent-cyan)';
+            
+            // Labels
+            let labels = [];
+            if (i === low) labels.push('L');
+            if (i === high) labels.push('H');
+            if (i === mid) labels.push('M');
+            
+            if (labels.length > 0) {
+                const labelEl = document.createElement('div');
+                labelEl.textContent = labels.join(',');
+                labelEl.style.position = 'absolute';
+                labelEl.style.bottom = '-25px';
+                labelEl.style.fontSize = '12px';
+                labelEl.style.color = 'var(--accent-orange)';
+                labelEl.style.fontWeight = 'bold';
+                el.appendChild(labelEl);
+            }
+            container.appendChild(el);
+        });
+    }
+
+    document.getElementById('btn-search-step').addEventListener('click', () => {
+        if (low > high) {
+            log.innerHTML = "Search finished. Target not found.";
+            return;
+        }
+        
+        if (state === 0) {
+            mid = Math.floor((low + high) / 2);
+            log.innerHTML = `Calculated Mid: <code>Math.floor((${low} + ${high}) / 2) = ${mid}</code>. Value is <strong>${arr[mid]}</strong>`;
+            state = 1;
+        } else if (state === 1) {
+            if (arr[mid] === target) {
+                log.innerHTML = `🎉 <strong>${arr[mid]} == ${target}</strong>! Target found at index ${mid}.`;
+                low = 1; high = 0; // End condition
+            } else if (arr[mid] < target) {
+                log.innerHTML = `<strong>${arr[mid]} < ${target}</strong>. Target must be to the right. <code>low = mid + 1</code>.`;
+                low = mid + 1;
+                mid = -1;
+            } else {
+                log.innerHTML = `<strong>${arr[mid]} > ${target}</strong>. Target must be to the left. <code>high = mid - 1</code>.`;
+                high = mid - 1;
+                mid = -1;
+            }
+            state = 0;
+        }
+        render();
+    });
+
+    document.getElementById('btn-search-reset').addEventListener('click', () => {
+        low = 0; high = arr.length - 1; mid = -1; state = 0;
+        log.innerHTML = "Click 'Step Binary Search' to begin.";
+        render();
+    });
+
+    render();
+});
+</script>
+
+        </section>
+
+        <section class="module-section" id="problems">
+          <h2 class="module-section__title"><span class="icon">💡</span> Practice Problems</h2>
+          <div class="problems-list">
+
+            <!-- Problem 1 -->
+            <a href="../problems/m3-p1.html" id="p1" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#1</span>
+                    <h3 class="problem-card__title">Find First and Last Position of Element in Sorted Array</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 2 -->
+            <a href="../problems/m3-p2.html" id="p2" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#2</span>
+                    <h3 class="problem-card__title">Search in Rotated Sorted Array</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 3 -->
+            <a href="../problems/m3-p3.html" id="p3" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#3</span>
+                    <h3 class="problem-card__title">Find Peak Element</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 4 -->
+            <a href="../problems/m3-p4.html" id="p4" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#4</span>
+                    <h3 class="problem-card__title">Single Element in a Sorted Array</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 5 -->
+            <a href="../problems/m3-p5.html" id="p5" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#5</span>
+                    <h3 class="problem-card__title">Search a 2D Matrix</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 6 -->
+            <a href="../problems/m3-p6.html" id="p6" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#6</span>
+                    <h3 class="problem-card__title">Capacity to Ship Packages Within D Days</h3>
+                    <span class="badge badge--hard">Hard</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            </div>
+        </section>
+
+        <div class="module-nav">
+          <a href="module-02-bit-manipulation.html" class="module-nav__btn"><div><span class="module-nav__label">← Previous Module</span><span class="module-nav__title">Bit Manipulation</span></div></a>
+          <a href="module-04-sorting.html" class="module-nav__btn module-nav__btn--next"><div><span class="module-nav__label">Next Module →</span><span class="module-nav__title">Sorting</span></div></a>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

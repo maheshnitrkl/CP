@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="Module 09: Hashing — CP-II Lab">
+  <title>Module 09: Hashing — CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/components.css"><link rel="stylesheet" href="../css/module.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">⚡</span><span>CP-II Lab</span></a><div class="navbar__nav" id="nav-menu"><a href="../index.html" class="navbar__link">📚 All Modules</a><a href="#theory" class="navbar__link">📖 Theory</a><a href="#problems" class="navbar__link">💡 Problems</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button><button class="navbar__hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button></div></div></nav>
+  <div class="module-page">
+    <section class="module-hero"><div class="module-hero__bg"><div class="module-hero__orb module-hero__orb--1" style="background:var(--accent-cyan);"></div><div class="module-hero__orb module-hero__orb--2" style="background:var(--accent-purple);"></div></div>
+      <div class="container"><div class="module-hero__content">
+        <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">›</span><span class="breadcrumb__current">Module 09</span></div>
+        <span class="module-hero__number">#️⃣ Module 09</span>
+        <h1 class="module-hero__title">Hashing <span class="text-gradient"></span></h1>
+        <p class="module-hero__desc">Use hash maps and sets for finding duplicates, grouping anagrams, character frequency analysis, and isomorphic strings.</p>
+        <div class="module-hero__meta"><span class="module-hero__meta-item"><span class="icon">📝</span> 6 Problems</span><span class="module-hero__meta-item"><span class="icon">⏱️</span> ~2.5 hours</span><span class="module-hero__meta-item"><span class="icon">📊</span> Easy to Medium</span></div>
+      </div></div></section>
+    <div class="module-layout">
+      <aside class="module-sidebar"><nav class="toc"><div class="toc__title">Contents</div><div class="toc__list"><a href="#theory" class="toc__link active">📖 Theory</a><a href="#problems" class="toc__link">💡 Problems</a><a href="#p1" class="toc__link toc__link--sub">Find Common Elements Between Two</a><a href="#p2" class="toc__link toc__link--sub">Contains Duplicate</a><a href="#p3" class="toc__link toc__link--sub">Find All Duplicates in an Array</a><a href="#p4" class="toc__link toc__link--sub">Sort Characters By Frequency</a><a href="#p5" class="toc__link toc__link--sub">Group Anagrams</a><a href="#p6" class="toc__link toc__link--sub">Isomorphic Strings</a></div></nav></aside>
+      <main class="module-main">
+        <section class="module-section" id="theory"><h2 class="module-section__title"><span class="icon">📖</span> Theory</h2><div class="theory-block"><h3 class="theory-block__title">#️⃣ Hashing Fundamentals</h3><div class="theory-block__content"><p>A <strong>hash map</strong> (dictionary) provides average O(1) insertion, deletion, and lookup by mapping keys to values via a hash function.</p><table class="complexity-table"><thead><tr><th>Operation</th><th>Average</th><th>Worst</th></tr></thead><tbody><tr><td>Insert</td><td><code>O(1)</code></td><td><code>O(n)</code></td></tr><tr><td>Lookup</td><td><code>O(1)</code></td><td><code>O(n)</code></td></tr><tr><td>Delete</td><td><code>O(1)</code></td><td><code>O(n)</code></td></tr></tbody></table><div class="callout callout--tip"><div class="callout__title">💡 Common Hashing Patterns</div><div class="callout__body"><strong>Frequency counting:</strong> Count occurrences of each element<br><strong>Two Sum pattern:</strong> Store complement in a map<br><strong>Grouping:</strong> Use sorted string or character count as key<br><strong>Existence check:</strong> Use a HashSet for O(1) contains</div></div></div></div></section>
+        <section class="module-section" id="visualization">
+          <h2 class="module-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+
+<div class="visualizer" id="hash-viz">
+  <div class="visualizer__controls" style="display:flex; gap:1rem;">
+    <input type="text" id="hash-input" placeholder="Type a word..." style="background:var(--bg-elevated); color:var(--text-primary); border:1px solid var(--border-primary); padding:0.5rem 1rem; border-radius:var(--radius-sm); outline:none;">
+    <button class="btn btn--primary" id="btn-hash">Hash & Store</button>
+  </div>
+  
+  <div style="margin: 2rem 0;">
+    <h4 style="color:var(--text-secondary); margin-bottom:1rem;">Hash Table (Array of size 5)</h4>
+    <div id="hash-buckets" style="display:flex; gap:10px;">
+        <!-- 5 buckets -->
+    </div>
+  </div>
+  
+  <div class="visualizer__log" id="hash-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary);">
+    Type a word to hash it into one of 5 buckets. (Simple hash: sum of ASCII % 5)
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const bucketsCont = document.getElementById('hash-buckets');
+    const log = document.getElementById('hash-log');
+    const input = document.getElementById('hash-input');
+    
+    let table = [[], [], [], [], []];
+
+    function render() {
+        bucketsCont.innerHTML = '';
+        for(let i=0; i<5; i++) {
+            const bucket = document.createElement('div');
+            bucket.style.border = '2px solid var(--border-primary)';
+            bucket.style.flex = '1';
+            bucket.style.minHeight = '100px';
+            bucket.style.padding = '10px';
+            bucket.style.display = 'flex';
+            bucket.style.flexDirection = 'column';
+            bucket.style.gap = '5px';
+            
+            const label = document.createElement('div');
+            label.textContent = `Index ${i}`;
+            label.style.color = 'var(--accent-orange)';
+            label.style.fontWeight = 'bold';
+            label.style.marginBottom = '5px';
+            label.style.borderBottom = '1px solid var(--border-primary)';
+            bucket.appendChild(label);
+            
+            table[i].forEach(word => {
+                const item = document.createElement('div');
+                item.style.background = 'var(--bg-elevated)';
+                item.style.padding = '5px';
+                item.style.borderRadius = 'var(--radius-sm)';
+                item.textContent = word;
+                bucket.appendChild(item);
+            });
+            
+            bucketsCont.appendChild(bucket);
+        }
+    }
+
+    document.getElementById('btn-hash').addEventListener('click', () => {
+        const word = input.value.trim();
+        if(!word) return;
+        
+        let sum = 0;
+        for(let i=0; i<word.length; i++) sum += word.charCodeAt(i);
+        const index = sum % 5;
+        
+        table[index].push(word);
+        log.innerHTML = `Hash Function: Sum of ASCII for "<strong>${word}</strong>" = ${sum}. <br><code>${sum} % 5 = <strong>Index ${index}</strong></code>`;
+        
+        input.value = '';
+        render();
+    });
+
+    render();
+});
+</script>
+
+        </section>
+        <section class="module-section" id="problems"><h2 class="module-section__title"><span class="icon">💡</span> Practice Problems</h2><div class="problems-list">
+
+            <!-- Problem 1 -->
+            <a href="../problems/m9-p1.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#1</span>
+                    <h3 class="problem-card__title">Find Common Elements Between Two Arrays</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 2 -->
+            <a href="../problems/m9-p2.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#2</span>
+                    <h3 class="problem-card__title">Contains Duplicate</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 3 -->
+            <a href="../problems/m9-p3.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#3</span>
+                    <h3 class="problem-card__title">Find All Duplicates in an Array</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 4 -->
+            <a href="../problems/m9-p4.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#4</span>
+                    <h3 class="problem-card__title">Sort Characters By Frequency</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 5 -->
+            <a href="../problems/m9-p5.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#5</span>
+                    <h3 class="problem-card__title">Group Anagrams</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 6 -->
+            <a href="../problems/m9-p6.html" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#6</span>
+                    <h3 class="problem-card__title">Isomorphic Strings</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            </div>
+        </section>
+        <div class="module-nav"><a href="module-08-stack-queue.html" class="module-nav__btn"><div><span class="module-nav__label">← Previous</span><span class="module-nav__title">Stack & Queue</span></div></a><a href="module-10-dp.html" class="module-nav__btn module-nav__btn--next"><div><span class="module-nav__label">Next →</span><span class="module-nav__title">Dynamic Programming</span></div></a></div>
+      </main>
+    </div>
+  </div>
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script><script src="../js/code-runner.js"></script>
+</body></html>

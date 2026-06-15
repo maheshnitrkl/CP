@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Module 4: Sorting — Visualize and implement Bubble Sort, Insertion Sort, Quick Sort, Merge Sort, and Counting Sort with optimized solutions.">
+  <title>Module 04: Sorting — CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/module.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body class="bg-dots">
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="navbar__inner">
+      <a href="../index.html" class="navbar__brand">
+        <span class="navbar__brand-icon">⚡</span>
+        <span>CP-II Lab</span>
+      </a>
+      <div class="navbar__nav" id="nav-menu">
+        <a href="../index.html" class="navbar__link">📚 All Modules</a>
+        <a href="#theory" class="navbar__link">📖 Theory</a>
+        <a href="#visualization" class="navbar__link">🎨 Visualize</a>
+        <a href="#problems" class="navbar__link">💡 Problems</a>
+      </div>
+      <div class="navbar__actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
+        <button class="navbar__hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="module-page">
+    <section class="module-hero">
+      <div class="module-hero__bg">
+        <div class="module-hero__orb module-hero__orb--1" style="background: var(--accent-orange);"></div>
+        <div class="module-hero__orb module-hero__orb--2" style="background: var(--accent-red);"></div>
+      </div>
+      <div class="container">
+        <div class="module-hero__content">
+          <div class="breadcrumb">
+            <a href="../index.html">Home</a>
+            <span class="breadcrumb__sep">›</span>
+            <span class="breadcrumb__current">Module 04</span>
+          </div>
+          <span class="module-hero__number">📊 Module 04</span>
+          <h1 class="module-hero__title">Sorting <span class="text-gradient">Algorithms</span></h1>
+          <p class="module-hero__desc">Visualize and understand five fundamental sorting algorithms — Bubble Sort, Insertion Sort, Quick Sort, Merge Sort, and Counting Sort. See them in action, then apply them to real problems.</p>
+          <div class="module-hero__meta">
+            <span class="module-hero__meta-item"><span class="icon">📝</span> 6 Problems</span>
+            <span class="module-hero__meta-item"><span class="icon">⏱️</span> ~4 hours</span>
+            <span class="module-hero__meta-item"><span class="icon">📊</span> Easy to Hard</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="module-layout">
+      <aside class="module-sidebar">
+        <nav class="toc">
+          <div class="toc__title">Contents</div>
+          <div class="toc__list">
+            <a href="#theory" class="toc__link active">📖 Theory</a>
+            <a href="#bubble" class="toc__link toc__link--sub">Bubble Sort</a>
+            <a href="#insertion" class="toc__link toc__link--sub">Insertion Sort</a>
+            <a href="#quick" class="toc__link toc__link--sub">Quick Sort</a>
+            <a href="#merge" class="toc__link toc__link--sub">Merge Sort</a>
+            <a href="#counting" class="toc__link toc__link--sub">Counting Sort</a>
+            <a href="#visualization" class="toc__link">🎨 Visualization</a>
+            <a href="#problems" class="toc__link">💡 Problems</a>
+          </div>
+        </nav>
+      </aside>
+
+      <main class="module-main">
+
+        <!-- ============ THEORY ============ -->
+        <section class="module-section" id="theory">
+          <h2 class="module-section__title"><span class="icon">📖</span> Theory</h2>
+
+          <!-- Comparison Table -->
+          <div class="theory-block">
+            <h3 class="theory-block__title">📊 Sorting Algorithm Comparison</h3>
+            <div class="theory-block__content">
+              <table class="complexity-table">
+                <thead>
+                  <tr>
+                    <th>Algorithm</th>
+                    <th>Best</th>
+                    <th>Average</th>
+                    <th>Worst</th>
+                    <th>Space</th>
+                    <th>Stable?</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Bubble Sort</strong></td>
+                    <td><code>O(n)</code></td>
+                    <td><code>O(n²)</code></td>
+                    <td><code>O(n²)</code></td>
+                    <td><code>O(1)</code></td>
+                    <td>✅ Yes</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Insertion Sort</strong></td>
+                    <td><code>O(n)</code></td>
+                    <td><code>O(n²)</code></td>
+                    <td><code>O(n²)</code></td>
+                    <td><code>O(1)</code></td>
+                    <td>✅ Yes</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Quick Sort</strong></td>
+                    <td><code>O(n log n)</code></td>
+                    <td><code>O(n log n)</code></td>
+                    <td><code>O(n²)</code></td>
+                    <td><code>O(log n)</code></td>
+                    <td>❌ No</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Merge Sort</strong></td>
+                    <td><code>O(n log n)</code></td>
+                    <td><code>O(n log n)</code></td>
+                    <td><code>O(n log n)</code></td>
+                    <td><code>O(n)</code></td>
+                    <td>✅ Yes</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Counting Sort</strong></td>
+                    <td><code>O(n+k)</code></td>
+                    <td><code>O(n+k)</code></td>
+                    <td><code>O(n+k)</code></td>
+                    <td><code>O(k)</code></td>
+                    <td>✅ Yes</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p><em>k = range of input values for Counting Sort</em></p>
+
+              <div class="callout callout--tip">
+                <div class="callout__title">💡 When to Use What?</div>
+                <div class="callout__body">
+                  <strong>Bubble/Insertion:</strong> Small datasets, nearly sorted data<br>
+                  <strong>Quick Sort:</strong> General purpose, in-place (preferred in practice)<br>
+                  <strong>Merge Sort:</strong> When stability is required, or for linked lists<br>
+                  <strong>Counting Sort:</strong> When range of values is small (e.g., characters, small integers)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bubble Sort -->
+          <div class="theory-block" id="bubble">
+            <h3 class="theory-block__title">🫧 Bubble Sort</h3>
+            <div class="theory-block__content">
+              <p>Repeatedly swap adjacent elements if they are in the wrong order. After each pass, the largest unsorted element "bubbles up" to its correct position.</p>
+              <p><strong>Key Idea:</strong> Compare adjacent pairs, swap if needed. Repeat until no swaps are needed.</p>
+              <div class="code-block">
+                <div class="code-block__header">
+                  <div class="code-block__tabs">
+                    <button class="code-block__tab active" data-lang="cpp">C++</button>
+                    <button class="code-block__tab" data-lang="python">Python</button>
+                  </div>
+                  <button class="code-block__copy">📋 Copy</button>
+                </div>
+                <div class="code-block__body">
+                  <div class="code-block__content active" data-lang="cpp">
+                    <pre><code class="language-cpp">void bubbleSort(vector&lt;int&gt;& arr) {
+    int n = arr.size();
+    for (int i = 0; i &lt; n - 1; i++) {
+        bool swapped = false;
+        for (int j = 0; j &lt; n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+                swapped = true;
+            }
+        }
+        if (!swapped) break; // Optimization: already sorted
+    }
+}</code></pre>
+                  </div>
+                  <div class="code-block__content" data-lang="python">
+                    <pre><code class="language-python">def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n - 1):
+        swapped = False
+        for j in range(n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
+        if not swapped:
+            break  # Optimization: already sorted</code></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Insertion Sort -->
+          <div class="theory-block" id="insertion">
+            <h3 class="theory-block__title">📥 Insertion Sort</h3>
+            <div class="theory-block__content">
+              <p>Build the sorted array one element at a time. Take each element and insert it into its correct position among the already-sorted elements.</p>
+              <p><strong>Analogy:</strong> Like sorting playing cards in your hand — pick one card at a time and insert it in the right position.</p>
+              <div class="code-block">
+                <div class="code-block__header">
+                  <div class="code-block__tabs">
+                    <button class="code-block__tab active" data-lang="cpp">C++</button>
+                    <button class="code-block__tab" data-lang="python">Python</button>
+                  </div>
+                  <button class="code-block__copy">📋 Copy</button>
+                </div>
+                <div class="code-block__body">
+                  <div class="code-block__content active" data-lang="cpp">
+                    <pre><code class="language-cpp">void insertionSort(vector&lt;int&gt;& arr) {
+    int n = arr.size();
+    for (int i = 1; i &lt; n; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+}</code></pre>
+                  </div>
+                  <div class="code-block__content" data-lang="python">
+                    <pre><code class="language-python">def insertion_sort(arr):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and arr[j] > key:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key</code></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Sort -->
+          <div class="theory-block" id="quick">
+            <h3 class="theory-block__title">⚡ Quick Sort</h3>
+            <div class="theory-block__content">
+              <p><strong>Divide & Conquer</strong>: Choose a <strong>pivot</strong>, partition the array so elements smaller than pivot go left and larger go right. Recursively sort both halves.</p>
+              <p><strong>Key Property:</strong> After partitioning, the pivot is in its final sorted position.</p>
+              <div class="callout callout--warning">
+                <div class="callout__title">⚠️ Worst Case</div>
+                <div class="callout__body">Quick Sort degrades to O(n²) when the pivot is always the smallest or largest element (e.g., already sorted array with first element as pivot). Use <strong>randomized pivot</strong> or <strong>median-of-three</strong> to avoid this.</div>
+              </div>
+              <div class="code-block">
+                <div class="code-block__header">
+                  <div class="code-block__tabs">
+                    <button class="code-block__tab active" data-lang="cpp">C++</button>
+                    <button class="code-block__tab" data-lang="python">Python</button>
+                  </div>
+                  <button class="code-block__copy">📋 Copy</button>
+                </div>
+                <div class="code-block__body">
+                  <div class="code-block__content active" data-lang="cpp">
+                    <pre><code class="language-cpp">int partition(vector&lt;int&gt;& arr, int low, int high) {
+    int pivot = arr[high]; // Last element as pivot
+    int i = low - 1;
+    
+    for (int j = low; j &lt; high; j++) {
+        if (arr[j] &lt;= pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[high]);
+    return i + 1;
+}
+
+void quickSort(vector&lt;int&gt;& arr, int low, int high) {
+    if (low &lt; high) {
+        int pi = partition(arr, low, high);
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}</code></pre>
+                  </div>
+                  <div class="code-block__content" data-lang="python">
+                    <pre><code class="language-python">def partition(arr, low, high):
+    pivot = arr[high]  # Last element as pivot
+    i = low - 1
+    
+    for j in range(low, high):
+        if arr[j] &lt;= pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+    
+    arr[i + 1], arr[high] = arr[high], arr[i + 1]
+    return i + 1
+
+def quick_sort(arr, low, high):
+    if low &lt; high:
+        pi = partition(arr, low, high)
+        quick_sort(arr, low, pi - 1)
+        quick_sort(arr, pi + 1, high)</code></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Merge Sort -->
+          <div class="theory-block" id="merge">
+            <h3 class="theory-block__title">🔀 Merge Sort</h3>
+            <div class="theory-block__content">
+              <p><strong>Divide & Conquer</strong>: Split the array in half, recursively sort each half, then merge the two sorted halves.</p>
+              <p><strong>Key Advantage:</strong> Always O(n log n) — no worst case degradation! Stable sort. Ideal for linked lists (no extra space needed for merging).</p>
+              <div class="code-block">
+                <div class="code-block__header">
+                  <div class="code-block__tabs">
+                    <button class="code-block__tab active" data-lang="cpp">C++</button>
+                    <button class="code-block__tab" data-lang="python">Python</button>
+                  </div>
+                  <button class="code-block__copy">📋 Copy</button>
+                </div>
+                <div class="code-block__body">
+                  <div class="code-block__content active" data-lang="cpp">
+                    <pre><code class="language-cpp">void merge(vector&lt;int&gt;& arr, int l, int m, int r) {
+    vector&lt;int&gt; left(arr.begin() + l, arr.begin() + m + 1);
+    vector&lt;int&gt; right(arr.begin() + m + 1, arr.begin() + r + 1);
+    
+    int i = 0, j = 0, k = l;
+    while (i &lt; left.size() && j &lt; right.size()) {
+        if (left[i] &lt;= right[j]) arr[k++] = left[i++];
+        else arr[k++] = right[j++];
+    }
+    while (i &lt; left.size()) arr[k++] = left[i++];
+    while (j &lt; right.size()) arr[k++] = right[j++];
+}
+
+void mergeSort(vector&lt;int&gt;& arr, int l, int r) {
+    if (l &lt; r) {
+        int m = l + (r - l) / 2;
+        mergeSort(arr, l, m);
+        mergeSort(arr, m + 1, r);
+        merge(arr, l, m, r);
+    }
+}</code></pre>
+                  </div>
+                  <div class="code-block__content" data-lang="python">
+                    <pre><code class="language-python">def merge_sort(arr):
+    if len(arr) &lt;= 1:
+        return arr
+    
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    
+    # Merge two sorted halves
+    result = []
+    i = j = 0
+    while i &lt; len(left) and j &lt; len(right):
+        if left[i] &lt;= right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result</code></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Counting Sort -->
+          <div class="theory-block" id="counting">
+            <h3 class="theory-block__title">🔢 Counting Sort</h3>
+            <div class="theory-block__content">
+              <p><strong>Non-comparison sort</strong>: Count occurrences of each value, then use cumulative counts to place elements directly into their sorted position.</p>
+              <p><strong>When to use:</strong> When the range of values (k) is not significantly larger than n. Perfect for sorting characters, grades, small integers.</p>
+              <div class="code-block">
+                <div class="code-block__header">
+                  <div class="code-block__tabs">
+                    <button class="code-block__tab active" data-lang="cpp">C++</button>
+                    <button class="code-block__tab" data-lang="python">Python</button>
+                  </div>
+                  <button class="code-block__copy">📋 Copy</button>
+                </div>
+                <div class="code-block__body">
+                  <div class="code-block__content active" data-lang="cpp">
+                    <pre><code class="language-cpp">void countingSort(vector&lt;int&gt;& arr) {
+    if (arr.empty()) return;
+    
+    int maxVal = *max_element(arr.begin(), arr.end());
+    int minVal = *min_element(arr.begin(), arr.end());
+    int range = maxVal - minVal + 1;
+    
+    vector&lt;int&gt; count(range, 0), output(arr.size());
+    
+    // Count occurrences
+    for (int x : arr) count[x - minVal]++;
+    
+    // Cumulative count
+    for (int i = 1; i &lt; range; i++) count[i] += count[i-1];
+    
+    // Build output (traverse in reverse for stability)
+    for (int i = arr.size() - 1; i >= 0; i--) {
+        output[count[arr[i] - minVal] - 1] = arr[i];
+        count[arr[i] - minVal]--;
+    }
+    
+    arr = output;
+}</code></pre>
+                  </div>
+                  <div class="code-block__content" data-lang="python">
+                    <pre><code class="language-python">def counting_sort(arr):
+    if not arr:
+        return arr
+    
+    min_val, max_val = min(arr), max(arr)
+    range_size = max_val - min_val + 1
+    
+    count = [0] * range_size
+    output = [0] * len(arr)
+    
+    # Count occurrences
+    for x in arr:
+        count[x - min_val] += 1
+    
+    # Cumulative count
+    for i in range(1, range_size):
+        count[i] += count[i - 1]
+    
+    # Build output (reverse for stability)
+    for i in range(len(arr) - 1, -1, -1):
+        output[count[arr[i] - min_val] - 1] = arr[i]
+        count[arr[i] - min_val] -= 1
+    
+    return output</code></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ VISUALIZATION ============ -->
+        <section class="module-section" id="visualization">
+          <h2 class="module-section__title"><span class="icon">🎨</span> Sorting Visualizer</h2>
+
+          <div class="viz-container">
+            <div class="viz-container__header">
+              <span class="viz-container__title">📊 Interactive Sorting</span>
+              <div class="viz-container__controls">
+                <select id="sort-algo" class="viz-input" style="min-width: 140px;">
+                  <option value="bubble">Bubble Sort</option>
+                  <option value="insertion">Insertion Sort</option>
+                  <option value="quick">Quick Sort</option>
+                  <option value="merge">Merge Sort</option>
+                </select>
+                <button class="viz-btn" id="sort-start" title="Start">▶</button>
+                <button class="viz-btn" id="sort-shuffle" title="Shuffle">🔀</button>
+                <div class="viz-speed">
+                  <span>Speed:</span>
+                  <input type="range" id="sort-speed" min="1" max="10" value="5">
+                </div>
+                <div class="viz-input-group">
+                  <label style="font-size: var(--fs-xs); color: var(--text-tertiary);">Size:</label>
+                  <input type="range" id="sort-size" min="8" max="40" value="20" style="width: 80px;">
+                </div>
+              </div>
+            </div>
+            <div class="viz-container__canvas" id="sort-canvas" style="min-height: 320px; align-items: flex-end; padding-bottom: var(--space-8);">
+            </div>
+            <div class="viz-container__info" id="sort-info">
+              Select an algorithm, then click <strong>▶ Start</strong> to watch it sort! Yellow = comparing, Red = swapping, Green = sorted, Purple = pivot.
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ PROBLEMS ============ -->
+        <section class="module-section" id="problems">
+          <h2 class="module-section__title"><span class="icon">💡</span> Practice Problems</h2>
+
+          <div class="problems-list">
+
+            <!-- Problem 1 -->
+            <a href="../problems/m4-p1.html" id="p1" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#1</span>
+                    <h3 class="problem-card__title">Minimum Moves to Equal Array Elements</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 2 -->
+            <a href="../problems/m4-p2.html" id="p2" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#2</span>
+                    <h3 class="problem-card__title">Minimum Absolute Difference</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 3 -->
+            <a href="../problems/m4-p3.html" id="p3" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#3</span>
+                    <h3 class="problem-card__title">Sort Array By Parity</h3>
+                    <span class="badge badge--easy">Easy</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 4 -->
+            <a href="../problems/m4-p4.html" id="p4" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#4</span>
+                    <h3 class="problem-card__title">Max Chunks To Make Sorted</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 5 -->
+            <a href="../problems/m4-p5.html" id="p5" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#5</span>
+                    <h3 class="problem-card__title">Kth Largest Element in an Array</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            
+            <!-- Problem 6 -->
+            <a href="../problems/m4-p6.html" id="p6" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div class="problem-card__header" style="border-bottom: none; ">
+                <div>
+                  <div class="problem-card__title-row">
+                    <span class="problem-card__number">#6</span>
+                    <h3 class="problem-card__title">Boats to Save People</h3>
+                    <span class="badge badge--medium">Medium</span>
+                  </div>
+                </div>
+                <span class="problem-card__expand" style="transform: rotate(-90deg);">▼</span>
+              </div>
+            </a>
+            </div>
+        </section>
+
+        <!-- Module Navigation -->
+        <div class="module-nav">
+          <a href="module-03-searching.html" class="module-nav__btn">
+            <div>
+              <span class="module-nav__label">← Previous Module</span>
+              <span class="module-nav__title">Searching</span>
+            </div>
+          </a>
+          <a href="module-05-recursion-backtracking.html" class="module-nav__btn module-nav__btn--next">
+            <div>
+              <span class="module-nav__label">Next Module →</span>
+              <span class="module-nav__title">Recursion & Backtracking</span>
+            </div>
+          </a>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+
+  <!-- Sorting Visualizer -->
+  <script>
+  (function() {
+    const canvas = document.getElementById('sort-canvas');
+    const info = document.getElementById('sort-info');
+    const algoSelect = document.getElementById('sort-algo');
+    const startBtn = document.getElementById('sort-start');
+    const shuffleBtn = document.getElementById('sort-shuffle');
+    const speedSlider = document.getElementById('sort-speed');
+    const sizeSlider = document.getElementById('sort-size');
+    let arr = [];
+    let running = false;
+    let aborted = false;
+
+    function generateArray() {
+      const size = parseInt(sizeSlider.value);
+      arr = Array.from({length: size}, (_, i) => i + 1);
+      shuffle(arr);
+      renderBars();
+    }
+
+    function shuffle(a) {
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+    }
+
+    function renderBars(highlights = {}) {
+      const maxVal = Math.max(...arr);
+      const barWidth = Math.max(16, Math.min(40, Math.floor((canvas.clientWidth - 40) / arr.length) - 4));
+      
+      canvas.innerHTML = arr.map((val, i) => {
+        const h = Math.max(20, (val / maxVal) * 260);
+        let cls = '';
+        if (highlights.sorted && highlights.sorted.includes(i)) cls = 'sorted';
+        else if (highlights.pivot === i) cls = 'pivot';
+        else if (highlights.swapping && highlights.swapping.includes(i)) cls = 'swapping';
+        else if (highlights.comparing && highlights.comparing.includes(i)) cls = 'comparing';
+        
+        return `<div class="array-viz__bar">
+          <div class="array-viz__bar-fill ${cls}" style="width:${barWidth}px;height:${h}px"></div>
+          <span class="array-viz__bar-label">${val}</span>
+        </div>`;
+      }).join('');
+    }
+
+    function getDelay() {
+      return (11 - parseInt(speedSlider.value)) * 40;
+    }
+
+    function sleep(ms) {
+      return new Promise(r => setTimeout(r, ms));
+    }
+
+    // ---- BUBBLE SORT ----
+    async function bubbleSort() {
+      const n = arr.length;
+      const sorted = [];
+      for (let i = 0; i < n - 1 && !aborted; i++) {
+        let swapped = false;
+        for (let j = 0; j < n - i - 1 && !aborted; j++) {
+          renderBars({comparing: [j, j+1], sorted});
+          info.innerHTML = `Comparing <strong>${arr[j]}</strong> and <strong>${arr[j+1]}</strong>`;
+          await sleep(getDelay());
+          if (arr[j] > arr[j+1]) {
+            [arr[j], arr[j+1]] = [arr[j+1], arr[j]];
+            renderBars({swapping: [j, j+1], sorted});
+            info.innerHTML = `Swapped <strong>${arr[j]}</strong> and <strong>${arr[j+1]}</strong>`;
+            await sleep(getDelay());
+            swapped = true;
+          }
+        }
+        sorted.unshift(n - i - 1);
+        if (!swapped) break;
+      }
+      sorted.push(0);
+      renderBars({sorted: Array.from({length: n}, (_, i) => i)});
+    }
+
+    // ---- INSERTION SORT ----
+    async function insertionSort() {
+      const n = arr.length;
+      const sorted = [0];
+      for (let i = 1; i < n && !aborted; i++) {
+        let key = arr[i];
+        let j = i - 1;
+        renderBars({comparing: [i], sorted});
+        info.innerHTML = `Inserting <strong>${key}</strong> into sorted portion`;
+        await sleep(getDelay() * 1.5);
+        while (j >= 0 && arr[j] > key && !aborted) {
+          arr[j + 1] = arr[j];
+          renderBars({swapping: [j, j+1], sorted});
+          info.innerHTML = `Shifting <strong>${arr[j]}</strong> right`;
+          await sleep(getDelay());
+          j--;
+        }
+        arr[j + 1] = key;
+        sorted.push(i);
+        renderBars({sorted});
+        await sleep(getDelay());
+      }
+      renderBars({sorted: Array.from({length: n}, (_, i) => i)});
+    }
+
+    // ---- QUICK SORT ----
+    async function quickSortViz() {
+      const sorted = new Set();
+      async function qs(lo, hi) {
+        if (lo >= hi || aborted) {
+          if (lo === hi) sorted.add(lo);
+          return;
+        }
+        const pivotVal = arr[hi];
+        renderBars({pivot: hi, sorted: [...sorted]});
+        info.innerHTML = `Pivot = <strong>${pivotVal}</strong>`;
+        await sleep(getDelay() * 2);
+        
+        let i = lo;
+        for (let j = lo; j < hi && !aborted; j++) {
+          renderBars({comparing: [j], pivot: hi, sorted: [...sorted]});
+          await sleep(getDelay());
+          if (arr[j] <= pivotVal) {
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+            renderBars({swapping: [i, j], pivot: hi, sorted: [...sorted]});
+            await sleep(getDelay());
+            i++;
+          }
+        }
+        [arr[i], arr[hi]] = [arr[hi], arr[i]];
+        sorted.add(i);
+        renderBars({sorted: [...sorted]});
+        info.innerHTML = `Pivot <strong>${pivotVal}</strong> placed at index ${i}`;
+        await sleep(getDelay() * 1.5);
+        
+        await qs(lo, i - 1);
+        await qs(i + 1, hi);
+      }
+      await qs(0, arr.length - 1);
+      renderBars({sorted: Array.from({length: arr.length}, (_, i) => i)});
+    }
+
+    // ---- MERGE SORT ----
+    async function mergeSortViz() {
+      const sorted = new Set();
+      async function ms(lo, hi) {
+        if (lo >= hi || aborted) return;
+        const mid = Math.floor((lo + hi) / 2);
+        await ms(lo, mid);
+        await ms(mid + 1, hi);
+        
+        // Merge
+        const left = arr.slice(lo, mid + 1);
+        const right = arr.slice(mid + 1, hi + 1);
+        let i = 0, j = 0, k = lo;
+        
+        info.innerHTML = `Merging [${left}] and [${right}]`;
+        await sleep(getDelay() * 1.5);
+        
+        while (i < left.length && j < right.length && !aborted) {
+          renderBars({comparing: [lo + i, mid + 1 + j], sorted: [...sorted]});
+          await sleep(getDelay());
+          if (left[i] <= right[j]) {
+            arr[k] = left[i++];
+          } else {
+            arr[k] = right[j++];
+          }
+          renderBars({swapping: [k], sorted: [...sorted]});
+          await sleep(getDelay());
+          k++;
+        }
+        while (i < left.length) { arr[k++] = left[i++]; }
+        while (j < right.length) { arr[k++] = right[j++]; }
+        
+        if (lo === 0 && hi === arr.length - 1) {
+          for (let x = lo; x <= hi; x++) sorted.add(x);
+        }
+        renderBars({sorted: [...sorted]});
+      }
+      await ms(0, arr.length - 1);
+      renderBars({sorted: Array.from({length: arr.length}, (_, i) => i)});
+    }
+
+    async function runSort() {
+      if (running) return;
+      running = true;
+      aborted = false;
+      const algo = algoSelect.value;
+      
+      switch(algo) {
+        case 'bubble': await bubbleSort(); break;
+        case 'insertion': await insertionSort(); break;
+        case 'quick': await quickSortViz(); break;
+        case 'merge': await mergeSortViz(); break;
+      }
+      
+      if (!aborted) {
+        info.innerHTML = `✅ <strong>${algoSelect.options[algoSelect.selectedIndex].text}</strong> complete!`;
+      }
+      running = false;
+    }
+
+    startBtn.addEventListener('click', runSort);
+    shuffleBtn.addEventListener('click', () => {
+      aborted = true;
+      running = false;
+      setTimeout(() => {
+        generateArray();
+        info.innerHTML = 'Array shuffled! Select an algorithm and click <strong>▶ Start</strong>.';
+      }, 100);
+    });
+    sizeSlider.addEventListener('input', () => {
+      if (!running) {
+        generateArray();
+      }
+    });
+
+    generateArray();
+  })();
+  </script>
+</body>
+</html>

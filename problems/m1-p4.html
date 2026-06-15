@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Total Chocolates II — CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">⚡</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-01-number-theory.html" class="navbar__link">← Back to Module 01</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">›</span><a href="../modules/module-01-number-theory.html">Module 01</a><span class="breadcrumb__sep">›</span><span class="breadcrumb__current">Total Chocolates II</span></div>
+      <h1 class="problem-header__title">Total Chocolates II</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://www.geeksforgeeks.org/batch/cp-mathematics/track/cp-math-primeFactorization/problem/total-chocolates-ii" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">🔗 GFG</a>
+      </div>
+    </header>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2>
+      <div class='math-block'>
+        <div class='formula'>Paired Divisors up to &radic;n</div>
+        <p style='font-size:0.9rem;margin-top:0.5rem;'>If <code>a &times; b = n</code>, then at least one of the factors must be less than or equal to &radic;n.</p>
+        <p style='font-size:0.9rem;'>Thus, we can find all divisors by iterating <code>i</code> up to &radic;n. If <code>i</code> divides <code>n</code>, both <code>i</code> and <code>n/i</code> are divisors.</p>
+      </div>
+    </section>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+      <div class="approach-card approach-card--brute">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Iterate to n</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Iterate <code>i</code> from 1 to <code>n</code>. If <code>n % i == 0</code>, add <code>i</code> to the total sum.</p>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(1)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros">
+              <div class="pros-cons__title">Pros</div>
+              <ul class="pros-cons__list"><li>Simple and easy to write</li></ul>
+            </div>
+            <div class="pros-cons__col pros-cons__col--cons">
+              <div class="pros-cons__title">Cons</div>
+              <ul class="pros-cons__list"><li>Too slow if n is up to 10^9 or higher</li></ul>
+            </div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">Divisors always appear in pairs. We only need to check up to &radic;n.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Iterate to &radic;n</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Iterate <code>i</code> from 1 to <code>&radic;n</code>. If <code>i</code> divides <code>n</code>, add both <code>i</code> and <code>n/i</code> to the sum. Handle perfect squares to avoid double counting.</p>
+          <div class="pseudocode-block"><span class='keyword'>for</span> i = 1 <span class='keyword'>to</span> &radic;n:<br>&nbsp;&nbsp;<span class='keyword'>if</span> n % i == 0:<br>&nbsp;&nbsp;&nbsp;&nbsp;total += i<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> i != n / i:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;total += n / i</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(&radic;n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(1)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros">
+              <div class="pros-cons__title">Pros</div>
+              <ul class="pros-cons__list"><li>Optimal time complexity</li></ul>
+            </div>
+            <div class="pros-cons__col pros-cons__col--cons">
+              <div class="pros-cons__title">Cons</div>
+              <ul class="pros-cons__list"><li>Requires handling the perfect square edge case</li></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">👀</span> Interactive Walkthrough</h2>
+      <div class="viz-controls">
+  <input type="number" id="div-input" class="viz-input" value="36" min="1" max="10000" style="width: 120px;">
+  <button class="viz-btn" id="div-btn">Find Divisors Sum</button>
+</div>
+<div class="viz-canvas" style="flex-direction: column; gap: var(--space-4);" id="div-log">
+  <div class="math-block" id="div-res" style="font-size: 2rem; color: var(--accent-green);">Sum: 0</div>
+</div>
+    </section>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr><td>Iterate to n</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Too slow</td></tr>
+          <tr class="row--optimal"><td>Iterate to &radic;n</td><td><code>O(&radic;n)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">💻</span> Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    long long totalChocolates(int n) {
+        long long total = 0;
+        for (int i = 1; i * i &lt;= n; i++) {
+            if (n % i == 0) {
+                total += i;
+                if (i != n / i) {
+                    total += n / i;
+                }
+            }
+        }
+        return total;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def totalChocolates(self, n):
+        total = 0
+        i = 1
+        while i * i &lt;= n:
+            if n % i == 0:
+                total += i
+                if i != n // i:
+                    total += n // i
+            i += 1
+        return total</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+  <script>
+    
+const input4 = document.getElementById('div-input');
+const btn4 = document.getElementById('div-btn');
+const log4 = document.getElementById('div-log');
+const res4 = document.getElementById('div-res');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+btn4.onclick = async () => {
+    btn4.disabled = true;
+    res4.textContent = 'Sum: 0';
+    Array.from(log4.children).forEach(c => { if(c.id !== 'div-res') c.remove(); });
+    
+    let n = parseInt(input4.value);
+    let total = 0;
+    
+    for (let i = 1; i * i <= n; i++) {
+        if (n % i === 0) {
+            const div = document.createElement('div');
+            div.className = `math-block`;
+            log4.insertBefore(div, res4);
+            
+            total += i;
+            let msg = `Found divisor <strong>${i}</strong>`;
+            
+            if (i !== n / i) {
+                let pair = n / i;
+                total += pair;
+                msg += ` and its pair <strong>${pair}</strong>`;
+            } else {
+                msg += ` (Perfect square root, no pair added)`;
+            }
+            
+            div.innerHTML = msg;
+            res4.textContent = `Sum: ${total}`;
+            await sleep(800);
+        }
+    }
+    btn4.disabled = false;
+};
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Largest Rectangle in Histogram - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-08-stack-queue.html" class="navbar__link">&#8592; Back to Module 08: Stack & Queue</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-08-stack-queue.html">Module 08: Stack & Queue</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Largest Rectangle in Histogram</span></div>
+      <h1 class="problem-header__title">Largest Rectangle in Histogram</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--hard">Hard</span>
+        <a href="https://leetcode.com/problems/largest-rectangle-in-histogram/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given an array of integers representing the histogram's bar height where the width of each bar is 1, return the area of the largest rectangle in the histogram.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Area = height[i] &times; (right_smaller_idx - left_smaller_idx - 1)</div><p style='font-size:0.9rem;margin-top:0.5rem;'>For each bar, if it is the minimum height of a rectangle, the rectangle extends left and right until it hits a bar smaller than it.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Expand from Each Bar</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">For every bar, expand left and right to find the boundaries where bars are &ge; current height.</p>
+        <div class="pseudocode-block"><span class='keyword'>for</span> i = 0 to n-1:
+&nbsp;&nbsp;expand left and right
+&nbsp;&nbsp;maxArea = max(maxArea, area)</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n<sup>2</sup>)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Intuitive</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Too slow</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">A monotonic stack can find the left and right smaller elements for all bars in a single pass O(n).</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Monotonic Increasing Stack</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Maintain a stack of indices with increasing heights. When a smaller bar is encountered, it acts as the 'right boundary' for the bars in the stack. The 'left boundary' is the element below it in the stack.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> largestRectangleArea(heights):<br>&nbsp;&nbsp;stack = []; maxArea = 0<br>&nbsp;&nbsp;heights.append(0) <span class='comment'>// flush remaining bars</span><br>&nbsp;&nbsp;<span class='keyword'>for</span> i, h <span class='keyword'>in</span> enumerate(heights):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>while</span> stack <span class='keyword'>and</span> h < heights[stack.top()]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;height = heights[stack.pop()]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;width = i <span class='keyword'>if</span> stack.empty() <span class='keyword'>else</span> i - stack.top() - 1<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;maxArea = max(maxArea, height * width)<br>&nbsp;&nbsp;&nbsp;&nbsp;stack.push(i)<br>&nbsp;&nbsp;<span class='keyword'>return</span> maxArea</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(n) time</li><li>Masterclass in Monotonic Stack</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Very tricky to handle width calculations correctly</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="stack-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step">Step Processing</button>
+          <button class="btn btn--outline" id="btn-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 4rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap;">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 1rem;">Histogram (Heights)</div>
+                <div id="hist-container" style="display: flex; gap: 0.25rem; align-items: flex-end; height: 150px; border-bottom: 2px solid var(--border-primary); padding: 0 1rem;"></div>
+                <div style="margin-top: 1rem; font-family: var(--font-mono); color: var(--text-secondary);">Max Area: <span id="max-area" style="color:var(--accent-green); font-weight:bold; font-size:1.2rem;">0</span></div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 1rem;">Stack (Indices)</div>
+                <div id="stack-container" style="display: flex; flex-direction: column-reverse; gap: 0.5rem; width: 120px; min-height: 150px; border-bottom: 2px solid var(--border-primary); padding-bottom: 0.5rem;"></div>
+            </div>
+        </div>
+
+        <div class="visualizer__log" id="viz-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Step Processing' to iterate through the histogram bars.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const heights = [2, 1, 5, 6, 2, 3, 0]; // appended 0
+          const displayHeights = [2, 1, 5, 6, 2, 3, "0(end)"];
+          let stack = [];
+          let maxArea = 0;
+          let currentIdx = 0;
+          let state = 0; // 0: checking, 1: popping
+          let isDone = false;
+          
+          const histCont = document.getElementById('hist-container');
+          const stackCont = document.getElementById('stack-container');
+          const log = document.getElementById('viz-log');
+          const maxAreaEl = document.getElementById('max-area');
+
+          function init() {
+              stack = [];
+              maxArea = 0;
+              currentIdx = 0;
+              state = 0;
+              isDone = false;
+              render();
+              log.innerHTML = "Click 'Step Processing' to iterate through the histogram bars.";
+          }
+
+          function render() {
+              histCont.innerHTML = '';
+              heights.forEach((h, i) => {
+                  const wrap = document.createElement('div');
+                  wrap.style.display = 'flex';
+                  wrap.style.flexDirection = 'column';
+                  wrap.style.alignItems = 'center';
+                  wrap.style.gap = '0.25rem';
+                  
+                  const bar = document.createElement('div');
+                  bar.style.width = '30px';
+                  bar.style.height = (h * 20) + 'px';
+                  bar.style.background = (i === currentIdx && state !== 1) ? 'var(--accent-purple)' : 'var(--bg-secondary)';
+                  bar.style.border = '1px solid var(--border-primary)';
+                  bar.style.borderBottom = 'none';
+                  bar.style.transition = 'all 0.3s ease';
+                  
+                  const label = document.createElement('div');
+                  label.style.fontFamily = 'var(--font-mono)';
+                  label.style.fontSize = '0.8rem';
+                  label.style.color = 'var(--text-secondary)';
+                  label.textContent = displayHeights[i];
+                  
+                  wrap.appendChild(bar);
+                  wrap.appendChild(label);
+                  histCont.appendChild(wrap);
+              });
+              
+              stackCont.innerHTML = '';
+              stack.forEach((idx, i) => {
+                  const isTop = i === stack.length - 1;
+                  const el = document.createElement('div');
+                  el.style.width = '100%';
+                  el.style.height = '40px';
+                  el.style.display = 'flex';
+                  el.style.alignItems = 'center';
+                  el.style.justifyContent = 'center';
+                  el.style.background = (isTop && state === 1) ? 'var(--accent-orange)' : 'var(--bg-secondary)';
+                  if (isTop && state === 1) el.style.color = 'black';
+                  el.style.border = '2px solid var(--border-primary)';
+                  el.style.borderRadius = '8px';
+                  el.innerHTML = `<span style="font-size:0.8rem;">i=${idx}</span>&nbsp;<b>h=${heights[idx]}</b>`;
+                  stackCont.appendChild(el);
+              });
+              
+              maxAreaEl.textContent = maxArea;
+          }
+
+          function step() {
+              if (isDone) return;
+              if (currentIdx >= heights.length) {
+                  log.innerHTML = `🎉 <strong>Processing Complete!</strong> Max Area is <strong>${maxArea}</strong>.`;
+                  isDone = true;
+                  render();
+                  return;
+              }
+              
+              if (state === 0 || state === 1) {
+                  if (stack.length > 0 && heights[currentIdx] < heights[stack[stack.length - 1]]) {
+                      state = 1;
+                      const pIdx = stack.pop();
+                      const h = heights[pIdx];
+                      const w = stack.length === 0 ? currentIdx : currentIdx - stack[stack.length - 1] - 1;
+                      const area = h * w;
+                      maxArea = Math.max(maxArea, area);
+                      
+                      log.innerHTML = `<code>heights[${currentIdx}] (${heights[currentIdx]}) < stack top height (${h})</code>.<br>Popped index <strong>${pIdx}</strong>. Height = ${h}. Width = ${w}. Area = <strong>${area}</strong>.<br>Max Area updated to <strong>${maxArea}</strong>.`;
+                  } else {
+                      state = 2; 
+                      step(); 
+                      return;
+                  }
+              } else if (state === 2) {
+                  stack.push(currentIdx);
+                  log.innerHTML = `Pushed index <strong>${currentIdx}</strong> (Height: ${heights[currentIdx]}) to stack.`;
+                  currentIdx++;
+                  state = 0;
+              }
+              
+              render();
+          }
+
+          document.getElementById('btn-step').addEventListener('click', step);
+          document.getElementById('btn-reset').addEventListener('click', init);
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: heights = [2, 1, 5, 6, 2, 3] (appended 0)</div><div class='math-block' style='text-align:left;font-size:0.9rem;'>
+<pre style="color:var(--text-secondary)">
+i=0 (h=2): Push 0. Stack=[0]. MaxArea=0
+i=1 (h=1): 1 &lt; 2. Pop 0. h=2, w=1-0=1. Area=2. MaxArea=2.
+           Stack empty. Push 1. Stack=[1]
+i=2 (h=5): 5 > 1. Push 2. Stack=[1, 2]
+i=3 (h=6): 6 > 5. Push 3. Stack=[1, 2, 3]
+i=4 (h=2): 2 &lt; 6. Pop 3. h=6, w=4-2-1=1. Area=6. MaxArea=6. Stack=[1, 2]
+           2 &lt; 5. Pop 2. h=5, w=4-1-1=2. Area=10. MaxArea=10. Stack=[1]
+           Push 4. Stack=[1, 4]
+i=5 (h=3): 3 > 2. Push 5. Stack=[1, 4, 5]
+i=6 (h=0): Flush stack!
+           Pop 5 (h=3). w=6-4-1=1. Area=3. MaxArea=10.
+           Pop 4 (h=2). w=6-1-1=4. Area=8. MaxArea=10.
+           Pop 1 (h=1). w=6 (empty stack). Area=6. MaxArea=10.
+
+<span class="highlight">Result: MaxArea = 10</span>
+</pre></div></div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Expand All</td><td><code>O(n<sup>2</sup>)</code></td><td><code>O(1)</code></td><td>Too slow</td></tr>
+<tr class="row--optimal"><td>Monotonic Stack</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    int largestRectangleArea(vector&lt;int&gt;&amp; heights) {
+        heights.push_back(0);
+        stack&lt;int&gt; st;
+        int maxArea = 0;
+        for (int i = 0; i &lt; heights.size(); i++) {
+            while (!st.empty() &amp;&amp; heights[i] &lt; heights[st.top()]) {
+                int h = heights[st.top()]; st.pop();
+                int w = st.empty() ? i : i - st.top() - 1;
+                maxArea = max(maxArea, h * w);
+            }
+            st.push(i);
+        }
+        return maxArea;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def largestRectangleArea(self, heights):
+        heights.append(0)
+        stack = []
+        maxArea = 0
+        for i, h in enumerate(heights):
+            while stack and h &lt; heights[stack[-1]]:
+                height = heights[stack.pop()]
+                width = i if not stack else i - stack[-1] - 1
+                maxArea = max(maxArea, height * width)
+            stack.append(i)
+        return maxArea</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

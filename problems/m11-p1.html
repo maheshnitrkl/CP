@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Binary Tree Preorder Traversal - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-11-trees.html" class="navbar__link">&#8592; Back to Module 11: Trees</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-11-trees.html">Module 11: Trees</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Binary Tree Preorder Traversal</span></div>
+      <h1 class="problem-header__title">Binary Tree Preorder Traversal</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/binary-tree-preorder-traversal/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given the root of a binary tree, return the preorder traversal of its nodes' values.</p></div>
+    </section>
+
+    <!-- 2. Logic & Core Concept -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128218;</span> Logic & Core Concept</h2>
+      <div class="math-block">
+        <p><strong>Preorder Traversal</strong> visits the nodes of a binary tree in the following order:</p>
+        <ol style="padding-left:1.5rem; margin-top:0.5rem; color:var(--text-secondary);">
+          <li>Visit the <strong>Current Node</strong> (Root).</li>
+          <li>Traverse the <strong>Left Subtree</strong>.</li>
+          <li>Traverse the <strong>Right Subtree</strong>.</li>
+        </ol>
+        <div style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-sm); margin-top:1rem; text-align:center;">
+          <code>Order: Node &rarr; Left &rarr; Right (NLR)</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+      <div class="approach-card approach-card--brute">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Recursive Traversal</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">The most natural way to implement tree traversals. The function calls itself on the left and right children, naturally using the call stack.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> preorder(node, result):<br>&nbsp;&nbsp;<span class='keyword'>if</span> node is null: <span class='keyword'>return</span><br>&nbsp;&nbsp;result.append(node.val) <span class='comment'>// Node</span><br>&nbsp;&nbsp;preorder(node.left, result) <span class='comment'>// Left</span><br>&nbsp;&nbsp;preorder(node.right, result) <span class='comment'>// Right</span></div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(h) (Call Stack)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Extremely clean and readable</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Risk of stack overflow for very deep skewed trees</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">To avoid relying on the system call stack, we can manually simulate the recursion using our own Stack data structure.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Iterative (Using a Stack)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">We use a LIFO (Last-In-First-Out) stack. To visit the left child before the right child, we must push the <strong>right child first</strong>, then the left child onto the stack.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> preorderIterative(root):<br>&nbsp;&nbsp;<span class='keyword'>if</span> root is null: <span class='keyword'>return</span> []<br>&nbsp;&nbsp;stack = [root]<br>&nbsp;&nbsp;result = []<br>&nbsp;&nbsp;<span class='keyword'>while</span> stack is not empty:<br>&nbsp;&nbsp;&nbsp;&nbsp;node = stack.pop()<br>&nbsp;&nbsp;&nbsp;&nbsp;result.append(node.val)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> node.right exists: stack.push(node.right)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> node.left exists: stack.push(node.left)<br>&nbsp;&nbsp;<span class='keyword'>return</span> result</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(h)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>No call stack overflow issues</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Still requires O(h) extra memory</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Can we traverse the tree without any extra space? Yes, by temporarily modifying the tree structure using Morris Traversal!</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 3</span></div>
+          <div class="approach-card__title">Morris Traversal</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Morris Traversal achieves <code>O(1)</code> space by creating temporary threaded links from the rightmost node of the left subtree back to the current node. This allows us to return to the parent without a stack.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> morrisPreorder(root):<br>&nbsp;&nbsp;curr = root, result = []<br>&nbsp;&nbsp;<span class='keyword'>while</span> curr != null:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> curr.left == null:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result.append(curr.val)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;curr = curr.right<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>else</span>:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prev = curr.left<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>while</span> prev.right != null and prev.right != curr:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prev = prev.right<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> prev.right == null: <span class='comment'>// Create thread</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result.append(curr.val)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prev.right = curr<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;curr = curr.left<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>else</span>: <span class='comment'>// Remove thread</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;prev.right = null<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;curr = curr.right</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(1)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Optimal O(1) extra space!</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Temporarily mutates the tree</li><li>Complex to write and read</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr class="row--brute"><td>Recursion</td><td><code>O(n)</code></td><td><code>O(h)</code></td><td>Good</td></tr>
+          <tr class="row--better"><td>Iterative (Stack)</td><td><code>O(n)</code></td><td><code>O(h)</code></td><td>Better</td></tr>
+          <tr class="row--optimal"><td>Morris Traversal</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Optimal Space</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">&#10024;</span> Interactive Visualization (Iterative Preorder)</h2>
+      <div class="visualizer" id="preorder-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step-pre">Next Step</button>
+          <button class="btn btn--outline" id="btn-reset-pre">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; margin: 2rem 0; flex-wrap: wrap; justify-content: center;">
+          <!-- Tree Display -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;" id="tree-canvas">
+            <div>
+              <div class="t-node" id="n-1" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;">1</div>
+            </div>
+            <div style="display:flex; gap: 60px;">
+              <div class="t-node" id="n-2" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;">2</div>
+              <div class="t-node" id="n-3" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;">3</div>
+            </div>
+            <div style="display:flex; gap: 20px;">
+              <div class="t-node" id="n-4" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;">4</div>
+              <div class="t-node" id="n-5" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;">5</div>
+              <div style="width:50px;"></div>
+              <div style="width:50px;"></div>
+            </div>
+          </div>
+          
+          <!-- Stack Display -->
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <h4 style="margin-bottom: 0.5rem; color: var(--text-secondary);">Stack (Top at top)</h4>
+            <div id="stack-container" style="width: 80px; min-height: 150px; border: 2px solid var(--border-primary); border-top: none; border-radius: 0 0 var(--radius-sm) var(--radius-sm); display: flex; flex-direction: column-reverse; justify-content: flex-start; align-items: center; padding: 5px; gap: 5px; background: var(--bg-elevated);">
+            </div>
+          </div>
+        </div>
+
+        <div class="visualizer__log" id="pre-log">
+          Click "Next Step" to push the root node (1) onto the stack.
+        </div>
+        <div style="text-align:center; font-family: monospace; font-size: 1.2rem; color: var(--accent-green); margin-top: 1rem;" id="pre-result">
+          Result: []
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const btnStep = document.getElementById("btn-step-pre");
+          const btnReset = document.getElementById("btn-reset-pre");
+          const stackContainer = document.getElementById("stack-container");
+          const log = document.getElementById("pre-log");
+          const resLog = document.getElementById("pre-result");
+          
+          // Tree structure: 1 -> [2, 3], 2 -> [4, 5], 3 -> [], 4 -> [], 5 -> []
+          const tree = {
+            1: { left: 2, right: 3 },
+            2: { left: 4, right: 5 },
+            3: { left: null, right: null },
+            4: { left: null, right: null },
+            5: { left: null, right: null }
+          };
+
+          let stack = [];
+          let result = [];
+          let state = 0; // 0: push root, 1: pop, 2: push children
+          let currNode = null;
+
+          function renderStack() {
+            stackContainer.innerHTML = "";
+            stack.forEach(val => {
+              const el = document.createElement("div");
+              el.style.width = "100%";
+              el.style.padding = "10px 0";
+              el.style.textAlign = "center";
+              el.style.background = "var(--accent-blue-dim)";
+              el.style.border = "1px solid var(--accent-blue)";
+              el.style.borderRadius = "var(--radius-sm)";
+              el.style.fontWeight = "bold";
+              el.textContent = val;
+              stackContainer.appendChild(el);
+            });
+          }
+
+          function resetNodes() {
+            for(let i=1; i<=5; i++) {
+              const node = document.getElementById(`n-${i}`);
+              node.style.background = "var(--bg-elevated)";
+              node.style.borderColor = "var(--border-primary)";
+              node.style.color = "var(--text-primary)";
+              node.style.boxShadow = "none";
+            }
+          }
+
+          function init() {
+            stack = [];
+            result = [];
+            state = 0;
+            currNode = null;
+            resetNodes();
+            renderStack();
+            resLog.innerHTML = "Result: []";
+            log.innerHTML = "Click \"Next Step\" to push the root node (1) onto the stack.";
+            btnStep.disabled = false;
+          }
+
+          btnStep.addEventListener("click", () => {
+            if (state === 0) {
+              stack.push(1);
+              renderStack();
+              document.getElementById("n-1").style.borderColor = "var(--accent-blue)";
+              log.innerHTML = "Pushed root node <code>1</code> onto the stack.";
+              state = 1;
+            } else if (state === 1) {
+              if (stack.length === 0) {
+                log.innerHTML = "Stack is empty! Traversal is complete.";
+                btnStep.disabled = true;
+                return;
+              }
+              currNode = stack.pop();
+              result.push(currNode);
+              renderStack();
+              
+              const nodeEl = document.getElementById(`n-${currNode}`);
+              nodeEl.style.background = "var(--accent-green-dim)";
+              nodeEl.style.borderColor = "var(--accent-green)";
+              nodeEl.style.color = "var(--accent-green)";
+              nodeEl.style.boxShadow = "0 0 10px var(--accent-green)";
+              
+              resLog.innerHTML = `Result: [${result.join(", ")}]`;
+              log.innerHTML = `Popped <code>${currNode}</code> from stack and added it to result.`;
+              state = 2;
+            } else if (state === 2) {
+              const children = tree[currNode];
+              let msg = "";
+              if (children.right) {
+                stack.push(children.right);
+                document.getElementById(`n-${children.right}`).style.borderColor = "var(--accent-blue)";
+                msg += `Pushed right child <code>${children.right}</code>. `;
+              }
+              if (children.left) {
+                stack.push(children.left);
+                document.getElementById(`n-${children.left}`).style.borderColor = "var(--accent-blue)";
+                msg += `Pushed left child <code>${children.left}</code>. `;
+              }
+              if (!children.left && !children.right) {
+                msg = `Node <code>${currNode}</code> has no children.`;
+              }
+              renderStack();
+              log.innerHTML = msg + (stack.length > 0 ? " Ready to pop next." : " Stack empty.");
+              state = 1;
+            }
+          });
+
+          btnReset.addEventListener("click", init);
+        });
+      </script>
+    </section>
+
+    <!-- 5. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++ (Iterative)</button><button class="code-block__tab" data-lang="python">Python (Iterative)</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    vector&lt;int&gt; preorderTraversal(TreeNode* root) {
+        vector&lt;int&gt; result;
+        if (root == nullptr) return result;
+        
+        stack&lt;TreeNode*&gt; s;
+        s.push(root);
+        
+        while (!s.empty()) {
+            TreeNode* node = s.top();
+            s.pop();
+            
+            result.push_back(node-&gt;val);
+            
+            // Push right child first so left is processed first (LIFO)
+            if (node-&gt;right) {
+                s.push(node-&gt;right);
+            }
+            if (node-&gt;left) {
+                s.push(node-&gt;left);
+            }
+        }
+        
+        return result;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        if not root:
+            return []
+            
+        result = []
+        stack = [root]
+        
+        while stack:
+            node = stack.pop()
+            result.append(node.val)
+            
+            # Push right child first so left is processed first (LIFO)
+            if node.right:
+                stack.append(node.right)
+            if node.left:
+                stack.append(node.left)
+                
+        return result</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <footer class="footer" style="margin-top: 4rem; padding: 2rem 0; text-align: center; color: var(--text-tertiary); border-top: 1px solid var(--border-primary);">
+    <p>CP-II Lab &copy; 2026. Built for learning.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

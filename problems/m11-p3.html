@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Binary Tree Postorder Traversal - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-11-trees.html" class="navbar__link">&#8592; Back to Module 11: Trees</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-11-trees.html">Module 11: Trees</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Binary Tree Postorder Traversal</span></div>
+      <h1 class="problem-header__title">Binary Tree Postorder Traversal</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/binary-tree-postorder-traversal/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given the root of a binary tree, return the postorder traversal of its nodes' values.</p></div>
+    </section>
+
+    <!-- 2. Logic & Core Concept -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128218;</span> Logic & Core Concept</h2>
+      <div class="math-block">
+        <p><strong>Postorder Traversal</strong> visits the nodes of a binary tree in the following order:</p>
+        <ol style="padding-left:1.5rem; margin-top:0.5rem; color:var(--text-secondary);">
+          <li>Traverse the <strong>Left Subtree</strong>.</li>
+          <li>Traverse the <strong>Right Subtree</strong>.</li>
+          <li>Visit the <strong>Current Node</strong> (Root).</li>
+        </ol>
+        <div style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-sm); margin-top:1rem; text-align:center;">
+          <code>Order: Left &rarr; Right &rarr; Node (LRN)</code>
+        </div>
+        <p style="margin-top:1rem;"><em>Key Insight:</em> Postorder is commonly used when you need to process children before their parent (e.g., deleting a tree, calculating directory sizes).</p>
+      </div>
+    </section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+      <div class="approach-card approach-card--brute">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Recursive Traversal</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Like other traversals, recursion is the most elegant solution. The function recursively calls itself for the left child, then the right child, and finally processes the root node.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> postorder(node, result):<br>&nbsp;&nbsp;<span class='keyword'>if</span> node is null: <span class='keyword'>return</span><br>&nbsp;&nbsp;postorder(node.left, result)  <span class='comment'>// Left</span><br>&nbsp;&nbsp;postorder(node.right, result) <span class='comment'>// Right</span><br>&nbsp;&nbsp;result.append(node.val)       <span class='comment'>// Node</span></div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(h) (Call Stack)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Simple and elegant code</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Subject to recursion depth limitations</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">To solve the problem iteratively, postorder is famously harder than preorder and inorder because we must visit the parent node twice but only output it the second time. Let's see a clever 2-stack approach first.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Iterative (Using 2 Stacks)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">We know Preorder is <strong>NLR</strong>. If we tweak Preorder to do <strong>NRL</strong>, and then reverse the result, we get exactly <strong>LRN</strong>! We can use a second stack (or an array reversed at the end) to store the NRL sequence.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> postorder2Stacks(root):<br>&nbsp;&nbsp;<span class='keyword'>if</span> root is null: <span class='keyword'>return</span> []<br>&nbsp;&nbsp;stack1 = [root], stack2 = []<br>&nbsp;&nbsp;<span class='keyword'>while</span> stack1 is not empty:<br>&nbsp;&nbsp;&nbsp;&nbsp;node = stack1.pop()<br>&nbsp;&nbsp;&nbsp;&nbsp;stack2.push(node)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> node.left exists: stack1.push(node.left)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> node.right exists: stack1.push(node.right)<br>&nbsp;&nbsp;<span class='keyword'>return</span> stack2 reversed</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(n) (For both stacks)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Very easy to understand and write</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Uses O(n) extra space instead of O(h)</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Can we do it iteratively with only ONE stack, bringing the space complexity down to O(h)? Yes, by tracking the previously visited node!</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 3</span></div>
+          <div class="approach-card__title">Iterative (Using 1 Stack)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Traverse as far left as possible. When you reach a null left child, peek the stack. If the right child exists and hasn't been visited, traverse right. Otherwise, pop and process the node.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> postorder1Stack(root):<br>&nbsp;&nbsp;stack = [], result = []<br>&nbsp;&nbsp;curr = root, lastVisited = null<br>&nbsp;&nbsp;<span class='keyword'>while</span> curr != null or stack is not empty:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> curr != null:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stack.push(curr)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;curr = curr.left<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>else</span>:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;peekNode = stack.peek()<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> peekNode.right != null and lastVisited != peekNode.right:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;curr = peekNode.right<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>else</span>:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result.append(peekNode.val)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lastVisited = stack.pop()</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(h)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Optimal iterative space O(h)</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Tricky to get the logic perfectly right</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr class="row--brute"><td>Recursion</td><td><code>O(n)</code></td><td><code>O(h)</code></td><td>Good</td></tr>
+          <tr class="row--better"><td>Iterative (2 Stacks)</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Easy Iterative</td></tr>
+          <tr class="row--optimal"><td>Iterative (1 Stack)</td><td><code>O(n)</code></td><td><code>O(h)</code></td><td>Optimal Iterative</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">&#10024;</span> Interactive Visualization (2 Stacks Approach)</h2>
+      <div class="visualizer" id="postorder-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step-post">Next Step</button>
+          <button class="btn btn--outline" id="btn-reset-post">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; margin: 2rem 0; flex-wrap: wrap; justify-content: center; align-items:flex-start;">
+          <!-- Tree Display -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;" id="post-tree-canvas">
+            <div>
+              <div class="t-node" id="postn-1" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;">1</div>
+            </div>
+            <div style="display:flex; gap: 60px;">
+              <div class="t-node" id="postn-2" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;">2</div>
+              <div class="t-node" id="postn-3" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;">3</div>
+            </div>
+            <div style="display:flex; gap: 20px;">
+              <div class="t-node" id="postn-4" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;">4</div>
+              <div class="t-node" id="postn-5" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;">5</div>
+              <div style="width:50px;"></div>
+              <div style="width:50px;"></div>
+            </div>
+          </div>
+          
+          <!-- Stack 1 Display -->
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <h4 style="margin-bottom: 0.5rem; color: var(--text-secondary);">Stack 1 (Processing)</h4>
+            <div id="stack1-container" style="width: 100px; min-height: 150px; border: 2px solid var(--border-primary); border-top: none; border-radius: 0 0 var(--radius-sm) var(--radius-sm); display: flex; flex-direction: column-reverse; justify-content: flex-start; align-items: center; padding: 5px; gap: 5px; background: var(--bg-elevated);">
+            </div>
+          </div>
+          
+          <!-- Stack 2 Display -->
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <h4 style="margin-bottom: 0.5rem; color: var(--text-secondary);">Stack 2 (Output NRL)</h4>
+            <div id="stack2-container" style="width: 100px; min-height: 150px; border: 2px solid var(--border-primary); border-top: none; border-radius: 0 0 var(--radius-sm) var(--radius-sm); display: flex; flex-direction: column-reverse; justify-content: flex-start; align-items: center; padding: 5px; gap: 5px; background: var(--bg-elevated);">
+            </div>
+          </div>
+        </div>
+
+        <div class="visualizer__log" id="post-log">
+          Click "Next Step" to push the root node (1) onto Stack 1.
+        </div>
+        <div style="text-align:center; font-family: monospace; font-size: 1.2rem; color: var(--accent-green); margin-top: 1rem;" id="post-result">
+          Result (Pop Stack 2): []
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const btnStep = document.getElementById("btn-step-post");
+          const btnReset = document.getElementById("btn-reset-post");
+          const s1Container = document.getElementById("stack1-container");
+          const s2Container = document.getElementById("stack2-container");
+          const log = document.getElementById("post-log");
+          const resLog = document.getElementById("post-result");
+          
+          const tree = {
+            1: { left: 2, right: 3 },
+            2: { left: 4, right: 5 },
+            3: { left: null, right: null },
+            4: { left: null, right: null },
+            5: { left: null, right: null }
+          };
+
+          let stack1 = [];
+          let stack2 = [];
+          let result = [];
+          let stage = 0; // 0: init, 1: process s1, 2: pop s2
+
+          function renderStack(container, st, color) {
+            container.innerHTML = "";
+            st.forEach(val => {
+              const el = document.createElement("div");
+              el.style.width = "100%";
+              el.style.padding = "10px 0";
+              el.style.textAlign = "center";
+              el.style.background = `var(--accent-${color}-dim)`;
+              el.style.border = `1px solid var(--accent-${color})`;
+              el.style.borderRadius = "var(--radius-sm)";
+              el.style.fontWeight = "bold";
+              el.textContent = val;
+              container.appendChild(el);
+            });
+          }
+
+          function resetNodes() {
+            for(let i=1; i<=5; i++) {
+              const node = document.getElementById(`postn-${i}`);
+              node.style.background = "var(--bg-elevated)";
+              node.style.borderColor = "var(--border-primary)";
+              node.style.color = "var(--text-primary)";
+              node.style.boxShadow = "none";
+            }
+          }
+
+          function init() {
+            stack1 = [];
+            stack2 = [];
+            result = [];
+            stage = 0;
+            resetNodes();
+            renderStack(s1Container, stack1, "blue");
+            renderStack(s2Container, stack2, "purple");
+            resLog.innerHTML = "Result (Pop Stack 2): []";
+            log.innerHTML = "Click \"Next Step\" to push the root node (1) onto Stack 1.";
+            btnStep.disabled = false;
+          }
+
+          btnStep.addEventListener("click", () => {
+            if (stage === 0) {
+              stack1.push(1);
+              renderStack(s1Container, stack1, "blue");
+              log.innerHTML = `Pushed root <code>1</code> to Stack 1.`;
+              document.getElementById("postn-1").style.borderColor = "var(--accent-blue)";
+              stage = 1;
+            } else if (stage === 1) {
+              if (stack1.length === 0) {
+                log.innerHTML = "Stack 1 empty. Now pop all from Stack 2 to get final Postorder!";
+                stage = 2;
+                return;
+              }
+              const curr = stack1.pop();
+              stack2.push(curr);
+              
+              document.getElementById(`postn-${curr}`).style.background = "var(--accent-purple-dim)";
+              document.getElementById(`postn-${curr}`).style.borderColor = "var(--accent-purple)";
+              
+              const left = tree[curr].left;
+              const right = tree[curr].right;
+              
+              // Note the order! Push left then right, so right pops first in S1 -> processed first!
+              let msg = `Popped <code>${curr}</code> from S1, pushed to S2. `;
+              if (left) {
+                stack1.push(left);
+                msg += `Pushed left child <code>${left}</code> to S1. `;
+              }
+              if (right) {
+                stack1.push(right);
+                msg += `Pushed right child <code>${right}</code> to S1.`;
+              }
+              
+              renderStack(s1Container, stack1, "blue");
+              renderStack(s2Container, stack2, "purple");
+              log.innerHTML = msg;
+              
+            } else if (stage === 2) {
+              if (stack2.length === 0) {
+                log.innerHTML = "<strong>Done!</strong> Postorder traversal is complete.";
+                btnStep.disabled = true;
+                return;
+              }
+              const curr = stack2.pop();
+              result.push(curr);
+              renderStack(s2Container, stack2, "purple");
+              
+              const nodeEl = document.getElementById(`postn-${curr}`);
+              nodeEl.style.background = "var(--accent-green-dim)";
+              nodeEl.style.borderColor = "var(--accent-green)";
+              nodeEl.style.color = "var(--accent-green)";
+              nodeEl.style.boxShadow = "0 0 10px var(--accent-green)";
+              
+              resLog.innerHTML = `Result: [${result.join(", ")}]`;
+              log.innerHTML = `Popped <code>${curr}</code> from Stack 2 into the result list.`;
+            }
+          });
+
+          btnReset.addEventListener("click", init);
+        });
+      </script>
+    </section>
+
+    <!-- 5. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++ (1 Stack)</button><button class="code-block__tab" data-lang="python">Python (1 Stack)</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    vector&lt;int&gt; postorderTraversal(TreeNode* root) {
+        vector&lt;int&gt; result;
+        if (!root) return result;
+        
+        stack&lt;TreeNode*&gt; s;
+        TreeNode* curr = root;
+        TreeNode* lastVisited = nullptr;
+        
+        while (curr != nullptr || !s.empty()) {
+            if (curr != nullptr) {
+                s.push(curr);
+                curr = curr-&gt;left;
+            } else {
+                TreeNode* peekNode = s.top();
+                // If right child exists and traversing node
+                // from left child, then move right
+                if (peekNode-&gt;right != nullptr &amp;&amp; lastVisited != peekNode-&gt;right) {
+                    curr = peekNode-&gt;right;
+                } else {
+                    result.push_back(peekNode-&gt;val);
+                    lastVisited = s.top();
+                    s.pop();
+                }
+            }
+        }
+        
+        return result;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        result = []
+        if not root:
+            return result
+            
+        stack = []
+        curr = root
+        last_visited = None
+        
+        while curr or stack:
+            if curr:
+                stack.append(curr)
+                curr = curr.left
+            else:
+                peek_node = stack[-1]
+                # If right child exists and traversing node
+                # from left child, then move right
+                if peek_node.right and last_visited != peek_node.right:
+                    curr = peek_node.right
+                else:
+                    result.append(peek_node.val)
+                    last_visited = stack.pop()
+                    
+        return result</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <footer class="footer" style="margin-top: 4rem; padding: 2rem 0; text-align: center; color: var(--text-tertiary); border-top: 1px solid var(--border-primary);">
+    <p>CP-II Lab &copy; 2026. Built for learning.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Make them Co-prime — CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">⚡</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-01-number-theory.html" class="navbar__link">← Back to Module 01</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">›</span><a href="../modules/module-01-number-theory.html">Module 01</a><span class="breadcrumb__sep">›</span><span class="breadcrumb__current">Make them Co-prime</span></div>
+      <h1 class="problem-header__title">Make them Co-prime</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://www.geeksforgeeks.org/problems/make-them-coprime/1" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">🔗 GFG</a>
+      </div>
+    </header>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2>
+      <div class='math-block'>
+        <div class='formula'>GCD Property: GCD(a&middot;g, b&middot;g) = g &times; GCD(a, b)</div>
+        <p style='font-size:0.9rem;margin-top:0.5rem;'>If all elements in an array share a common factor <code>g</code>, dividing every element by <code>g</code> removes that common factor from all pairs simultaneously.</p>
+        <p style='font-size:0.9rem;'>By finding the global GCD of the entire array and dividing all elements by it, the new global GCD becomes 1, making the elements co-prime.</p>
+      </div>
+    </section>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+      <div class="approach-card approach-card--brute">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Check Every Possible Divisor</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Find the minimum element in the array. Try dividing all elements by every integer from 2 up to that minimum element to see if there is a common divisor.</p>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(N &times; min(arr))</span>
+            <span class="cx-badge cx-badge--space">Space: O(1)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros">
+              <div class="pros-cons__title">Pros</div>
+              <ul class="pros-cons__list"><li>Conceptual simplicity</li></ul>
+            </div>
+            <div class="pros-cons__col pros-cons__col--cons">
+              <div class="pros-cons__title">Cons</div>
+              <ul class="pros-cons__list"><li>Too slow if the minimum element is large</li></ul>
+            </div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">Finding the Greatest Common Divisor using the Euclidean algorithm is significantly faster than checking every number manually.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Global GCD Division</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Iterate through the array to find the global Greatest Common Divisor (GCD) of all elements. Divide every element by this global GCD.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> gcd(a, b):<br>&nbsp;&nbsp;<span class='keyword'>return</span> b == 0 ? a : gcd(b, a % b)<br><br>global_g = arr[0]<br><span class='keyword'>for</span> x <span class='keyword'>in</span> arr:<br>&nbsp;&nbsp;global_g = gcd(global_g, x)<br><span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> N-1:<br>&nbsp;&nbsp;arr[i] = arr[i] / global_g</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(N &times; log(min(a,b)))</span>
+            <span class="cx-badge cx-badge--space">Space: O(1)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros">
+              <div class="pros-cons__title">Pros</div>
+              <ul class="pros-cons__list"><li>Optimal time complexity</li></ul>
+            </div>
+            <div class="pros-cons__col pros-cons__col--cons">
+              <div class="pros-cons__title">Cons</div>
+              <ul class="pros-cons__list"><li>None</li></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">👀</span> Interactive Walkthrough</h2>
+      <div class="viz-controls">
+  <button class="viz-btn" id="gcd-btn">Calculate GCD Array</button>
+</div>
+<div class="viz-canvas" style="flex-direction: column; gap: var(--space-4);" id="gcd-log">
+  <div class="math-block">Array: [24, 36, 48]</div>
+</div>
+    </section>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr><td>Check Every Divisor</td><td><code>O(N &times; min(arr))</code></td><td><code>O(1)</code></td><td>Too slow</td></tr>
+          <tr class="row--optimal"><td>Global GCD Division</td><td><code>O(N &times; log(min))</code></td><td><code>O(1)</code></td><td>Optimal</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">💻</span> Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
+    }
+    
+    vector&lt;int&gt; makeCoPrime(vector&lt;int&gt;& arr) {
+        if (arr.empty()) return arr;
+        
+        int g = arr[0];
+        for (int i = 1; i &lt; arr.size(); i++) {
+            g = gcd(g, arr[i]);
+        }
+        
+        for (int i = 0; i &lt; arr.size(); i++) {
+            arr[i] /= g;
+        }
+        return arr;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">import math
+class Solution:
+    def makeCoPrime(self, arr):
+        if not arr: return arr
+        
+        g = arr[0]
+        for x in arr[1:]:
+            g = math.gcd(g, x)
+            
+        return [x // g for x in arr]</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+  <script>
+    
+const arr = [24, 36, 48];
+const btn6 = document.getElementById('gcd-btn');
+const log6 = document.getElementById('gcd-log');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+
+btn6.onclick = async () => {
+    btn6.disabled = true;
+    
+    const append = (text) => {
+        const div = document.createElement('div');
+        div.className = `math-block`;
+        div.innerHTML = text;
+        log6.appendChild(div);
+    };
+
+    let curGcd = arr[0];
+    append(`Starting GCD = ${curGcd}`);
+    await sleep(800);
+    
+    for(let i=1; i<arr.length; i++) {
+        let nxt = arr[i];
+        let nextGcd = gcd(curGcd, nxt);
+        append(`GCD(${curGcd}, ${nxt}) = <strong>${nextGcd}</strong>`);
+        curGcd = nextGcd;
+        await sleep(800);
+    }
+    
+    append(`Global GCD is <span style="color:var(--accent-orange)">${curGcd}</span>. Divide all elements by it.`);
+    await sleep(800);
+    
+    let res = arr.map(x => x / curGcd);
+    append(`<span style="color:var(--accent-green)">Resulting Co-prime Array: [${res.join(', ')}]</span>`);
+};
+
+  </script>
+</body>
+</html>

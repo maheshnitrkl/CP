@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minimum Path Sum - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-10-dp.html" class="navbar__link">&#8592; Back to Module 10: DP</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-10-dp.html">Module 10: DP</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Minimum Path Sum</span></div>
+      <h1 class="problem-header__title">Minimum Path Sum</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/minimum-path-sum/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right, which minimizes the sum of all numbers along its path. Note: You can only move either down or right at any point in time.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128218;</span> Mathematical Foundation</h2>
+      <div class="math-block">
+        <p>Let <code>dp[r][c]</code> be the minimum path sum from the top-left corner <code>(0,0)</code> to the cell <code>(r,c)</code>.</p>
+        <p>Since the robot can only move <strong>down</strong> or <strong>right</strong>, the minimum cost to reach <code>(r,c)</code> is the cost of the current cell plus the minimum of the paths to its top and left neighbors:</p>
+        <div style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-sm); margin-top:1rem; text-align:center;">
+          <code>dp[r][c] = grid[r][c] + min(dp[r-1][c], dp[r][c-1])</code>
+        </div>
+        <p style="margin-top:1rem;"><strong>Base cases:</strong></p>
+        <ul style="padding-left:1.5rem; color:var(--text-secondary);">
+          <li><code>dp[0][0] = grid[0][0]</code></li>
+          <li>First row: <code>dp[0][c] = grid[0][c] + dp[0][c-1]</code></li>
+          <li>First column: <code>dp[r][0] = grid[r][0] + dp[r-1][0]</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+      <div class="approach-card approach-card--brute">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Brute Force Recursion</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Traverse the grid recursively. From every cell, explore moving right and moving down. Return the minimum path sum among all choices.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> minPath(r, c, grid):<br>&nbsp;&nbsp;<span class='keyword'>if</span> r &ge; m or c &ge; n: <span class='keyword'>return</span> INF<br>&nbsp;&nbsp;<span class='keyword'>if</span> r == m-1 and c == n-1: <span class='keyword'>return</span> grid[r][c]<br>&nbsp;&nbsp;<span class='keyword'>return</span> grid[r][c] + min(minPath(r+1, c), minPath(r, c+1))</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(2<sup>m+n</sup>)</span>
+            <span class="cx-badge cx-badge--space">Space: O(m+n)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Simple DFS logic</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Exponential time, TLE</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Many paths converge on the same grid cell. We calculate the minimum path from `(r, c)` to the end over and over.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Top-Down Memoization</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Use a 2D array or hash map to cache the minimum path from <code>(r,c)</code> to the destination.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> minPath(r, c, grid, memo):<br>&nbsp;&nbsp;<span class='keyword'>if</span> r &ge; m or c &ge; n: <span class='keyword'>return</span> INF<br>&nbsp;&nbsp;<span class='keyword'>if</span> r == m-1 and c == n-1: <span class='keyword'>return</span> grid[r][c]<br>&nbsp;&nbsp;<span class='keyword'>if</span> memo[r][c] exists: <span class='keyword'>return</span> memo[r][c]<br>&nbsp;&nbsp;memo[r][c] = grid[r][c] + min(minPath(r+1, c), minPath(r, c+1))<br>&nbsp;&nbsp;<span class='keyword'>return</span> memo[r][c]</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(m &times; n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(m &times; n)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Fast pseudo-polynomial time</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Recursion uses call stack</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">We can avoid recursion stack limits by doing this iteratively from the start to the end (Tabulation).</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 3</span></div>
+          <div class="approach-card__title">2D DP Tabulation</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Create a 2D <code>dp</code> array of size <code>m x n</code>. Fill it row by row, column by column.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> minPathSum(grid):<br>&nbsp;&nbsp;dp = 2D array [m][n]<br>&nbsp;&nbsp;dp[0][0] = grid[0][0]<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 1 <span class='keyword'>to</span> m-1: dp[i][0] = grid[i][0] + dp[i-1][0]<br>&nbsp;&nbsp;<span class='keyword'>for</span> j = 1 <span class='keyword'>to</span> n-1: dp[0][j] = grid[0][j] + dp[0][j-1]<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 1 <span class='keyword'>to</span> m-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> j = 1 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1])<br>&nbsp;&nbsp;<span class='keyword'>return</span> dp[m-1][n-1]</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(m &times; n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(m &times; n)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Iterative, avoids stack limit</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Allocates a new O(m*n) matrix</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">We don't actually need a separate `dp` array. If we are allowed to modify the input grid, we can do it in O(1) extra space!</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 4</span></div>
+          <div class="approach-card__title">In-Place DP (Modify Input)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Use the input <code>grid</code> itself as the DP table. We just overwrite <code>grid[i][j]</code> with the minimum sum to reach it.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> minPathSum(grid):<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> m-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> j = 0 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> i == 0 and j == 0: continue<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> i == 0: grid[i][j] += grid[i][j-1]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>else if</span> j == 0: grid[i][j] += grid[i-1][j]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>else</span>: grid[i][j] += min(grid[i-1][j], grid[i][j-1])<br>&nbsp;&nbsp;<span class='keyword'>return</span> grid[m-1][n-1]</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(m &times; n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(1)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>No extra memory used</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Mutates input data (not always allowed)</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr class="row--brute"><td>Recursion</td><td><code>O(2<sup>m+n</sup>)</code></td><td><code>O(m+n)</code></td><td>TLE</td></tr>
+          <tr class="row--better"><td>Memoization</td><td><code>O(m &times; n)</code></td><td><code>O(m &times; n)</code></td><td>Better</td></tr>
+          <tr class="row--better"><td>2D DP Tabulation</td><td><code>O(m &times; n)</code></td><td><code>O(m &times; n)</code></td><td>Better</td></tr>
+          <tr class="row--optimal"><td>In-Place DP</td><td><code>O(m &times; n)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">&#10024;</span> Interactive Visualization</h2>
+      <div class="visualizer" id="minpath-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step-minpath">Calculate Next Cell</button>
+          <button class="btn btn--outline" id="btn-reset-minpath">Reset</button>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 80px); gap: 5px; justify-content: center; margin: 3rem 0;" id="minpath-container">
+          <!-- 9 cells -->
+        </div>
+
+        <div class="visualizer__log" id="minpath-log">
+          Initialized 3x3 grid. Red numbers are the original costs.
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const container = document.getElementById("minpath-container");
+          const log = document.getElementById("minpath-log");
+          const btnStep = document.getElementById("btn-step-minpath");
+          const btnReset = document.getElementById("btn-reset-minpath");
+
+          const grid = [
+            [1, 3, 1],
+            [1, 5, 1],
+            [4, 2, 1]
+          ];
+          const m = 3, n = 3;
+          let dp = [];
+          let currentRow = 0, currentCol = 0;
+
+          function init() {
+            dp = Array(m).fill().map(() => Array(n).fill(0));
+            currentRow = 0; currentCol = 0;
+            render();
+            log.innerHTML = `Initialized 3x3 grid. The red numbers are the original cell costs.`;
+            btnStep.disabled = false;
+          }
+
+          function render() {
+            container.innerHTML = "";
+            for (let r = 0; r < m; r++) {
+              for (let c = 0; c < n; c++) {
+                const cell = document.createElement("div");
+                cell.style.width = "80px";
+                cell.style.height = "80px";
+                cell.style.display = "flex";
+                cell.style.flexDirection = "column";
+                cell.style.alignItems = "center";
+                cell.style.justifyContent = "center";
+                cell.style.borderRadius = "var(--radius-sm)";
+                
+                const isCalculated = (r < currentRow || (r === currentRow && c < currentCol));
+                const isCurrent = (r === currentRow && c === currentCol);
+
+                if (isCalculated) {
+                  cell.style.background = "var(--bg-elevated)";
+                  cell.style.border = "2px solid var(--accent-green)";
+                } else if (isCurrent) {
+                  cell.style.background = "var(--accent-orange-dim)";
+                  cell.style.border = "2px solid var(--accent-orange)";
+                  cell.style.boxShadow = "0 0 10px var(--accent-orange)";
+                } else {
+                  cell.style.background = "transparent";
+                  cell.style.border = "1px dashed var(--border-primary)";
+                }
+
+                const costLbl = document.createElement("div");
+                costLbl.style.fontSize = "0.8rem";
+                costLbl.style.color = "var(--accent-red)";
+                costLbl.textContent = `cost: ${grid[r][c]}`;
+                cell.appendChild(costLbl);
+
+                const dpLbl = document.createElement("div");
+                dpLbl.style.fontWeight = "bold";
+                dpLbl.style.fontSize = "1.5rem";
+                if (isCalculated) {
+                  dpLbl.textContent = dp[r][c];
+                  dpLbl.style.color = "var(--accent-green)";
+                } else if (isCurrent) {
+                  dpLbl.textContent = "?";
+                  dpLbl.style.color = "var(--text-primary)";
+                } else {
+                  dpLbl.textContent = "-";
+                  dpLbl.style.color = "var(--text-tertiary)";
+                }
+                cell.appendChild(dpLbl);
+
+                container.appendChild(cell);
+              }
+            }
+          }
+
+          btnStep.addEventListener("click", () => {
+            if (currentRow < m && currentCol < n) {
+              const r = currentRow, c = currentCol;
+              let msg = "";
+              
+              if (r === 0 && c === 0) {
+                dp[r][c] = grid[r][c];
+                msg = `Base case <code>(0,0)</code>: cost is simply <strong>${dp[r][c]}</strong>.`;
+              } else if (r === 0) {
+                dp[r][c] = grid[r][c] + dp[r][c-1];
+                msg = `Top edge <code>(0,${c})</code>: Can only come from left. <code>${grid[r][c]} + dp[${r}][${c-1}]</code> = ${grid[r][c]} + ${dp[r][c-1]} = <strong>${dp[r][c]}</strong>`;
+              } else if (c === 0) {
+                dp[r][c] = grid[r][c] + dp[r-1][c];
+                msg = `Left edge <code>(${r},0)</code>: Can only come from top. <code>${grid[r][c]} + dp[${r-1}][${c}]</code> = ${grid[r][c]} + ${dp[r-1][c]} = <strong>${dp[r][c]}</strong>`;
+              } else {
+                const top = dp[r-1][c];
+                const left = dp[r][c-1];
+                dp[r][c] = grid[r][c] + Math.min(top, left);
+                msg = `Cell <code>(${r},${c})</code>: Cost is ${grid[r][c]}. Min(top:${top}, left:${left}) is ${Math.min(top, left)}. Total = ${grid[r][c]} + ${Math.min(top, left)} = <strong>${dp[r][c]}</strong>`;
+              }
+              
+              log.innerHTML = msg;
+              
+              currentCol++;
+              if (currentCol >= n) {
+                currentCol = 0;
+                currentRow++;
+              }
+              
+              if (currentRow >= m) {
+                btnStep.disabled = true;
+                log.innerHTML += `<br><strong>Finished!</strong> Minimum path sum to bottom-right is ${dp[m-1][n-1]}.`;
+              }
+              
+              render();
+            }
+          });
+
+          btnReset.addEventListener("click", init);
+
+          init();
+        });
+      </script>
+    </section>
+
+    <!-- 5. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    int minPathSum(vector&lt;vector&lt;int&gt;&gt;&amp; grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        
+        for (int i = 0; i &lt; m; i++) {
+            for (int j = 0; j &lt; n; j++) {
+                if (i == 0 && j == 0) {
+                    continue;
+                } else if (i == 0) {
+                    grid[i][j] += grid[i][j - 1]; // Only from left
+                } else if (j == 0) {
+                    grid[i][j] += grid[i - 1][j]; // Only from top
+                } else {
+                    grid[i][j] += min(grid[i - 1][j], grid[i][j - 1]); // Min of top and left
+                }
+            }
+        }
+        
+        return grid[m - 1][n - 1];
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def minPathSum(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        
+        for i in range(m):
+            for j in range(n):
+                if i == 0 and j == 0:
+                    continue
+                elif i == 0:
+                    grid[i][j] += grid[i][j - 1] # Only from left
+                elif j == 0:
+                    grid[i][j] += grid[i - 1][j] # Only from top
+                else:
+                    # Minimum of the path from top or left
+                    grid[i][j] += min(grid[i - 1][j], grid[i][j - 1])
+                    
+        return grid[-1][-1]</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <footer class="footer" style="margin-top: 4rem; padding: 2rem 0; text-align: center; color: var(--text-tertiary); border-top: 1px solid var(--border-primary);">
+    <p>CP-II Lab &copy; 2026. Built for learning.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

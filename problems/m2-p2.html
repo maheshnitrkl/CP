@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bit Difference - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-02-bit-manipulation.html" class="navbar__link">&#8592; Back to Module 02: Bit Manipulation</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-02-bit-manipulation.html">Module 02: Bit Manipulation</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Bit Difference</span></div>
+      <h1 class="problem-header__title">Bit Difference</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://www.geeksforgeeks.org/count-number-of-bits-to-be-flipped-to-convert-a-to-b/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; GFG</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given two integers <code>a</code> and <code>b</code>, count the number of bits that need to be flipped to convert <code>a</code> to <code>b</code>. This is the <strong>Hamming Distance</strong> between two numbers.</p>
+<p><strong>Example:</strong> <code>a = 10 (1010)</code>, <code>b = 20 (10100)</code> &rarr; Output: <strong>4</strong></p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class="math-block">
+  <div class="formula">Hamming Distance = popcount(a XOR b)</div>
+  <p style="font-size:0.9rem;margin-top:0.5rem;">XOR produces 1 only where bits differ. Counting those 1s gives the number of flips needed.</p>
+  <p style="font-size:0.85rem;">Example: <code>10 XOR 20 = 1010 XOR 10100 = 11110</code> &rarr; 4 bits set &rarr; 4 flips needed.</p>
+</div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Compare Bit by Bit</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Extract each bit of both numbers using right shifts, compare them one by one.</p>
+        <div class="pseudocode-block"><span class="keyword">function</span> bitDiff(a, b):<br>
+&nbsp;&nbsp;count = 0<br>
+&nbsp;&nbsp;<span class="keyword">for</span> i = 0 <span class="keyword">to</span> 31:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bitA = (a >> i) &amp; 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;bitB = (b >> i) &amp; 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> bitA != bitB: count += 1<br>
+&nbsp;&nbsp;<span class="keyword">return</span> count</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(32)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Easy to understand</li><li>No bitwise tricks needed</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Always 32 iterations</li><li>Two operations per iteration</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We're doing two extractions per bit. XOR can tell us all differing positions in a single operation.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">XOR + Brian Kernighan's</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">XOR gives us a number where only the differing bits are set. Then count those set bits using Brian Kernighan's algorithm.</p>
+        <div class="pseudocode-block"><span class="keyword">function</span> bitDiff(a, b):<br>
+&nbsp;&nbsp;xor = a ^ b <span class="comment">// 1s where bits differ</span><br>
+&nbsp;&nbsp;count = 0<br>
+&nbsp;&nbsp;<span class="keyword">while</span> xor != 0:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;xor = xor &amp; (xor - 1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;count += 1<br>
+&nbsp;&nbsp;<span class="keyword">return</span> count</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(k) where k = differing bits</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Only iterates over differing bits</li><li>Elegant composition of two techniques</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Requires understanding of XOR and Kernighan's</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Logic Flow Diagram -->
+    
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class="walkthrough-step">
+  <div class="walkthrough-step__desc">Trace: a = 10 (01010), b = 20 (10100)</div>
+  <div class="math-block" style="text-align:left;font-size:0.9rem;">
+    <strong>Step 1:</strong> xor = 01010 ^ 10100 = <span class="highlight">11110</span> (4 bits set)<br>
+    <strong>Step 2:</strong> xor &amp; (xor-1) = 11110 &amp; 11101 = 11100, count = 1<br>
+    <strong>Step 3:</strong> 11100 &amp; 11011 = 11000, count = 2<br>
+    <strong>Step 4:</strong> 11000 &amp; 10111 = 10000, count = 3<br>
+    <strong>Step 5:</strong> 10000 &amp; 01111 = 00000, count = <span class="highlight">4</span>
+  </div>
+</div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Bit-by-Bit Compare</td><td><code>O(32)</code></td><td><code>O(1)</code></td><td>Simple but always 32 iterations</td></tr>
+<tr class="row--optimal"><td>XOR + Kernighan's</td><td><code>O(k)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    int countBitsFlip(int a, int b) {
+        int xorVal = a ^ b, count = 0;
+        while (xorVal) {
+            xorVal &amp;= (xorVal - 1);
+            count++;
+        }
+        return count;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def countBitsFlip(self, a, b):
+        xor = a ^ b
+        count = 0
+        while xor:
+            xor &amp;= (xor - 1)
+            count += 1
+        return count</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sliding Window Maximum - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-08-stack-queue.html" class="navbar__link">&#8592; Back to Module 08: Stack & Queue</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-08-stack-queue.html">Module 08: Stack & Queue</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Sliding Window Maximum</span></div>
+      <h1 class="problem-header__title">Sliding Window Maximum</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--hard">Hard</span>
+        <a href="https://leetcode.com/problems/sliding-window-maximum/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given array <code>nums</code> and window size <code>k</code>, return the max sliding window array.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Monotonic Deque</div><p style='font-size:0.9rem;margin-top:0.5rem;'>Maintain a deque of indices. Keep it strictly decreasing in values. If a new element is larger than elements at the back, they can never be the max &mdash; pop them. Remove elements from the front if they fall out of the window.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Brute Force Window Scan</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">For every window of size k, iterate through all k elements to find the maximum.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> maxSlidingWindow(nums, k):<br>&nbsp;&nbsp;n = len(nums), res = []<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> n-k:<br>&nbsp;&nbsp;&nbsp;&nbsp;max_val = -infinity<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> j = i <span class='keyword'>to</span> i+k-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max_val = max(max_val, nums[j])<br>&nbsp;&nbsp;&nbsp;&nbsp;res.append(max_val)<br>&nbsp;&nbsp;<span class='keyword'>return</span> res</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n &times; k)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Trivial to write</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Very slow when k is large</li><li>O(n*k) time limit exceeded</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">We are recalculating the max for (k-1) overlapping elements. We should use a data structure to maintain the maximum efficiently.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--better">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Max-Heap / Priority Queue</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Use a Max-Heap storing (value, index). The max is always at the top. If the top element's index is out of the current window, pop it.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> maxSlidingWindow(nums, k):<br>&nbsp;&nbsp;heap = MaxHeap(), res = []<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;heap.push((nums[i], i))<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> i >= k - 1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>while</span> heap.peek().index <= i - k:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;heap.pop()<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res.append(heap.peek().value)<br>&nbsp;&nbsp;<span class='keyword'>return</span> res</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n log k)</span>
+          <span class="cx-badge cx-badge--space">Space: O(k)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Much faster than brute force</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Heap operations cost O(log k)</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">By keeping the elements strictly decreasing, we don't need a heap. We can maintain the maximum in O(1) amortized time using a Deque.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 3</span></div>
+        <div class="approach-card__title">Monotonic Deque</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Deque stores indices. Front of deque is the max for the current window.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> maxSlidingWindow(nums, k):<br>&nbsp;&nbsp;dq = Deque(), res = []<br>&nbsp;&nbsp;<span class='keyword'>for</span> i, x <span class='keyword'>in</span> enumerate(nums):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='comment'>// remove out of bounds</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> dq <span class='keyword'>and</span> dq.front() == i - k: dq.popFront()<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='comment'>// remove smaller elements (useless)</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>while</span> dq <span class='keyword'>and</span> nums[dq.back()] < x: dq.popBack()<br>&nbsp;&nbsp;&nbsp;&nbsp;dq.pushBack(i)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> i >= k - 1: res.append(nums[dq.front()])<br>&nbsp;&nbsp;<span class='keyword'>return</span> res</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(k)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(n) time</li><li>Classic Deque usage</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Implementation details can be tricky</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approach Comparison Table -->
+    <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time Complexity</th><th>Space Complexity</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr class="row--brute"><td>Brute Force Window Scan</td><td><code>O(n &times; k)</code></td><td><code>O(1)</code></td><td>Naive</td></tr>
+        <tr class="row--better"><td>Max-Heap</td><td><code>O(n log k)</code></td><td><code>O(k)</code></td><td>Better</td></tr>
+        <tr class="row--optimal"><td>Monotonic Deque</td><td><code>O(n)</code></td><td><code>O(k)</code></td><td>Optimal</td></tr>
+      </tbody>
+    </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="deque-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step">Step Next Array Element</button>
+          <button class="btn btn--outline" id="btn-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; align-items: center; margin: 2rem 0; gap: 2rem;">
+            <!-- Array -->
+            <div>
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem; text-align:center;">Array (k = 3)</div>
+                <div id="arr-container" style="display: flex; gap: 0.25rem;"></div>
+            </div>
+            
+            <div style="display: flex; gap: 2rem;">
+                <!-- Deque -->
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">Deque (Indices)</div>
+                    <div id="dq-container" style="display: flex; gap: 0.5rem; width: 300px; height: 50px; border: 2px dashed var(--border-primary); padding: 0.5rem; align-items: center; overflow: hidden; border-radius:8px;"></div>
+                </div>
+                <!-- Result -->
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">Result Max Array</div>
+                    <div id="res-container" style="display: flex; gap: 0.25rem; min-width:100px; height: 50px; align-items: center;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="visualizer__log" id="viz-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6;">
+          Click 'Step Next Array Element' to slide the window.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const arr = [1, 3, -1, -3, 5, 3, 6, 7];
+          const k = 3;
+          let dq = [];
+          let res = [];
+          let i = 0;
+          let isDone = false;
+          
+          const arrCont = document.getElementById('arr-container');
+          const dqCont = document.getElementById('dq-container');
+          const resCont = document.getElementById('res-container');
+          const log = document.getElementById('viz-log');
+
+          function init() {
+              dq = [];
+              res = [];
+              i = 0;
+              isDone = false;
+              render();
+              log.innerHTML = "Click 'Step Next Array Element' to slide the window.";
+          }
+
+          function createBox(val, highlightClass) {
+              const el = document.createElement('div');
+              el.style.width = '35px';
+              el.style.height = '35px';
+              el.style.display = 'flex';
+              el.style.alignItems = 'center';
+              el.style.justifyContent = 'center';
+              el.style.border = '2px solid var(--border-primary)';
+              el.style.borderRadius = '6px';
+              el.textContent = val;
+              if (highlightClass === 'window') {
+                  el.style.background = 'rgba(157, 78, 221, 0.2)';
+                  el.style.borderColor = 'var(--accent-purple)';
+              } else if (highlightClass === 'curr') {
+                  el.style.background = 'var(--accent-purple)';
+                  el.style.color = 'black';
+              } else {
+                  el.style.background = 'var(--bg-secondary)';
+              }
+              return el;
+          }
+
+          function render() {
+              arrCont.innerHTML = '';
+              arr.forEach((v, idx) => {
+                  let cls = '';
+                  if (idx === i) cls = 'curr';
+                  else if (idx > i - k && idx < i) cls = 'window';
+                  arrCont.appendChild(createBox(v, cls));
+              });
+              
+              dqCont.innerHTML = '';
+              dq.forEach((idx) => {
+                  const el = createBox(idx);
+                  el.innerHTML = `<span style="font-size:0.7rem;">i=${idx}</span><br><b>${arr[idx]}</b>`;
+                  el.style.flexDirection = 'column';
+                  el.style.lineHeight = '1';
+                  dqCont.appendChild(el);
+              });
+              
+              resCont.innerHTML = '';
+              res.forEach(v => {
+                  const el = createBox(v);
+                  el.style.background = 'var(--accent-green)';
+                  el.style.color = 'black';
+                  resCont.appendChild(el);
+              });
+          }
+
+          function step() {
+              if (isDone) return;
+              if (i >= arr.length) {
+                  log.innerHTML = `🎉 <strong>Sliding Window Complete!</strong>`;
+                  isDone = true;
+                  render();
+                  return;
+              }
+              
+              let desc = `i = <strong>${i}</strong> (Value: ${arr[i]}).<br>`;
+              
+              if (dq.length > 0 && dq[0] === i - k) {
+                  const popped = dq.shift();
+                  desc += `Removed out-of-bounds index <code>${popped}</code> from front.<br>`;
+              }
+              
+              let poppedBack = 0;
+              while (dq.length > 0 && arr[dq[dq.length - 1]] < arr[i]) {
+                  dq.pop();
+                  poppedBack++;
+              }
+              if (poppedBack > 0) {
+                  desc += `Popped <code>${poppedBack}</code> smaller elements from back of deque.<br>`;
+              }
+              
+              dq.push(i);
+              desc += `Pushed index <code>${i}</code> to back of deque.<br>`;
+              
+              if (i >= k - 1) {
+                  res.push(arr[dq[0]]);
+                  desc += `&rarr; Window full. Added front of deque (<strong>${arr[dq[0]]}</strong>) to Result.`;
+              }
+              
+              log.innerHTML = desc;
+              i++;
+              render();
+          }
+
+          document.getElementById('btn-step').addEventListener('click', step);
+          document.getElementById('btn-reset').addEventListener('click', init);
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: arr=[1, 3, -1, -3, 5, 3], k=3</div><div class='math-block' style='text-align:left;font-size:0.9rem;'>
+<pre style="color:var(--text-secondary)">
+i=0 (v=1): dq=[0]. res=[]
+i=1 (v=3): 3 > arr[0](1). Pop 0. dq=[1]. res=[]
+i=2 (v=-1): -1 &lt; 3. dq=[1, 2]. Window full! res=[3] (arr[1])
+i=3 (v=-3): -3 &lt; -1. dq=[1, 2, 3]. res=[3, 3] (arr[1])
+i=4 (v=5): Out-of-bounds? dq[0] is 1. 1 == 4-3, so Pop front 1.
+           5 > arr[3](-3) &rarr; Pop back.
+           5 > arr[2](-1) &rarr; Pop back.
+           dq=[4]. res=[3, 3, 5] (arr[4])
+i=5 (v=3): 3 &lt; 5. dq=[4, 5]. res=[3, 3, 5, 5] (arr[4])
+
+<span class="highlight">Final Res: [3, 3, 5, 5]</span>
+</pre></div></div></section>
+<!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    vector&lt;int&gt; maxSlidingWindow(vector&lt;int&gt;&amp; nums, int k) {
+        deque&lt;int&gt; dq; vector&lt;int&gt; res;
+        for (int i = 0; i &lt; nums.size(); i++) {
+            if (!dq.empty() &amp;&amp; dq.front() == i - k) dq.pop_front();
+            while (!dq.empty() &amp;&amp; nums[dq.back()] &lt; nums[i]) dq.pop_back();
+            dq.push_back(i);
+            if (i &gt;= k - 1) res.push_back(nums[dq.front()]);
+        }
+        return res;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">from collections import deque
+class Solution:
+    def maxSlidingWindow(self, nums, k):
+        dq = deque(); res = []
+        for i, x in enumerate(nums):
+            if dq and dq[0] == i - k: dq.popleft()
+            while dq and nums[dq[-1]] &lt; x: dq.pop()
+            dq.append(i)
+            if i &gt;= k - 1: res.append(nums[dq[0]])
+        return res</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

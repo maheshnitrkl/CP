@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Missing Number - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-02-bit-manipulation.html" class="navbar__link">&#8592; Back to Module 02: Bit Manipulation</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-02-bit-manipulation.html">Module 02: Bit Manipulation</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Missing Number</span></div>
+      <h1 class="problem-header__title">Missing Number</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--easy">Easy</span>
+        <a href="https://leetcode.com/problems/missing-number/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given an array <code>nums</code> containing <code>n</code> distinct numbers in the range <code>[0, n]</code>, return the only number in the range that is missing from the array.</p>
+<p><strong>Example:</strong> <code>nums = [3, 0, 1]</code> &rarr; Output: <strong>2</strong></p>
+<p><strong>Constraints:</strong> <code>n == nums.length</code>, <code>0 &le; nums[i] &le; n</code>, all values are unique.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class="math-block">
+  <div class="formula">Sum Formula: missing = n(n+1)/2 - &Sigma;(nums)</div>
+  <p style="font-size:0.9rem;margin-top:0.5rem;">The expected sum of 0 to n is n(n+1)/2. The actual sum of the array is missing one number. The difference is the answer.</p>
+  <div class="formula" style="margin-top:1rem;">XOR Property: a ^ a = 0, a ^ 0 = a</div>
+  <p style="font-size:0.85rem;">XOR all numbers 0..n with all array elements. Paired numbers cancel out, leaving only the missing one.</p>
+</div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Sorting</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Sort the array and look for the first index where <code>nums[i] != i</code>.</p>
+        <div class="pseudocode-block"><span class="keyword">function</span> missingNumber(nums):<br>
+&nbsp;&nbsp;sort(nums)<br>
+&nbsp;&nbsp;<span class="keyword">for</span> i = 0 <span class="keyword">to</span> len(nums)-1:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> nums[i] != i:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> i<br>
+&nbsp;&nbsp;<span class="keyword">return</span> len(nums)</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n log n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Intuitive</li><li>Easy to implement</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>O(n log n) due to sorting</li><li>Modifies the input array</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">Sorting is overkill. We only need to find one missing element &mdash; we can use math or XOR.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--better">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Hash Set</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Put all elements in a set, then check which number from 0 to n is not in the set.</p>
+        <div class="pseudocode-block"><span class="keyword">function</span> missingNumber(nums):<br>
+&nbsp;&nbsp;numSet = Set(nums)<br>
+&nbsp;&nbsp;<span class="keyword">for</span> i = 0 <span class="keyword">to</span> len(nums):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> i not in numSet:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> i</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(n) time</li><li>Doesn't modify input</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>O(n) extra space for the set</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We need O(n) extra space. Can we do it in O(1) space?</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 3</span></div>
+        <div class="approach-card__title">XOR / Sum Formula</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">XOR all indices 0..n with all array elements. Duplicates cancel out (a ^ a = 0), leaving only the missing number. Alternatively, use the Gauss sum formula.</p>
+        <div class="pseudocode-block"><span class="comment">// XOR approach</span><br>
+<span class="keyword">function</span> missingNumber(nums):<br>
+&nbsp;&nbsp;xor = len(nums)<br>
+&nbsp;&nbsp;<span class="keyword">for</span> i = 0 <span class="keyword">to</span> len(nums)-1:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;xor = xor ^ i ^ nums[i]<br>
+&nbsp;&nbsp;<span class="keyword">return</span> xor</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(n) time, O(1) space</li><li>No overflow risk with XOR approach</li><li>Elegant use of mathematical properties</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Less intuitive for beginners</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Logic Flow Diagram -->
+    
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class="walkthrough-step">
+  <div class="walkthrough-step__desc">Trace (XOR): nums = [3, 0, 1], n = 3</div>
+  <div class="math-block" style="text-align:left;font-size:0.9rem;">
+    Start: xor = 3 (n)<br>
+    i=0: xor = 3 ^ 0 ^ 3 = <span class="highlight">0</span><br>
+    i=1: xor = 0 ^ 1 ^ 0 = <span class="highlight">1</span><br>
+    i=2: xor = 1 ^ 2 ^ 1 = <span class="highlight">2</span><br>
+    Result: <span class="highlight">2</span> (the missing number!)
+  </div>
+</div>
+<div class="walkthrough-step">
+  <div class="walkthrough-step__desc">Trace (Sum): nums = [3, 0, 1], n = 3</div>
+  <div class="math-block" style="text-align:left;font-size:0.9rem;">
+    Expected sum = 3 &times; 4 / 2 = <span class="highlight">6</span><br>
+    Actual sum = 3 + 0 + 1 = 4<br>
+    Missing = 6 - 4 = <span class="highlight">2</span>
+  </div>
+</div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Sorting</td><td><code>O(n log n)</code></td><td><code>O(1)</code></td><td>Overkill for this problem</td></tr>
+<tr><td>Hash Set</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Good but uses extra space</td></tr>
+<tr class="row--optimal"><td>XOR / Sum Formula</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Optimal &mdash; no extra space</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    int missingNumber(vector&lt;int&gt;&amp; nums) {
+        int xorVal = nums.size();
+        for (int i = 0; i &lt; nums.size(); i++) {
+            xorVal ^= i ^ nums[i];
+        }
+        return xorVal;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def missingNumber(self, nums: list[int]) -&gt; int:
+        xor = len(nums)
+        for i, num in enumerate(nums):
+            xor ^= i ^ num
+        return xor</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

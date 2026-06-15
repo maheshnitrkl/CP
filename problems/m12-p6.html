@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Schedule - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-12-graphs.html" class="navbar__link">&#8592; Back to Module 12: Graphs</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-12-graphs.html">Module 12: Graphs</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Course Schedule</span></div>
+      <h1 class="problem-header__title">Course Schedule</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/course-schedule/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; Problem Link</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>There are a total of numCourses courses you have to take. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai. Return true if you can finish all courses. Otherwise, return false.</p></div>
+    </section>
+
+    <!-- 2. Logic & Core Concept -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128218;</span> Logic & Core Concept</h2>
+      <div class="math-block">
+        <p>You have to take <code>numCourses</code> courses, labeled <code>0</code> to <code>numCourses-1</code>. You are given an array of prerequisites where <code>prerequisites[i] = [a, b]</code> means you must take course <code>b</code> before you can take course <code>a</code>.</p>
+        <p>This is a classic problem of finding if a <strong>Directed Graph has a cycle</strong>. If there's a cycle (e.g., A requires B, and B requires A), you can never finish all courses.</p>
+        <div style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-sm); margin-top:1rem;">
+          There are two standard ways to detect cycles in a directed graph:
+          <ul style="margin-left: 1.5rem; margin-top: 0.5rem; color:var(--text-secondary);">
+            <li><strong>DFS Cycle Detection (3-Colors):</strong> Mark nodes as unvisited, visiting (in current path), and visited (fully processed). If we hit a 'visiting' node, we found a cycle!</li>
+            <li><strong>Kahn's Algorithm (BFS Topological Sort):</strong> Count how many prerequisites each course has (in-degree). Start with courses that have 0 prerequisites. Remove them, decrease the in-degree of their neighbors, and repeat. If we can process all courses, there's no cycle.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: DFS &#8594; Kahn's Algorithm</h2>
+      
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">DFS Cycle Detection (3 States)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">We maintain a <code>state</code> array for each node: 0 = unvisited, 1 = visiting (currently on the recursion stack), 2 = visited (fully processed and safe). If during our DFS we ever encounter a node with state 1, it means we looped back to a node currently in our path—a cycle!</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> canFinishDFS(numCourses, prerequisites):<br>&nbsp;&nbsp;adj = buildAdjacencyList(numCourses, prerequisites)<br>&nbsp;&nbsp;state = array of 0s (size numCourses)<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>function</span> hasCycle(node):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> state[node] == 1: <span class='keyword'>return</span> true <span class='comment'>// Cycle detected!</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> state[node] == 2: <span class='keyword'>return</span> false <span class='comment'>// Already checked and safe</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;state[node] = 1 <span class='comment'>// Mark as visiting</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> neighbor <span class='keyword'>in</span> adj[node]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> hasCycle(neighbor): <span class='keyword'>return</span> true<br>&nbsp;&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;state[node] = 2 <span class='comment'>// Mark as fully processed</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>return</span> false<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>for</span> i from 0 to numCourses - 1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> state[i] == 0 and hasCycle(i):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>return</span> false <span class='comment'>// Found a cycle</span><br>&nbsp;&nbsp;<span class='keyword'>return</span> true <span class='comment'>// No cycles found</span></div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(V + E)</span>
+            <span class="cx-badge cx-badge--space">Space: O(V + E) (Adj List + Recursion Stack)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Kahn's Algorithm (Topological Sort via BFS)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Instead of recursion, we count the "in-degree" (number of incoming edges/prerequisites) for each node. We put all nodes with 0 in-degree into a queue. We process them, reducing the in-degree of their neighbors by 1. If a neighbor reaches 0, it goes in the queue. If the total processed nodes equals <code>numCourses</code>, we succeed.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> canFinishKahn(numCourses, prerequisites):<br>&nbsp;&nbsp;adj = buildAdjacencyList(numCourses, prerequisites)<br>&nbsp;&nbsp;in_degree = array of 0s<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>for</span> (course, prereq) <span class='keyword'>in</span> prerequisites:<br>&nbsp;&nbsp;&nbsp;&nbsp;in_degree[course] += 1<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;queue = queue of all courses with in_degree == 0<br>&nbsp;&nbsp;count = 0<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>while</span> queue is not empty:<br>&nbsp;&nbsp;&nbsp;&nbsp;curr = queue.dequeue()<br>&nbsp;&nbsp;&nbsp;&nbsp;count += 1<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> neighbor <span class='keyword'>in</span> adj[curr]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;in_degree[neighbor] -= 1<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> in_degree[neighbor] == 0:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;queue.enqueue(neighbor)<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>return</span> count == numCourses</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(V + E)</span>
+            <span class="cx-badge cx-badge--space">Space: O(V + E)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Iterative (no recursion limits).</li><li>Naturally produces a valid topological ordering (useful if the problem asks for the actual schedule).</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Requires maintaining an extra array (`in_degree`).</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr class="row--better"><td>DFS (3 States)</td><td><code>O(V+E)</code></td><td><code>O(V+E)</code></td><td>Classic cycle detection</td></tr>
+          <tr class="row--optimal"><td>Kahn's Algorithm (BFS)</td><td><code>O(V+E)</code></td><td><code>O(V+E)</code></td><td>Best iterative approach</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">&#10024;</span> Interactive Visualization (Kahn's Algorithm)</h2>
+      <div class="visualizer" id="kahn-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step-kahn">Next Step</button>
+          <button class="btn btn--outline" id="btn-reset-kahn">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; margin: 2rem 0; flex-wrap: wrap; justify-content: center; align-items:flex-start;">
+          <!-- Graph Area -->
+          <div style="position: relative; width: 400px; height: 300px; background:var(--bg-elevated); border:1px solid var(--border-primary); border-radius:var(--radius-md);">
+            <!-- Edges (SVG) -->
+            <svg style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1;" id="kahn-svg">
+              <defs>
+                <marker id="karrow" markerWidth="10" markerHeight="7" refX="25" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="var(--text-secondary)" id="karrow-poly" />
+                </marker>
+              </defs>
+              
+              <!-- 0->1, 0->2, 1->3, 2->3, 4->1 -->
+              <line id="ke-0-1" x1="100" y1="150" x2="200" y2="80" stroke="var(--text-secondary)" stroke-width="3" marker-end="url(#karrow)" />
+              <line id="ke-0-2" x1="100" y1="150" x2="200" y2="220" stroke="var(--text-secondary)" stroke-width="3" marker-end="url(#karrow)" />
+              <line id="ke-1-3" x1="200" y1="80" x2="300" y2="150" stroke="var(--text-secondary)" stroke-width="3" marker-end="url(#karrow)" />
+              <line id="ke-2-3" x1="200" y1="220" x2="300" y2="150" stroke="var(--text-secondary)" stroke-width="3" marker-end="url(#karrow)" />
+              <line id="ke-4-1" x1="200" y1="20" x2="200" y2="80" stroke="var(--text-secondary)" stroke-width="3" marker-end="url(#karrow)" />
+            </svg>
+            
+            <!-- Nodes -->
+            <!-- Note: Nodes are positioned such that lines connect properly -->
+            <div class="k-node" id="kn-0" style="position:absolute; top:130px; left:80px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s; flex-direction:column; line-height:1;">
+               <span>0</span><span style="font-size:0.6rem; color:var(--text-secondary);" id="ind-0">In:0</span>
+            </div>
+            
+            <div class="k-node" id="kn-4" style="position:absolute; top:0px; left:180px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s; flex-direction:column; line-height:1;">
+               <span>4</span><span style="font-size:0.6rem; color:var(--text-secondary);" id="ind-4">In:0</span>
+            </div>
+            
+            <div class="k-node" id="kn-1" style="position:absolute; top:60px; left:180px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s; flex-direction:column; line-height:1;">
+               <span>1</span><span style="font-size:0.6rem; color:var(--text-secondary);" id="ind-1">In:2</span>
+            </div>
+            
+            <div class="k-node" id="kn-2" style="position:absolute; top:200px; left:180px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s; flex-direction:column; line-height:1;">
+               <span>2</span><span style="font-size:0.6rem; color:var(--text-secondary);" id="ind-2">In:1</span>
+            </div>
+            
+            <div class="k-node" id="kn-3" style="position:absolute; top:130px; left:280px; width:40px; height:40px; border-radius:50%; background:var(--bg-main); border:2px solid var(--border-primary); display:flex; align-items:center; justify-content:center; font-weight:bold; z-index:2; transition:all 0.3s; flex-direction:column; line-height:1;">
+               <span>3</span><span style="font-size:0.6rem; color:var(--text-secondary);" id="ind-3">In:2</span>
+            </div>
+          </div>
+          
+          <!-- State Display -->
+          <div style="display: flex; flex-direction: column; gap: 1rem; width: 250px;">
+            <div style="background: var(--bg-elevated); padding: 1rem; border: 1px solid var(--border-primary); border-radius: var(--radius-md);">
+              <h3 style="margin-bottom: 0.5rem; font-size:1rem;">Queue (Zero In-Degree)</h3>
+              <div id="kahn-queue" style="display:flex; gap:0.5rem; font-family:monospace; min-height:40px; overflow-x:auto;">
+                <!-- Queue items go here -->
+              </div>
+            </div>
+            
+            <div style="background: var(--bg-elevated); padding: 1rem; border: 1px solid var(--border-primary); border-radius: var(--radius-md);">
+              <h3 style="margin-bottom: 0.5rem; font-size:1rem;">Taken Courses</h3>
+              <div id="kahn-taken" style="font-size: 1.2rem; font-weight: bold; color: var(--accent-green); font-family: monospace; letter-spacing: 2px; min-height:30px;">
+                []
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="visualizer__log" id="kahn-viz-log">
+          Calculate In-Degrees. Courses 0 and 4 have no prerequisites (In: 0). Add to Queue.
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const btnStep = document.getElementById("btn-step-kahn");
+          const btnReset = document.getElementById("btn-reset-kahn");
+          const log = document.getElementById("kahn-viz-log");
+          const queueEl = document.getElementById("kahn-queue");
+          const takenEl = document.getElementById("kahn-taken");
+          
+          // Edges: 0->1, 0->2, 4->1, 1->3, 2->3
+          // initial InD: 0:0, 1:2, 2:1, 3:2, 4:0
+          
+          const steps = [
+            { q: [0, 4], t: [], msg: "Calculate In-Degrees. Courses 0 and 4 have no prerequisites (In: 0). Add to Queue." },
+            { pop: 0, q: [4], t: [0], msg: "Dequeue Course 0. It is now completed." },
+            { dec: [1, 2], q: [4], t: [0], ind: {1:1, 2:0}, edges:['ke-0-1', 'ke-0-2'], msg: "Remove edges from 0. Decrease in-degree of 1 and 2. Course 2 reached In-Degree 0!" },
+            { q: [4, 2], t: [0], msg: "Enqueue Course 2 since it now has 0 prerequisites left." },
+            { pop: 4, q: [2], t: [0, 4], msg: "Dequeue Course 4. It is now completed." },
+            { dec: [1], q: [2], t: [0, 4], ind: {1:0}, edges:['ke-4-1'], msg: "Remove edge from 4. Decrease in-degree of 1. Course 1 reached In-Degree 0!" },
+            { q: [2, 1], t: [0, 4], msg: "Enqueue Course 1 since it now has 0 prerequisites left." },
+            { pop: 2, q: [1], t: [0, 4, 2], msg: "Dequeue Course 2. It is now completed." },
+            { dec: [3], q: [1], t: [0, 4, 2], ind: {3:1}, edges:['ke-2-3'], msg: "Remove edge from 2. Decrease in-degree of 3 (from 2 to 1)." },
+            { pop: 1, q: [], t: [0, 4, 2, 1], msg: "Dequeue Course 1. It is now completed." },
+            { dec: [3], q: [], t: [0, 4, 2, 1], ind: {3:0}, edges:['ke-1-3'], msg: "Remove edge from 1. Decrease in-degree of 3. Course 3 reached In-Degree 0!" },
+            { q: [3], t: [0, 4, 2, 1], msg: "Enqueue Course 3." },
+            { pop: 3, q: [], t: [0, 4, 2, 1, 3], msg: "Dequeue Course 3. It is now completed." },
+            { win: true, q: [], t: [0, 4, 2, 1, 3], msg: "Queue is empty. Total taken = 5. All courses completed! <strong>True</strong>" }
+          ];
+
+          let stepIdx = 0;
+          let currentInD = {0:0, 1:2, 2:1, 3:2, 4:0};
+
+          function resetViz() {
+            for(let i=0; i<=4; i++) {
+              const node = document.getElementById(`kn-${i}`);
+              node.style.background = "var(--bg-main)";
+              node.style.borderColor = "var(--border-primary)";
+              node.style.color = "var(--text-primary)";
+              node.style.opacity = "1";
+              node.style.boxShadow = "none";
+              
+              if(i===0 || i===4) document.getElementById(`ind-${i}`).innerText = "In:0";
+              if(i===1 || i===3) document.getElementById(`ind-${i}`).innerText = "In:2";
+              if(i===2) document.getElementById(`ind-${i}`).innerText = "In:1";
+              document.getElementById(`ind-${i}`).style.color = "var(--text-secondary)";
+            }
+            
+            for(const e of ['ke-0-1', 'ke-0-2', 'ke-1-3', 'ke-2-3', 'ke-4-1']) {
+              document.getElementById(e).style.display = "block";
+              document.getElementById(e).setAttribute('stroke', "var(--text-secondary)");
+            }
+            
+            queueEl.innerHTML = "";
+            takenEl.innerHTML = "[]";
+            currentInD = {0:0, 1:2, 2:1, 3:2, 4:0};
+          }
+
+          function init() {
+            stepIdx = 0;
+            resetViz();
+            log.innerHTML = "Click \"Next Step\" to initialize Kahn's Algorithm.";
+            btnStep.disabled = false;
+          }
+
+          function renderQueue(q) {
+            queueEl.innerHTML = "";
+            for (let item of q) {
+              const frame = document.createElement("div");
+              frame.style.padding = "4px 8px";
+              frame.style.background = "var(--bg-elevated)";
+              frame.style.border = "1px solid var(--border-primary)";
+              frame.style.borderRadius = "4px";
+              frame.innerText = item;
+              queueEl.appendChild(frame);
+            }
+          }
+
+          btnStep.addEventListener("click", () => {
+            if (stepIdx >= steps.length) return;
+            const step = steps[stepIdx];
+            
+            if (step.q !== undefined) renderQueue(step.q);
+            if (step.t !== undefined) takenEl.innerHTML = `[${step.t.join(", ")}]`;
+            
+            if (step.pop !== undefined) {
+                const node = document.getElementById(`kn-${step.pop}`);
+                node.style.background = "var(--accent-green-dim)";
+                node.style.borderColor = "var(--accent-green)";
+                node.style.color = "var(--accent-green)";
+            }
+            
+            if (step.ind !== undefined) {
+                for (let k in step.ind) {
+                    currentInD[k] = step.ind[k];
+                    document.getElementById(`ind-${k}`).innerText = `In:${step.ind[k]}`;
+                    if (step.ind[k] === 0) {
+                        document.getElementById(`ind-${k}`).style.color = "var(--accent-orange)";
+                        document.getElementById(`kn-${k}`).style.borderColor = "var(--accent-orange)";
+                    }
+                }
+            }
+            
+            if (step.edges !== undefined) {
+                for(let e of step.edges) {
+                    document.getElementById(e).style.display = "none";
+                }
+            }
+            
+            if (step.win) {
+                takenEl.style.boxShadow = "0 0 15px var(--accent-green)";
+            }
+            
+            log.innerHTML = step.msg;
+            
+            stepIdx++;
+            if (stepIdx >= steps.length) {
+              btnStep.disabled = true;
+            }
+          });
+
+          btnReset.addEventListener("click", init);
+        });
+      </script>
+    </section>
+
+    <!-- 5. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++ (Kahn's BFS)</button><button class="code-block__tab" data-lang="python">Python (Kahn's BFS)</button><button class="code-block__tab" data-lang="python2">Python (DFS)</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    bool canFinish(int numCourses, vector&lt;vector&lt;int&gt;&gt;&amp; prerequisites) {
+        vector&lt;vector&lt;int&gt;&gt; adj(numCourses);
+        vector&lt;int&gt; inDegree(numCourses, 0);
+        
+        // Build graph
+        for (const auto&amp; pre : prerequisites) {
+            adj[pre[1]].push_back(pre[0]);
+            inDegree[pre[0]]++;
+        }
+        
+        queue&lt;int&gt; q;
+        // Enqueue courses with 0 prerequisites
+        for (int i = 0; i &lt; numCourses; i++) {
+            if (inDegree[i] == 0) {
+                q.push(i);
+            }
+        }
+        
+        int count = 0;
+        while (!q.empty()) {
+            int curr = q.front();
+            q.pop();
+            count++;
+            
+            for (int neighbor : adj[curr]) {
+                inDegree[neighbor]--;
+                if (inDegree[neighbor] == 0) {
+                    q.push(neighbor);
+                }
+            }
+        }
+        
+        return count == numCourses;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        adj = collections.defaultdict(list)
+        in_degree = [0] * numCourses
+        
+        # Build graph
+        for crs, pre in prerequisites:
+            adj[pre].append(crs)
+            in_degree[crs] += 1
+            
+        # Queue for nodes with 0 in-degree
+        queue = collections.deque([i for i in range(numCourses) if in_degree[i] == 0])
+        count = 0
+        
+        while queue:
+            curr = queue.popleft()
+            count += 1
+            
+            for neighbor in adj[curr]:
+                in_degree[neighbor] -= 1
+                if in_degree[neighbor] == 0:
+                    queue.append(neighbor)
+                    
+        return count == numCourses</code></pre></div><div class="code-block__content" data-lang="python2"><pre><code class="language-python">class Solution:
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        adj = collections.defaultdict(list)
+        for crs, pre in prerequisites:
+            adj[pre].append(crs)
+            
+        # 0: unvisited, 1: visiting, 2: visited
+        state = [0] * numCourses
+        
+        def hasCycle(crs):
+            if state[crs] == 1:
+                return True
+            if state[crs] == 2:
+                return False
+                
+            state[crs] = 1 # Mark as visiting
+            for neighbor in adj[crs]:
+                if hasCycle(neighbor):
+                    return True
+            
+            state[crs] = 2 # Mark as fully processed
+            return False
+            
+        for i in range(numCourses):
+            if state[i] == 0:
+                if hasCycle(i):
+                    return False
+                    
+        return True</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <footer class="footer" style="margin-top: 4rem; padding: 2rem 0; text-align: center; color: var(--text-tertiary); border-top: 1px solid var(--border-primary);">
+    <p>CP-II Lab &copy; 2026. Built for learning.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

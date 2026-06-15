@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Binary Tree Right Side View - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-11-trees.html" class="navbar__link">&#8592; Back to Module 11: Trees</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-11-trees.html">Module 11: Trees</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Binary Tree Right Side View</span></div>
+      <h1 class="problem-header__title">Binary Tree Right Side View</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/binary-tree-right-side-view/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given the root of a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.</p></div>
+    </section>
+
+    <!-- 2. Logic & Core Concept -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128218;</span> Logic & Core Concept</h2>
+      <div class="math-block">
+        <p>Imagine standing on the right side of a binary tree. The nodes you can see form the <strong>right side view</strong>.</p>
+        <p>This translates to finding the <strong>rightmost node at each depth level</strong> of the tree.</p>
+        <div style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-sm); margin-top:1rem; text-align:center;">
+          <code>Result[level] = Last Node visited at that level (if scanning Left to Right)</code><br>
+          <code style="display:block; margin-top:10px;">Result[level] = First Node visited at that level (if scanning Right to Left)</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Intuitive &#8594; Optimal</h2>
+      
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Breadth-First Search (Level Order)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">We traverse the tree level by level using a Queue. For each level, we iterate through all its nodes. The very last node we process in each level is the one visible from the right side.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> rightSideViewBFS(root):<br>&nbsp;&nbsp;<span class='keyword'>if</span> root is null: <span class='keyword'>return</span> []<br>&nbsp;&nbsp;queue = [root], result = []<br>&nbsp;&nbsp;<span class='keyword'>while</span> queue is not empty:<br>&nbsp;&nbsp;&nbsp;&nbsp;levelSize = len(queue)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> i from 0 to levelSize - 1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;node = queue.dequeue()<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> i == levelSize - 1: <span class='comment'>// Last node in current level</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result.append(node.val)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> node.left: queue.enqueue(node.left)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> node.right: queue.enqueue(node.right)<br>&nbsp;&nbsp;<span class='keyword'>return</span> result</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(w) (Max width of tree)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Very intuitive, directly maps to "levels"</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Takes O(N/2) space for perfectly balanced trees (the bottom level)</li></ul></div>
+          </div>
+          <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">Can we do it recursively with Depth-First Search? Yes, by being smart about the order we visit nodes.</div></div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Depth-First Search (Root &#8594; Right &#8594; Left)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">We traverse using a modified Preorder: we visit the <strong>Root</strong>, then the <strong>Right</strong> child, then the <strong>Left</strong> child. By passing the current depth as an argument, we know if we are visiting a level for the <em>first</em> time. If <code>depth == result.length</code>, we add the node!</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> rightSideViewDFS(root):<br>&nbsp;&nbsp;result = []<br>&nbsp;&nbsp;<span class='keyword'>function</span> dfs(node, depth):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> node is null: <span class='keyword'>return</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> depth == len(result):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result.append(node.val) <span class='comment'>// First node we see at this depth!</span><br>&nbsp;&nbsp;&nbsp;&nbsp;dfs(node.right, depth + 1) <span class='comment'>// Go RIGHT first</span><br>&nbsp;&nbsp;&nbsp;&nbsp;dfs(node.left, depth + 1)  <span class='comment'>// Then go LEFT</span><br>&nbsp;&nbsp;dfs(root, 0)<br>&nbsp;&nbsp;<span class='keyword'>return</span> result</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(n)</span>
+            <span class="cx-badge cx-badge--space">Space: O(h) (Height of tree for call stack)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Often takes less memory than BFS for bushy trees</li><li>Code is extremely short and elegant</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Call stack overflow risk for skewed trees</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr class="row--better"><td>BFS (Level Order)</td><td><code>O(n)</code></td><td><code>O(w)</code></td><td>Great</td></tr>
+          <tr class="row--optimal"><td>DFS (Root&rarr;Right&rarr;Left)</td><td><code>O(n)</code></td><td><code>O(h)</code></td><td>Optimal Space (usually)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">&#10024;</span> Interactive Visualization (DFS Approach)</h2>
+      <div class="visualizer" id="right-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step-right">Next Step</button>
+          <button class="btn btn--outline" id="btn-reset-right">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; margin: 2rem 0; flex-wrap: wrap; justify-content: center; align-items:flex-start;">
+          <!-- Tree Display -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;" id="right-tree-canvas">
+            <div>
+              <div class="t-node" id="rn-1" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;position:relative;">
+                1
+                <div class="depth-badge" style="position:absolute; top:-20px; font-size:10px; color:var(--text-secondary);">depth 0</div>
+              </div>
+            </div>
+            <div style="display:flex; gap: 60px;">
+              <div class="t-node" id="rn-2" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;position:relative;">
+                2
+                <div class="depth-badge" style="position:absolute; top:-20px; font-size:10px; color:var(--text-secondary);">depth 1</div>
+              </div>
+              <div class="t-node" id="rn-3" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;position:relative;">
+                3
+                <div class="depth-badge" style="position:absolute; top:-20px; font-size:10px; color:var(--text-secondary);">depth 1</div>
+              </div>
+            </div>
+            <div style="display:flex; gap: 20px; margin-right:110px;">
+              <div class="t-node" id="rn-5" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;position:relative;">
+                5
+                <div class="depth-badge" style="position:absolute; top:-20px; font-size:10px; color:var(--text-secondary);">depth 2</div>
+              </div>
+              <div style="width:50px;"></div>
+              <div class="t-node" id="rn-4" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;position:relative;">
+                4
+                <div class="depth-badge" style="position:absolute; top:-20px; font-size:10px; color:var(--text-secondary);">depth 2</div>
+              </div>
+            </div>
+            <div style="display:flex; gap: 20px; margin-right:220px;">
+              <div class="t-node" id="rn-6" style="width:50px;height:50px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--border-primary);display:flex;align-items:center;justify-content:center;font-weight:bold;transition:all 0.3s;position:relative;">
+                6
+                <div class="depth-badge" style="position:absolute; top:-20px; font-size:10px; color:var(--text-secondary);">depth 3</div>
+              </div>
+              <div style="width:50px;"></div>
+            </div>
+          </div>
+          
+          <!-- Result List -->
+          <div style="display: flex; flex-direction: column; align-items: center; padding: 1.5rem; background: var(--bg-elevated); border: 1px solid var(--border-primary); border-radius: var(--radius-md); min-width:200px;">
+            <h3 style="margin-bottom: 1rem;">Result List</h3>
+            <div id="right-res-list" style="font-size: 1.5rem; font-weight: bold; color: var(--accent-green); font-family: monospace; letter-spacing: 2px;">
+              []
+            </div>
+            <p style="margin-top:1rem; font-size:0.9rem; color:var(--text-secondary);"><code>res.length = <span id="res-len">0</span></code></p>
+          </div>
+        </div>
+
+        <div class="visualizer__log" id="right-log">
+          Click "Next Step" to start DFS.
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const btnStep = document.getElementById("btn-step-right");
+          const btnReset = document.getElementById("btn-reset-right");
+          const log = document.getElementById("right-log");
+          const resList = document.getElementById("right-res-list");
+          const resLen = document.getElementById("res-len");
+          
+          // DFS sequence: root->right->left
+          // 1: d=0, len=0 -> append 1
+          // 3: d=1, len=1 -> append 3
+          // 4: d=2, len=2 -> append 4
+          // 2: d=1, len=3 -> skip
+          // 5: d=2, len=3 -> skip
+          // 6: d=3, len=3 -> append 6
+          const steps = [
+            { node: 1, val: 1, d: 0, append: true, msg: "Visit 1 (depth 0). <code>depth == res.length</code> (0 == 0). Append 1. Go Right." },
+            { node: 3, val: 3, d: 1, append: true, msg: "Visit 3 (depth 1). <code>depth == res.length</code> (1 == 1). Append 3. Go Right." },
+            { node: 4, val: 4, d: 2, append: true, msg: "Visit 4 (depth 2). <code>depth == res.length</code> (2 == 2). Append 4. (No children, backtrack to 1, then go Left to 2)." },
+            { node: 2, val: 2, d: 1, append: false, msg: "Visit 2 (depth 1). <code>depth != res.length</code> (1 != 3). Already saw a rightmost node for this depth. Go Right." },
+            { node: 5, val: 5, d: 2, append: false, msg: "Visit 5 (depth 2). <code>depth != res.length</code> (2 != 3). Already saw a rightmost node for this depth. Go Left." },
+            { node: 6, val: 6, d: 3, append: true, msg: "Visit 6 (depth 3). <code>depth == res.length</code> (3 == 3). Append 6. (No more nodes)." },
+          ];
+
+          let stepIdx = 0;
+          let resultArr = [];
+
+          function resetViz() {
+            for(const id of [1, 2, 3, 4, 5, 6]) {
+              const node = document.getElementById(`rn-${id}`);
+              node.style.background = "var(--bg-elevated)";
+              node.style.borderColor = "var(--border-primary)";
+              node.style.color = "var(--text-primary)";
+              node.style.boxShadow = "none";
+            }
+            resList.innerHTML = "[]";
+            resLen.innerHTML = "0";
+          }
+
+          function init() {
+            stepIdx = 0;
+            resultArr = [];
+            resetViz();
+            log.innerHTML = "Click \"Next Step\" to start DFS (Root &rarr; Right &rarr; Left).";
+            btnStep.disabled = false;
+          }
+
+          btnStep.addEventListener("click", () => {
+            if (stepIdx >= steps.length) return;
+            
+            const step = steps[stepIdx];
+            
+            const nodeEl = document.getElementById(`rn-${step.node}`);
+            
+            if (step.append) {
+              resultArr.push(step.val);
+              nodeEl.style.background = "var(--accent-green-dim)";
+              nodeEl.style.borderColor = "var(--accent-green)";
+              nodeEl.style.color = "var(--accent-green)";
+              nodeEl.style.boxShadow = "0 0 10px var(--accent-green)";
+            } else {
+              nodeEl.style.background = "var(--bg-main)";
+              nodeEl.style.borderColor = "var(--text-secondary)";
+              nodeEl.style.color = "var(--text-secondary)";
+            }
+            
+            resList.innerHTML = `[${resultArr.join(", ")}]`;
+            resLen.innerHTML = resultArr.length;
+            log.innerHTML = step.msg;
+            
+            stepIdx++;
+            if (stepIdx >= steps.length) {
+              btnStep.disabled = true;
+              log.innerHTML += " <strong>Complete!</strong>";
+            }
+          });
+
+          btnReset.addEventListener("click", init);
+        });
+      </script>
+    </section>
+
+    <!-- 5. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++ (DFS)</button><button class="code-block__tab" data-lang="python">Python (DFS)</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+    void dfs(TreeNode* node, int depth, vector&lt;int&gt;&amp; result) {
+        if (node == nullptr) return;
+        
+        // If we're visiting this depth for the first time
+        if (depth == result.size()) {
+            result.push_back(node-&gt;val);
+        }
+        
+        // Go right first, so the first node we see at each depth is the rightmost
+        dfs(node-&gt;right, depth + 1, result);
+        dfs(node-&gt;left, depth + 1, result);
+    }
+    
+public:
+    vector&lt;int&gt; rightSideView(TreeNode* root) {
+        vector&lt;int&gt; result;
+        dfs(root, 0, result);
+        return result;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def rightSideView(self, root: Optional[TreeNode]) -> List[int]:
+        result = []
+        
+        def dfs(node, depth):
+            if not node:
+                return
+            
+            # If we're visiting this depth for the first time
+            if depth == len(result):
+                result.append(node.val)
+                
+            # Go right first, so the first node we see at each depth is the rightmost
+            dfs(node.right, depth + 1)
+            dfs(node.left, depth + 1)
+            
+        dfs(root, 0)
+        return result</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <footer class="footer" style="margin-top: 4rem; padding: 2rem 0; text-align: center; color: var(--text-tertiary); border-top: 1px solid var(--border-primary);">
+    <p>CP-II Lab &copy; 2026. Built for learning.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

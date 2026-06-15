@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Copy List with Random Pointer - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-07-linked-list-2.html" class="navbar__link">&#8592; Back to Module 07: Linked List Part 2</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-07-linked-list-2.html">Module 07: Linked List Part 2</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Copy List with Random Pointer</span></div>
+      <h1 class="problem-header__title">Copy List with Random Pointer</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/copy-list-with-random-pointer/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Deep copy a linked list where each node has a <code>next</code> pointer and a <code>random</code> pointer.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Hash Map</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Create a copy of each node. Use a hash map to map original &rarr; copy. Then set next and random pointers.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> copyRandomList(head):<br>&nbsp;&nbsp;map = HashMap() <span class='comment'>// old node &rarr; new node</span><br>&nbsp;&nbsp;curr = head<br>&nbsp;&nbsp;<span class='keyword'>while</span> curr: map[curr] = Node(curr.val); curr = curr.next<br>&nbsp;&nbsp;curr = head<br>&nbsp;&nbsp;<span class='keyword'>while</span> curr:<br>&nbsp;&nbsp;&nbsp;&nbsp;map[curr].next = map[curr.next]<br>&nbsp;&nbsp;&nbsp;&nbsp;map[curr].random = map[curr.random]<br>&nbsp;&nbsp;&nbsp;&nbsp;curr = curr.next<br>&nbsp;&nbsp;<span class='keyword'>return</span> map[head]</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Clean and simple</li><li>Two passes</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>O(n) space for hash map</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We can interleave copies within the original list to map old-new without a hash map.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Interleave Nodes (O(1) Space)</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">1) Insert copy of each node right after its original. 2) Set random pointers using the interleaved structure. 3) Separate the two lists.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> copyRandomList(head):<br>&nbsp;&nbsp;<span class='comment'>// Step 1: Interleave copies</span><br>&nbsp;&nbsp;curr = head<br>&nbsp;&nbsp;<span class='keyword'>while</span> curr:<br>&nbsp;&nbsp;&nbsp;&nbsp;copy = Node(curr.val, curr.next)<br>&nbsp;&nbsp;&nbsp;&nbsp;curr.next = copy; curr = copy.next<br>&nbsp;&nbsp;<span class='comment'>// Step 2: Set random pointers</span><br>&nbsp;&nbsp;curr = head<br>&nbsp;&nbsp;<span class='keyword'>while</span> curr:<br>&nbsp;&nbsp;&nbsp;&nbsp;curr.next.random = curr.random.next <span class='keyword'>if</span> curr.random<br>&nbsp;&nbsp;&nbsp;&nbsp;curr = curr.next.next<br>&nbsp;&nbsp;<span class='comment'>// Step 3: Separate lists</span></div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1) (excluding output)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>No hash map needed</li><li>3 elegant passes</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>More complex pointer manipulation</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Next Phase</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 2rem; margin: 4rem 0; min-height: 150px; align-items: center; position: relative;" id="ll-container">
+            <!-- Nodes will be injected here -->
+        </div>
+
+        <div style="text-align: center; margin: 1rem 0; font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-secondary);" id="phase-indicator">
+            <strong>Initialization</strong>
+        </div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Next Phase' to start cloning the list.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          let state = 0; 
+          let isDone = false;
+          
+          const llCont = document.getElementById('ll-container');
+          const log = document.getElementById('search-log');
+          const phaseInd = document.getElementById('phase-indicator');
+          
+          const originalNodes = ['A', 'B'];
+          const clonedNodes = ["A'", "B'"];
+          
+          // Pre-defined states
+          const states = [
+              {
+                  phase: "Initial List",
+                  log: "Starting list: <code>A &rarr; B</code>. Assume <code>A.random = B</code> and <code>B.random = A</code>.",
+                  render: () => {
+                      return [
+                          createNodeWrap('A', 'var(--accent-blue)', true),
+                          createArrow(),
+                          createNodeWrap('B', 'var(--accent-blue)', true)
+                      ];
+                  }
+              },
+              {
+                  phase: "Phase 1: Weave Clones",
+                  log: "Insert clone nodes immediately after their originals: <code>A &rarr; A' &rarr; B &rarr; B'</code>.",
+                  render: () => {
+                      return [
+                          createNodeWrap('A', 'var(--accent-blue)', false),
+                          createArrow(),
+                          createNodeWrap("A'", 'var(--accent-green)', false),
+                          createArrow(),
+                          createNodeWrap('B', 'var(--accent-blue)', false),
+                          createArrow(),
+                          createNodeWrap("B'", 'var(--accent-green)', false)
+                      ];
+                  }
+              },
+              {
+                  phase: "Phase 2: Link Random Pointers",
+                  log: "Set random pointers for clones: <code>curr.next.random = curr.random ? curr.random.next : null</code>.",
+                  render: () => {
+                      const els = [
+                          createNodeWrap('A', 'var(--accent-blue)', true),
+                          createArrow(),
+                          createNodeWrap("A'", 'var(--accent-green)', true),
+                          createArrow(),
+                          createNodeWrap('B', 'var(--accent-blue)', true),
+                          createArrow(),
+                          createNodeWrap("B'", 'var(--accent-green)', true)
+                      ];
+                      
+                      // Add random pointers visually using positioned divs
+                      const rand1 = document.createElement('div');
+                      rand1.style.position = 'absolute';
+                      rand1.style.top = '-25px';
+                      rand1.style.left = '45px';
+                      rand1.style.width = '140px';
+                      rand1.style.height = '15px';
+                      rand1.style.borderTop = '2px dashed var(--accent-orange)';
+                      rand1.style.borderLeft = '2px dashed var(--accent-orange)';
+                      rand1.style.borderRight = '2px dashed var(--accent-orange)';
+                      rand1.innerHTML = '<div style="position:absolute; right:-6px; bottom:-10px; color:var(--accent-orange); font-size:12px;">&#9660;</div>';
+                      
+                      els[2].appendChild(rand1); // A' -> B'
+                      
+                      return els;
+                  }
+              },
+              {
+                  phase: "Phase 3: Extract Clones",
+                  log: "Separate the woven list back into two distinct lists: Original and Cloned.",
+                  render: () => {
+                      const row1 = document.createElement('div');
+                      row1.style.display = 'flex';
+                      row1.style.gap = '1rem';
+                      row1.style.alignItems = 'center';
+                      row1.appendChild(createNodeWrap('A', 'var(--accent-blue)', false));
+                      row1.appendChild(createArrow());
+                      row1.appendChild(createNodeWrap('B', 'var(--accent-blue)', false));
+                      
+                      const row2 = document.createElement('div');
+                      row2.style.display = 'flex';
+                      row2.style.gap = '1rem';
+                      row2.style.alignItems = 'center';
+                      row2.appendChild(createNodeWrap("A'", 'var(--accent-green)', false));
+                      row2.appendChild(createArrow());
+                      row2.appendChild(createNodeWrap("B'", 'var(--accent-green)', false));
+                      
+                      return [row1, row2];
+                  }
+              }
+          ];
+
+          function init() {
+              state = 0;
+              isDone = false;
+              render();
+              log.innerHTML = "Click 'Next Phase' to start cloning the list.";
+          }
+
+          function createArrow() {
+              const arrowWrap = document.createElement('div');
+              arrowWrap.style.position = 'relative';
+              const arrow = document.createElement('div');
+              arrow.innerHTML = '&#8594;';
+              arrow.style.fontSize = '1.5rem';
+              arrow.style.color = 'var(--text-secondary)';
+              arrowWrap.appendChild(arrow);
+              return arrowWrap;
+          }
+
+          function createNodeWrap(val, color, showRandoms) {
+              const nodeWrapper = document.createElement('div');
+              nodeWrapper.style.display = 'flex';
+              nodeWrapper.style.alignItems = 'center';
+              nodeWrapper.style.gap = '1rem';
+              nodeWrapper.style.position = 'relative';
+              
+              const node = document.createElement('div');
+              node.className = 'array-item';
+              node.style.width = '40px';
+              node.style.height = '40px';
+              node.style.display = 'flex';
+              node.style.alignItems = 'center';
+              node.style.justifyContent = 'center';
+              node.style.background = color;
+              node.style.color = 'white';
+              node.style.fontWeight = 'bold';
+              node.style.border = '2px solid var(--border-primary)';
+              node.style.borderRadius = '8px';
+              node.style.position = 'relative';
+              node.textContent = val;
+              
+              nodeWrapper.appendChild(node);
+              
+              if (showRandoms) {
+                  // just a hint label
+                  const rLbl = document.createElement('div');
+                  rLbl.style.position = 'absolute';
+                  rLbl.style.bottom = '-20px';
+                  rLbl.style.left = '50%';
+                  rLbl.style.transform = 'translateX(-50%)';
+                  rLbl.style.fontSize = '10px';
+                  rLbl.style.color = 'var(--text-secondary)';
+                  rLbl.textContent = 'random';
+                  node.appendChild(rLbl);
+              }
+              
+              return nodeWrapper;
+          }
+
+          function render() {
+              llCont.innerHTML = '';
+              const currentState = states[state] || states[states.length - 1];
+              
+              phaseInd.innerHTML = `<strong>${currentState.phase}</strong>`;
+              
+              const els = currentState.render();
+              
+              if (state === 3) {
+                  // Needs to be vertical
+                  llCont.style.flexDirection = 'column';
+                  els.forEach(e => llCont.appendChild(e));
+              } else {
+                  llCont.style.flexDirection = 'row';
+                  els.forEach(e => llCont.appendChild(e));
+              }
+          }
+
+          function step() {
+              if (isDone) {
+                  log.innerHTML = `🎉 <strong>Clone Complete!</strong> Return head of cloned list.`;
+                  return;
+              }
+              
+              state++;
+              if (state >= states.length) {
+                  isDone = true;
+                  state = states.length - 1;
+                  log.innerHTML = `🎉 <strong>Clone Complete!</strong> Return head of cloned list.`;
+              } else {
+                  log.innerHTML = states[state].log;
+              }
+              
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              init();
+          });
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Hash Map</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Extra space</td></tr>
+<tr class="row--optimal"><td>Interleave</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        if (!head) return nullptr;
+        // Step 1: Interleave
+        Node* curr = head;
+        while (curr) {
+            Node* copy = new Node(curr-&gt;val);
+            copy-&gt;next = curr-&gt;next;
+            curr-&gt;next = copy;
+            curr = copy-&gt;next;
+        }
+        // Step 2: Set random
+        curr = head;
+        while (curr) {
+            if (curr-&gt;random) curr-&gt;next-&gt;random = curr-&gt;random-&gt;next;
+            curr = curr-&gt;next-&gt;next;
+        }
+        // Step 3: Separate
+        Node* newHead = head-&gt;next;
+        curr = head;
+        while (curr) {
+            Node* copy = curr-&gt;next;
+            curr-&gt;next = copy-&gt;next;
+            copy-&gt;next = copy-&gt;next ? copy-&gt;next-&gt;next : nullptr;
+            curr = curr-&gt;next;
+        }
+        return newHead;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def copyRandomList(self, head):
+        if not head: return None
+        curr = head
+        while curr:
+            copy = Node(curr.val, curr.next)
+            curr.next = copy; curr = copy.next
+        curr = head
+        while curr:
+            if curr.random: curr.next.random = curr.random.next
+            curr = curr.next.next
+        new_head = head.next; curr = head
+        while curr:
+            copy = curr.next; curr.next = copy.next
+            copy.next = copy.next.next if copy.next else None
+            curr = curr.next
+        return new_head</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Count Primes - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-01-number-theory.html" class="navbar__link">&#8592; Back to Module 01: Number Theory</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-01-number-theory.html">Module 01: Number Theory</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Count Primes</span></div>
+      <h1 class="problem-header__title">Count Primes</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/count-primes/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Count the number of prime numbers strictly less than n.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Sieve of Eratosthenes</div><p style='font-size:0.9rem;margin-top:0.5rem;'>To find all primes up to n, assume all numbers are prime. Starting from 2, if a number is prime, mark all of its multiples starting from its square as not prime.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Check Each Number</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">For each number up to n, call isPrime(x).</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> countPrimes(n):<br>&nbsp;&nbsp;count = 0<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 2 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> isPrime(i): count++<br>&nbsp;&nbsp;<span class='keyword'>return</span> count</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n&radic;n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Easy to write if isPrime exists</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Too slow for large ranges</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We recalculate properties of numbers repeatedly. The Sieve eliminates composites efficiently.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Sieve of Eratosthenes</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Array of booleans. Mark multiples as false.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> countPrimes(n):<br>&nbsp;&nbsp;isPrime = array of true<br>&nbsp;&nbsp;isPrime[0] = isPrime[1] = false<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 2 <span class='keyword'>to</span> &radic;n:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> isPrime[i]:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> j = i*i <span class='keyword'>to</span> n <span class='keyword'>step</span> i:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;isPrime[j] = false<br>&nbsp;&nbsp;<span class='keyword'>return</span> count of true values</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n log log n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Extremely fast for range queries</li><li>Beautiful algorithm</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Requires O(n) memory</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Logic Flow Diagram -->
+    
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class="viz-controls"><button class="viz-btn" id="start-btn">▶ Start Sieve</button><button class="viz-btn" id="reset-btn">🔄 Reset</button></div><div class="viz-canvas" style="flex-wrap: wrap; gap: 8px; justify-content: flex-start; max-width: 600px; margin: 0 auto;" id="grid-container"></div><div id="status-text" style="text-align:center; margin-top:1rem; font-family:var(--font-mono); color:var(--accent-purple);">Click Start to visualize n=30</div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Individual Checks</td><td><code>O(n&radic;n)</code></td><td><code>O(1)</code></td><td>Too slow</td></tr>
+<tr class="row--optimal"><td>Sieve of Eratosthenes</td><td><code>O(n log log n)</code></td><td><code>O(n)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    int countPrimes(int n) {
+        if (n &lt;= 2) return 0;
+        vector&lt;bool&gt; isPrime(n, true);
+        isPrime[0] = isPrime[1] = false;
+        for (int i = 2; i * i &lt; n; i++) {
+            if (isPrime[i]) {
+                for (int j = i * i; j &lt; n; j += i) {
+                    isPrime[j] = false;
+                }
+            }
+        }
+        return count(isPrime.begin(), isPrime.end(), true);
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def countPrimes(self, n: int) -&gt; int:
+        if n &lt;= 2: return 0
+        is_prime = [True] * n
+        is_prime[0] = is_prime[1] = False
+        for i in range(2, int(n**0.5) + 1):
+            if is_prime[i]:
+                for j in range(i*i, n, i):
+                    is_prime[j] = False
+        return sum(is_prime)</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>\n  <script>const grid = document.getElementById('grid-container'); const startBtn = document.getElementById('start-btn'); const resetBtn = document.getElementById('reset-btn'); const status = document.getElementById('status-text'); const N = 30; let isRunning = false; function initGrid() { grid.innerHTML = ''; for(let i=2; i<N; i++) { const cell = document.createElement('div'); cell.className = 'array-cell'; cell.id = `cell-${i}`; cell.textContent = i; grid.appendChild(cell); } } const sleep = ms => new Promise(r => setTimeout(r, ms)); async function runSieve() { if(isRunning) return; isRunning = true; initGrid(); let isPrime = new Array(N).fill(true); for(let i=2; i*i<N; i++) { if(isPrime[i]) { status.innerHTML = `Found prime <span style="color:var(--accent-green)">${i}</span>. Marking multiples...`; document.getElementById(`cell-${i}`).classList.add('success'); await sleep(800); for(let j=i*i; j<N; j+=i) { isPrime[j] = false; const c = document.getElementById(`cell-${j}`); if(c){ c.classList.add('highlight'); await sleep(300); c.classList.remove('highlight'); c.classList.add('muted'); c.style.textDecoration = 'line-through'; } } } } status.innerHTML = "Done! All remaining numbers are prime."; for(let i=2; i<N; i++) { if(isPrime[i]) document.getElementById(`cell-${i}`).classList.add('success'); } isRunning = false; } initGrid(); startBtn.onclick = runSieve; resetBtn.onclick = () => { isRunning = false; initGrid(); status.textContent = 'Click Start to visualize n=30'; };</script>
+</body>
+</html>

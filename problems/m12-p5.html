@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jump Game III - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-12-graphs.html" class="navbar__link">&#8592; Back to Module 12: Graphs</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-12-graphs.html">Module 12: Graphs</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Jump Game III</span></div>
+      <h1 class="problem-header__title">Jump Game III</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/jump-game-iii/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; Problem Link</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given an array of non-negative integers arr, you are initially positioned at start index of the array. When you are at index i, you can jump to i + arr[i] or i - arr[i], check if you can reach to any index with value 0.</p></div>
+    </section>
+
+    <!-- 2. Logic & Core Concept -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128218;</span> Logic & Core Concept</h2>
+      <div class="math-block">
+        <p>You are given an array of non-negative integers <code>arr</code> and a <code>start</code> index. When you are at index <code>i</code>, you can jump to <code>i + arr[i]</code> or <code>i - arr[i]</code>.</p>
+        <p>The goal is to determine if you can reach <strong>any</strong> index with value <code>0</code>.</p>
+        <div style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-sm); margin-top:1rem;">
+          <strong>Graph Interpretation:</strong>
+          <ul style="margin-left: 1.5rem; margin-top: 0.5rem; color:var(--text-secondary);">
+            <li><strong>Nodes:</strong> The indices of the array (<code>0</code> to <code>n-1</code>).</li>
+            <li><strong>Edges:</strong> Directed edges from <code>i</code> to <code>i + arr[i]</code> and <code>i - arr[i]</code> (if within bounds).</li>
+            <li><strong>Destination:</strong> Any node <code>j</code> such that <code>arr[j] == 0</code>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: DFS &#8594; BFS</h2>
+      
+      <div class="approach-card approach-card--optimal">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 1</span></div>
+          <div class="approach-card__title">Depth-First Search (DFS)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">We can solve this with recursion. From index <code>i</code>, we recursively try to solve for <code>i + arr[i]</code> and <code>i - arr[i]</code>. To avoid infinite loops (cycles), we can use a <code>visited</code> set, or trickily, mutate the array by making <code>arr[i]</code> negative after visiting it.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> canReach(arr, start):<br>&nbsp;&nbsp;<span class='keyword'>if</span> start &lt; 0 <span class='keyword'>or</span> start &gt;= len(arr) <span class='keyword'>or</span> arr[start] &lt; 0:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>return</span> false<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>if</span> arr[start] == 0:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>return</span> true<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='comment'>// Mark as visited by negating</span><br>&nbsp;&nbsp;arr[start] = -arr[start]<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>return</span> canReach(arr, start + arr[start]) <span class='keyword'>or</span> canReach(arr, start - arr[start])</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(N)</span>
+            <span class="cx-badge cx-badge--space">Space: O(N) (Recursion Stack)</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros-cons__col pros-cons__col--pros"><div class="pros-cons__title">Pros</div><ul class="pros-cons__list"><li>Extremely concise code.</li><li>Mutating the array saves O(N) space for the visited set (though the call stack is still O(N)).</li></ul></div>
+            <div class="pros-cons__col pros-cons__col--cons"><div class="pros-cons__title">Cons</div><ul class="pros-cons__list"><li>Mutates input (not always acceptable in production).</li><li>Deep recursion can cause stack overflow in some languages.</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="approach-card approach-card--better">
+        <div class="approach-card__header">
+          <div><span class="approach-card__label">Approach 2</span></div>
+          <div class="approach-card__title">Breadth-First Search (BFS)</div>
+        </div>
+        <div class="approach-card__body">
+          <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">We can iteratively explore level by level using a Queue. We start by putting the <code>start</code> index in the queue. While the queue isn't empty, pop an index, check if it's 0. If not, calculate left and right jumps and add valid ones to the queue.</p>
+          <div class="pseudocode-block"><span class='keyword'>function</span> canReachBFS(arr, start):<br>&nbsp;&nbsp;queue = [start]<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>while</span> queue is not empty:<br>&nbsp;&nbsp;&nbsp;&nbsp;curr = queue.dequeue()<br>&nbsp;&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> arr[curr] == 0: <span class='keyword'>return</span> true<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> arr[curr] &lt; 0: <span class='keyword'>continue</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='comment'>// Left Jump</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> curr - arr[curr] &gt;= 0: queue.enqueue(curr - arr[curr])<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='comment'>// Right Jump</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> curr + arr[curr] &lt; len(arr): queue.enqueue(curr + arr[curr])<br>&nbsp;&nbsp;&nbsp;&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='comment'>// Mark visited</span><br>&nbsp;&nbsp;&nbsp;&nbsp;arr[curr] = -arr[curr]<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;<span class='keyword'>return</span> false</div>
+          <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+            <span class="cx-badge cx-badge--time">Time: O(N)</span>
+            <span class="cx-badge cx-badge--space">Space: O(N) (Queue)</span>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      <table class="comparison-table">
+        <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr class="row--optimal"><td>DFS</td><td><code>O(N)</code></td><td><code>O(N)</code></td><td>Cleanest Code</td></tr>
+          <tr class="row--better"><td>BFS</td><td><code>O(N)</code></td><td><code>O(N)</code></td><td>Iterative Alternative</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">&#10024;</span> Interactive Visualization (Jumps)</h2>
+      <div class="visualizer" id="jump-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step-jump">Next Jump</button>
+          <button class="btn btn--outline" id="btn-reset-jump">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 0.5rem; margin: 3rem 0; justify-content: center; position: relative;">
+          <!-- SVG for jump arrows -->
+          <svg style="position: absolute; top: -50px; left: 0; width: 100%; height: 200px; z-index: 1; pointer-events: none;" id="jump-svg">
+             <!-- Arrows will be drawn here -->
+          </svg>
+          
+          <!-- arr = [4,2,3,0,3,1,2], start = 5 -->
+          <div class="array-cell" id="c-0" style="width: 50px; height: 50px; background: var(--bg-elevated); border: 2px solid var(--border-primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; border-radius: 8px; z-index: 2; position: relative;">
+             <span style="position:absolute; top:-20px; font-size:0.8rem; color:var(--text-secondary);">0</span>
+             4
+          </div>
+          <div class="array-cell" id="c-1" style="width: 50px; height: 50px; background: var(--bg-elevated); border: 2px solid var(--border-primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; border-radius: 8px; z-index: 2; position: relative;">
+             <span style="position:absolute; top:-20px; font-size:0.8rem; color:var(--text-secondary);">1</span>
+             2
+          </div>
+          <div class="array-cell" id="c-2" style="width: 50px; height: 50px; background: var(--bg-elevated); border: 2px solid var(--border-primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; border-radius: 8px; z-index: 2; position: relative;">
+             <span style="position:absolute; top:-20px; font-size:0.8rem; color:var(--text-secondary);">2</span>
+             3
+          </div>
+          <div class="array-cell" id="c-3" style="width: 50px; height: 50px; background: var(--bg-elevated); border: 2px solid var(--border-primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; border-radius: 8px; z-index: 2; position: relative; color: var(--accent-green);">
+             <span style="position:absolute; top:-20px; font-size:0.8rem; color:var(--text-secondary);">3</span>
+             0
+          </div>
+          <div class="array-cell" id="c-4" style="width: 50px; height: 50px; background: var(--bg-elevated); border: 2px solid var(--border-primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; border-radius: 8px; z-index: 2; position: relative;">
+             <span style="position:absolute; top:-20px; font-size:0.8rem; color:var(--text-secondary);">4</span>
+             3
+          </div>
+          <div class="array-cell" id="c-5" style="width: 50px; height: 50px; background: var(--bg-elevated); border: 2px solid var(--accent-orange); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; border-radius: 8px; z-index: 2; position: relative; color: var(--accent-orange);">
+             <span style="position:absolute; top:-20px; font-size:0.8rem; color:var(--text-secondary);">5</span>
+             1
+          </div>
+          <div class="array-cell" id="c-6" style="width: 50px; height: 50px; background: var(--bg-elevated); border: 2px solid var(--border-primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; border-radius: 8px; z-index: 2; position: relative;">
+             <span style="position:absolute; top:-20px; font-size:0.8rem; color:var(--text-secondary);">6</span>
+             2
+          </div>
+        </div>
+
+        <div class="visualizer__log" id="jump-viz-log">
+          Start at index 5. Value is 1. We can jump to 5-1=4 or 5+1=6.
+        </div>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const btnStep = document.getElementById("btn-step-jump");
+          const btnReset = document.getElementById("btn-reset-jump");
+          const log = document.getElementById("jump-viz-log");
+          const svg = document.getElementById("jump-svg");
+          
+          // DFS Path: 5 -> 4 -> 1 -> 3 (Value 0! Win!)
+          
+          const steps = [
+            { from: 5, to: 4, msg: "Jump left from 5 to 4. Value is 3. Mark 5 as visited." },
+            { from: 4, to: 1, msg: "From 4, jump left to 1 (4-3). Right jump (4+3=7) is out of bounds. Mark 4 as visited." },
+            { from: 1, to: 3, msg: "From 1, jump right to 3 (1+2). Left jump (-1) is out of bounds. Mark 1 as visited." },
+            { win: 3, msg: "At index 3, value is 0! <strong>Target Reached!</strong>" }
+          ];
+
+          let stepIdx = 0;
+
+          function getCenter(id) {
+            const el = document.getElementById(id);
+            const rect = el.getBoundingClientRect();
+            const parentRect = el.parentElement.getBoundingClientRect();
+            return {
+                x: rect.left - parentRect.left + rect.width / 2,
+                y: 25 // halfway up the cell
+            };
+          }
+
+          function drawArrow(p1, p2) {
+             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+             const midX = (p1.x + p2.x) / 2;
+             // quadratic bezier
+             const d = `M ${p1.x} ${p1.y} Q ${midX} -30 ${p2.x} ${p2.y}`;
+             path.setAttribute("d", d);
+             path.setAttribute("fill", "none");
+             path.setAttribute("stroke", "var(--accent-orange)");
+             path.setAttribute("stroke-width", "3");
+             path.setAttribute("marker-end", "url(#arrowhead)");
+             svg.appendChild(path);
+          }
+
+          function resetViz() {
+            for(let i=0; i<=6; i++) {
+              const el = document.getElementById(`c-${i}`);
+              el.style.background = "var(--bg-elevated)";
+              el.style.borderColor = "var(--border-primary)";
+              el.style.opacity = "1";
+              if (i === 3) {
+                 el.style.color = "var(--accent-green)";
+              } else if (i === 5) {
+                 el.style.borderColor = "var(--accent-orange)";
+                 el.style.color = "var(--accent-orange)";
+              } else {
+                 el.style.color = "var(--text-primary)";
+              }
+            }
+            svg.innerHTML = `
+              <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                  <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-orange)" />
+                </marker>
+              </defs>
+            `;
+          }
+
+          function init() {
+            stepIdx = 0;
+            resetViz();
+            log.innerHTML = "Start at index 5. Value is 1. We can jump to 5-1=4 or 5+1=6.";
+            btnStep.disabled = false;
+          }
+
+          btnStep.addEventListener("click", () => {
+            if (stepIdx >= steps.length) return;
+            const step = steps[stepIdx];
+            
+            if (step.from !== undefined) {
+                const elFrom = document.getElementById(`c-${step.from}`);
+                elFrom.style.background = "#1a1a1a";
+                elFrom.style.opacity = "0.5";
+                
+                const elTo = document.getElementById(`c-${step.to}`);
+                elTo.style.borderColor = "var(--accent-orange)";
+                elTo.style.color = "var(--accent-orange)";
+                
+                const p1 = getCenter(`c-${step.from}`);
+                const p2 = getCenter(`c-${step.to}`);
+                drawArrow(p1, p2);
+            }
+            
+            if (step.win !== undefined) {
+                const elWin = document.getElementById(`c-${step.win}`);
+                elWin.style.background = "var(--accent-green)";
+                elWin.style.color = "var(--bg-main)";
+                elWin.style.boxShadow = "0 0 15px var(--accent-green)";
+            }
+            
+            log.innerHTML = step.msg;
+            
+            stepIdx++;
+            if (stepIdx >= steps.length) {
+              btnStep.disabled = true;
+            }
+          });
+
+          btnReset.addEventListener("click", init);
+          
+          // Setup initial marker
+          setTimeout(init, 100);
+        });
+      </script>
+    </section>
+
+    <!-- 5. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++ (DFS)</button><button class="code-block__tab" data-lang="python">Python (DFS)</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    bool canReach(vector&lt;int&gt;&amp; arr, int start) {
+        // Out of bounds or already visited
+        if (start &lt; 0 || start &gt;= arr.size() || arr[start] &lt; 0) {
+            return false;
+        }
+        
+        // Target found
+        if (arr[start] == 0) {
+            return true;
+        }
+        
+        // Mark as visited by making it negative
+        arr[start] = -arr[start];
+        
+        // Jump left or right
+        return canReach(arr, start + arr[start]) || canReach(arr, start - arr[start]);
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def canReach(self, arr: List[int], start: int) -> bool:
+        if start &lt; 0 or start &gt;= len(arr) or arr[start] &lt; 0:
+            return False
+            
+        if arr[start] == 0:
+            return True
+            
+        # Mark as visited
+        arr[start] = -arr[start]
+        
+        # Jump right or left
+        return self.canReach(arr, start + arr[start]) or self.canReach(arr, start - arr[start])</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <footer class="footer" style="margin-top: 4rem; padding: 2rem 0; text-align: center; color: var(--text-tertiary); border-top: 1px solid var(--border-primary);">
+    <p>CP-II Lab &copy; 2026. Built for learning.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

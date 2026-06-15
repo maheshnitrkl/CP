@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Permutations - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-05-recursion-backtracking.html" class="navbar__link">&#8592; Back to Module 05: Recursion & Backtracking</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-05-recursion-backtracking.html">Module 05: Recursion & Backtracking</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Permutations</span></div>
+      <h1 class="problem-header__title">Permutations</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/permutations/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given an array <code>nums</code> of distinct integers, return all possible permutations.</p><p><strong>Example:</strong> <code>[1,2,3]</code> &rarr; <code>[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]</code></p><p><strong>Key:</strong> n! permutations for n elements.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>n! = n &times; (n-1) &times; (n-2) &times; ... &times; 1</div><p style='font-size:0.9rem;margin-top:0.5rem;'>For the first position, n choices. For the second, n-1 choices (one used). And so on. Total = n!</p><p style='font-size:0.85rem;'>3! = 6 permutations, 4! = 24, 10! = 3,628,800.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Generate & Filter</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Generate all n! arrangements by trying every possible mapping. Use a set to track used elements.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> permute(nums):<br>&nbsp;&nbsp;result = []<br>&nbsp;&nbsp;used = [false] * n<br>&nbsp;&nbsp;<span class='keyword'>function</span> build(current):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> len(current) == n:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result.append(copy(current))<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>return</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> used[i]: <span class='keyword'>continue</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;used[i] = true<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current.append(nums[i])<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;build(current)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current.pop(); used[i] = false<br>&nbsp;&nbsp;build([])<br>&nbsp;&nbsp;<span class='keyword'>return</span> result</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n &times; n!)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Straightforward</li><li>Uses boolean array for tracking</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Boolean array uses O(n) space</li><li>Checks all n elements each level</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">This is already the standard approach. We can make it slightly cleaner by swapping elements in-place.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Backtracking with Swap</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Instead of a used array, swap elements into position. Swap nums[start] with each nums[i], recurse, then swap back.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> permute(nums):<br>&nbsp;&nbsp;result = []<br>&nbsp;&nbsp;<span class='keyword'>function</span> <span class='highlight'>backtrack</span>(start):<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> start == n:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result.append(copy(nums))<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>return</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>for</span> i = start <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;swap(nums[start], nums[i]) <span class='comment'>// CHOOSE</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='highlight'>backtrack</span>(start + 1) <span class='comment'>// EXPLORE</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;swap(nums[start], nums[i]) <span class='comment'>// UN-CHOOSE</span><br>&nbsp;&nbsp;backtrack(0)<br>&nbsp;&nbsp;<span class='keyword'>return</span> result</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n &times; n!)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n) recursion depth</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>No extra boolean array needed</li><li>In-place swapping</li><li>Clean backtracking pattern</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Modifies input array during recursion (restored after)</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Step Permutations</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; justify-content: center; margin: 2rem 0;">
+            <div style="text-align: center;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">Current Array</div>
+                <div id="nums-array" style="display: flex; gap: 0.5rem; position: relative; height: 60px;"></div>
+            </div>
+        </div>
+
+        <div style="text-align: center; font-family: var(--font-mono); margin: 1rem 0;">Result Permutations</div>
+        <div id="result-sets" style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; min-height: 40px;"></div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Step Permutations' to begin backtracking.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          let arr = [1, 2, 3];
+          
+          // State machine for permutations
+          // Call stack stores: { startIdx, i, state } 
+          // state: 0 (about to swap start and i, then recurse), 1 (back from recursion, about to unswap)
+          let callStack = []; 
+          let results = [];
+          let isDone = false;
+          
+          const numsCont = document.getElementById('nums-array');
+          const resCont = document.getElementById('result-sets');
+          const log = document.getElementById('search-log');
+
+          function init() {
+              arr = [1, 2, 3];
+              callStack = [{start: 0, i: 0, state: 0}];
+              results = [];
+              isDone = false;
+              render();
+          }
+
+          function render(swapI = -1, swapJ = -1) {
+              numsCont.innerHTML = '';
+              const topCall = callStack.length > 0 ? callStack[callStack.length - 1] : {start: arr.length, i: arr.length};
+              
+              arr.forEach((val, idx) => {
+                  const el = document.createElement('div');
+                  el.className = 'array-item';
+                  el.style.width = '40px';
+                  el.style.height = '40px';
+                  el.style.display = 'flex';
+                  el.style.alignItems = 'center';
+                  el.style.justifyContent = 'center';
+                  el.style.background = 'var(--bg-secondary)';
+                  
+                  if (idx < topCall.start) el.style.background = 'var(--accent-green)'; // Fixed
+                  if (idx === swapI || idx === swapJ) {
+                      el.style.background = 'var(--accent-purple)';
+                      el.style.transform = 'translateY(-5px)';
+                  }
+                  
+                  el.textContent = val;
+                  
+                  let labels = [];
+                  if (idx === topCall.start) labels.push('start');
+                  if (idx === topCall.i) labels.push('i');
+                  
+                  if (labels.length > 0) {
+                      const labelEl = document.createElement('div');
+                      labelEl.textContent = labels.join(',');
+                      labelEl.style.position = 'absolute';
+                      labelEl.style.bottom = '-20px';
+                      labelEl.style.fontSize = '12px';
+                      labelEl.style.color = 'var(--accent-orange)';
+                      labelEl.style.fontWeight = 'bold';
+                      el.appendChild(labelEl);
+                  }
+                  
+                  numsCont.appendChild(el);
+              });
+
+              resCont.innerHTML = '';
+              results.forEach(res => {
+                  const el = document.createElement('div');
+                  el.style.background = 'var(--bg-secondary)';
+                  el.style.border = '1px solid var(--border-primary)';
+                  el.style.padding = '0.2rem 0.5rem';
+                  el.style.borderRadius = '4px';
+                  el.style.fontFamily = 'var(--font-mono)';
+                  el.textContent = '[' + res.join(',') + ']';
+                  resCont.appendChild(el);
+              });
+          }
+
+          function step() {
+              if (isDone || callStack.length === 0) {
+                  log.innerHTML = `🎉 Recursion complete! Found <strong>${results.length}</strong> permutations.`;
+                  isDone = true;
+                  render();
+                  return;
+              }
+              
+              let top = callStack[callStack.length - 1];
+              
+              if (top.start === arr.length) {
+                  log.innerHTML = `Base case! <code>start == ${arr.length}</code>. Found permutation: <strong>[${arr.join(',')}]</strong>. Returning.`;
+                  results.push([...arr]);
+                  callStack.pop();
+                  render();
+                  return;
+              }
+              
+              if (top.i >= arr.length) {
+                  log.innerHTML = `Loop <code>i</code> finished at <code>start=${top.start}</code>. Returning to previous level.`;
+                  callStack.pop();
+                  render();
+                  return;
+              }
+              
+              if (top.state === 0) {
+                  // Swap and recurse
+                  let i = top.i;
+                  let start = top.start;
+                  log.innerHTML = `Level <code>start=${start}</code>, loop <code>i=${i}</code>. <strong>Swap</strong> <code>arr[${start}]</code> and <code>arr[${i}]</code>. Recursing to <code>start=${start+1}</code>.`;
+                  
+                  [arr[start], arr[i]] = [arr[i], arr[start]];
+                  top.state = 1; // next time we see this call, we unswap
+                  
+                  // Push next recursion level
+                  callStack.push({start: start + 1, i: start + 1, state: 0});
+                  
+                  render(start, i);
+              } else if (top.state === 1) {
+                  // Unswap
+                  let i = top.i;
+                  let start = top.start;
+                  log.innerHTML = `Returned to level <code>start=${start}</code>, loop <code>i=${i}</code>. <strong>Un-swap (Backtrack)</strong> <code>arr[${start}]</code> and <code>arr[${i}]</code>.`;
+                  
+                  [arr[start], arr[i]] = [arr[i], arr[start]];
+                  
+                  // Move to next i
+                  top.i++;
+                  top.state = 0; // ready to swap for the new i
+                  
+                  render(start, i);
+              }
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              init();
+              log.innerHTML = "Click 'Step Permutations' to begin backtracking.";
+          });
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: nums = [1, 2, 3]</div><div class='math-block' style='text-align:left;font-size:0.85rem;'><pre style='color:var(--text-secondary);'>
+backtrack(0): fix position 0
+  swap(0,0): [1,2,3] &rarr; backtrack(1)
+    swap(1,1): [1,2,3] &rarr; backtrack(2)
+      swap(2,2): [1,2,3] &rarr; backtrack(3) &rarr; <span class='highlight'>add [1,2,3]</span>
+    swap(1,2): [1,3,2] &rarr; backtrack(2)
+      &rarr; <span class='highlight'>add [1,3,2]</span>
+  swap(0,1): [2,1,3] &rarr; backtrack(1)
+    &rarr; <span class='highlight'>add [2,1,3]</span>, <span class='highlight'>[2,3,1]</span>
+  swap(0,2): [3,2,1] &rarr; backtrack(1)
+    &rarr; <span class='highlight'>add [3,2,1]</span>, <span class='highlight'>[3,1,2]</span>
+
+<span class='highlight'>Total: 6 permutations = 3!</span></pre></div></div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Used Array Backtracking</td><td><code>O(n&times;n!)</code></td><td><code>O(n)</code></td><td>Standard approach</td></tr>
+<tr class="row--optimal"><td>Swap Backtracking</td><td><code>O(n&times;n!)</code></td><td><code>O(n)</code></td><td>Optimal &mdash; no extra array</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    vector&lt;vector&lt;int&gt;&gt; permute(vector&lt;int&gt;&amp; nums) {
+        vector&lt;vector&lt;int&gt;&gt; result;
+        backtrack(nums, 0, result);
+        return result;
+    }
+    void backtrack(vector&lt;int&gt;&amp; nums, int start, vector&lt;vector&lt;int&gt;&gt;&amp; result) {
+        if (start == nums.size()) {
+            result.push_back(nums);
+            return;
+        }
+        for (int i = start; i &lt; nums.size(); i++) {
+            swap(nums[start], nums[i]);
+            backtrack(nums, start + 1, result);
+            swap(nums[start], nums[i]);
+        }
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def permute(self, nums):
+        result = []
+        def backtrack(start):
+            if start == len(nums):
+                result.append(nums[:])
+                return
+            for i in range(start, len(nums)):
+                nums[start], nums[i] = nums[i], nums[start]
+                backtrack(start + 1)
+                nums[start], nums[i] = nums[i], nums[start]
+        backtrack(0)
+        return result</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

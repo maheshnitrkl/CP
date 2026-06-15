@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sort List - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-07-linked-list-2.html" class="navbar__link">&#8592; Back to Module 07: Linked List Part 2</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-07-linked-list-2.html">Module 07: Linked List Part 2</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Sort List</span></div>
+      <h1 class="problem-header__title">Sort List</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/sort-list/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Sort a linked list in O(n log n) time and O(1) memory.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Extract, Sort, Rebuild</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Extract values to array, sort, rebuild list.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> sortList(head):<br>&nbsp;&nbsp;arr = extractValues(head)<br>&nbsp;&nbsp;sort(arr)<br>&nbsp;&nbsp;<span class='keyword'>return</span> buildList(arr)</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n log n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Simple</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>O(n) extra space</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">We can sort in-place using Merge Sort on the linked list.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Merge Sort (Recursive)</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Find middle, split into two halves, recursively sort each half, merge the sorted halves.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> sortList(head):<br>&nbsp;&nbsp;<span class='keyword'>if</span> head == null OR head.next == null: <span class='keyword'>return</span> head<br>&nbsp;&nbsp;mid = findMiddle(head) <span class='comment'>// split</span><br>&nbsp;&nbsp;right = mid.next; mid.next = null<br>&nbsp;&nbsp;left = sortList(head) <span class='comment'>// sort left half</span><br>&nbsp;&nbsp;right = sortList(right) <span class='comment'>// sort right half</span><br>&nbsp;&nbsp;<span class='keyword'>return</span> merge(left, right) <span class='comment'>// merge sorted halves</span></div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n log n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(log n) stack</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>O(n log n) guaranteed</li><li>Stable sort</li><li>Natural for linked lists (no random access needed)</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>O(log n) stack space for recursion</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="search-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-search-step">Next Step</button>
+          <button class="btn btn--outline" id="btn-search-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; justify-content: center; margin: 4rem 0; min-height: 100px; align-items: center; position: relative; flex-wrap: wrap;" id="ll-container">
+            <!-- Nodes will be injected here -->
+        </div>
+
+        <div style="text-align: center; margin: 1rem 0; font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-secondary);" id="phase-indicator">
+            <strong>Initialization</strong>
+        </div>
+
+        <div class="visualizer__log" id="search-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Next Step' to start bottom-up merge sort.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          let state = 0; 
+          let isDone = false;
+          
+          const llCont = document.getElementById('ll-container');
+          const log = document.getElementById('search-log');
+          const phaseInd = document.getElementById('phase-indicator');
+          
+          // Pre-defined states
+          const states = [
+              { lists: [[4, 2, 1, 3]], phase: "Initial List", log: "Starting list: 4 -> 2 -> 1 -> 3" },
+              { lists: [[4], [2], [1], [3]], phase: "Step=1: Split", log: "Treat each node as a sorted list of size 1." },
+              { lists: [[2, 4], [1, 3]], phase: "Step=1: Merge", log: "Merge adjacent lists of size 1. (4, 2) &rarr; 2->4. (1, 3) &rarr; 1->3." },
+              { lists: [[2, 4], [1, 3]], phase: "Step=2: Split", log: "Now we have sorted lists of size 2. We will merge them next." },
+              { lists: [[1, 2, 3, 4]], phase: "Step=2: Merge", log: "Merge adjacent lists of size 2. (2->4, 1->3) &rarr; 1->2->3->4." }
+          ];
+
+          function init() {
+              state = 0;
+              isDone = false;
+              render();
+              log.innerHTML = "Click 'Next Step' to start bottom-up merge sort.";
+          }
+
+          function createNode(val) {
+              const node = document.createElement('div');
+              node.className = 'array-item';
+              node.style.width = '40px';
+              node.style.height = '40px';
+              node.style.display = 'flex';
+              node.style.alignItems = 'center';
+              node.style.justifyContent = 'center';
+              node.style.background = 'var(--bg-secondary)';
+              node.style.border = '2px solid var(--border-primary)';
+              node.style.borderRadius = '8px';
+              node.style.position = 'relative';
+              node.textContent = val;
+              return node;
+          }
+
+          function render() {
+              llCont.innerHTML = '';
+              const currentState = states[state] || states[states.length - 1];
+              
+              phaseInd.innerHTML = `<strong>${currentState.phase}</strong>`;
+              
+              currentState.lists.forEach((list, idx) => {
+                  const listWrap = document.createElement('div');
+                  listWrap.style.display = 'flex';
+                  listWrap.style.alignItems = 'center';
+                  listWrap.style.gap = '1rem';
+                  listWrap.style.padding = '1rem';
+                  listWrap.style.border = '2px dashed var(--border-primary)';
+                  listWrap.style.borderRadius = '12px';
+                  listWrap.style.background = 'rgba(255,255,255,0.02)';
+                  
+                  list.forEach((val, i) => {
+                      const n = createNode(val);
+                      if(state === states.length - 1) {
+                          n.style.background = 'var(--accent-green)';
+                          n.style.color = 'black';
+                          n.style.fontWeight = 'bold';
+                      }
+                      listWrap.appendChild(n);
+                      
+                      if (i < list.length - 1) {
+                          const arrow = document.createElement('div');
+                          arrow.innerHTML = '&#8594;';
+                          arrow.style.fontSize = '1.2rem';
+                          arrow.style.color = 'var(--text-secondary)';
+                          listWrap.appendChild(arrow);
+                      }
+                  });
+                  llCont.appendChild(listWrap);
+              });
+          }
+
+          function step() {
+              if (isDone) {
+                  log.innerHTML = `🎉 <strong>Sort Complete!</strong> The linked list is fully sorted.`;
+                  return;
+              }
+              
+              state++;
+              if (state >= states.length) {
+                  isDone = true;
+                  state = states.length - 1;
+                  log.innerHTML = `🎉 <strong>Sort Complete!</strong> The linked list is fully sorted.`;
+              } else {
+                  log.innerHTML = states[state].log;
+              }
+              
+              render();
+          }
+
+          document.getElementById('btn-search-step').addEventListener('click', step);
+          document.getElementById('btn-search-reset').addEventListener('click', () => {
+              init();
+          });
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Array Sort</td><td><code>O(n log n)</code></td><td><code>O(n)</code></td><td>Extra space</td></tr>
+<tr class="row--optimal"><td>Merge Sort</td><td><code>O(n log n)</code></td><td><code>O(log n)</code></td><td>Optimal for linked lists</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    ListNode* sortList(ListNode* head) {
+        if (!head || !head-&gt;next) return head;
+        ListNode *slow = head, *fast = head-&gt;next;
+        while (fast &amp;&amp; fast-&gt;next) { slow = slow-&gt;next; fast = fast-&gt;next-&gt;next; }
+        ListNode *right = slow-&gt;next; slow-&gt;next = nullptr;
+        return merge(sortList(head), sortList(right));
+    }
+    ListNode* merge(ListNode* l1, ListNode* l2) {
+        ListNode dummy(0), *tail = &amp;dummy;
+        while (l1 &amp;&amp; l2) {
+            if (l1-&gt;val &lt;= l2-&gt;val) { tail-&gt;next = l1; l1 = l1-&gt;next; }
+            else { tail-&gt;next = l2; l2 = l2-&gt;next; }
+            tail = tail-&gt;next;
+        }
+        tail-&gt;next = l1 ? l1 : l2;
+        return dummy.next;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def sortList(self, head):
+        if not head or not head.next: return head
+        slow, fast = head, head.next
+        while fast and fast.next: slow = slow.next; fast = fast.next.next
+        right = slow.next; slow.next = None
+        left = self.sortList(head)
+        right = self.sortList(right)
+        dummy = tail = ListNode(0)
+        while left and right:
+            if left.val &lt;= right.val: tail.next = left; left = left.next
+            else: tail.next = right; right = right.next
+            tail = tail.next
+        tail.next = left or right
+        return dummy.next</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

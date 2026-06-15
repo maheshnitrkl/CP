@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gas Station - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-08-stack-queue.html" class="navbar__link">&#8592; Back to Module 08: Stack & Queue</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-08-stack-queue.html">Module 08: Stack & Queue</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Gas Station</span></div>
+      <h1 class="problem-header__title">Gas Station</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/gas-station/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Given circular arrays <code>gas</code> and <code>cost</code>, find the starting station to complete the circuit. Return -1 if impossible.</p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Greedy Property</div><p style='font-size:0.9rem;margin-top:0.5rem;'>1. If sum(gas) < sum(cost), impossible to complete circuit.<br>2. If you start at A and can't reach B, no station between A and B can reach B either. Set start = B + 1.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Brute Force Simulation</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Try starting at every single station `i`. For each station, simulate the journey around the circle. If the tank drops below 0, break and try the next station.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> canCompleteCircuit(gas, cost):<br>&nbsp;&nbsp;n = len(gas)<br>&nbsp;&nbsp;<span class='keyword'>for</span> start = 0 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;tank = 0, steps = 0<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>while</span> steps < n:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;curr = (start + steps) % n<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tank += gas[curr] - cost[curr]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> tank < 0: <span class='keyword'>break</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;steps += 1<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> steps == n: <span class='keyword'>return</span> start<br>&nbsp;&nbsp;<span class='keyword'>return</span> -1</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n<sup>2</sup>)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Easy to understand and implement</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Time Limit Exceeded (TLE) on large inputs</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why optimize?</div><div class="why-optimize__body">When we fail to reach station B from A, no station between A and B can reach B either! So we can safely skip all of them and try B+1.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Greedy O(n) Pass</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Maintain total_tank and current_tank. If current_tank < 0, reset start to next station and current_tank to 0. If total_tank >= 0 at end, return start.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> canCompleteCircuit(gas, cost):<br>&nbsp;&nbsp;total = 0, curr = 0, start = 0<br>&nbsp;&nbsp;<span class='keyword'>for</span> i = 0 <span class='keyword'>to</span> n-1:<br>&nbsp;&nbsp;&nbsp;&nbsp;diff = gas[i] - cost[i]<br>&nbsp;&nbsp;&nbsp;&nbsp;total += diff; curr += diff<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> curr < 0:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start = i + 1; curr = 0<br>&nbsp;&nbsp;<span class='keyword'>return</span> total >= 0 ? start : -1</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(1)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Single pass</li><li>Brilliant greedy logic</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Requires proving the greedy choice is valid</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Approach Comparison Table -->
+    <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time Complexity</th><th>Space Complexity</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr class="row--brute"><td>Brute Force Simulation</td><td><code>O(n&sup2;)</code></td><td><code>O(1)</code></td><td>Naive</td></tr>
+        <tr class="row--optimal"><td>Greedy Single Pass</td><td><code>O(n)</code></td><td><code>O(1)</code></td><td>Optimal</td></tr>
+      </tbody>
+    </table>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="gas-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step">Step Car</button>
+          <button class="btn btn--outline" id="btn-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; align-items: center; margin: 2rem 0; gap: 2rem;">
+            <div style="display: flex; gap: 1rem;" id="stations-container"></div>
+            
+            <div style="display: flex; gap: 3rem; font-family: var(--font-mono); color: var(--text-secondary); background: var(--bg-secondary); padding: 1rem 2rem; border-radius: 8px; border: 1px solid var(--border-primary);">
+                <div>Total Tank: <span id="val-total" style="color:var(--text-primary); font-weight:bold;">0</span></div>
+                <div>Current Tank: <span id="val-curr" style="color:var(--text-primary); font-weight:bold;">0</span></div>
+                <div>Start Index: <span id="val-start" style="color:var(--accent-green); font-weight:bold;">0</span></div>
+            </div>
+        </div>
+
+        <div class="visualizer__log" id="viz-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6;">
+          Click 'Step Car' to travel to the next station.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const gas = [1, 2, 3, 4, 5];
+          const cost = [3, 4, 5, 1, 2];
+          let total = 0;
+          let curr = 0;
+          let start = 0;
+          let i = 0;
+          let isDone = false;
+          
+          const stCont = document.getElementById('stations-container');
+          const vTotal = document.getElementById('val-total');
+          const vCurr = document.getElementById('val-curr');
+          const vStart = document.getElementById('val-start');
+          const log = document.getElementById('viz-log');
+
+          function init() {
+              total = 0;
+              curr = 0;
+              start = 0;
+              i = 0;
+              isDone = false;
+              render();
+              log.innerHTML = "Click 'Step Car' to travel to the next station.";
+          }
+
+          function render() {
+              stCont.innerHTML = '';
+              gas.forEach((g, idx) => {
+                  const el = document.createElement('div');
+                  el.style.width = '60px';
+                  el.style.height = '80px';
+                  el.style.display = 'flex';
+                  el.style.flexDirection = 'column';
+                  el.style.alignItems = 'center';
+                  el.style.justifyContent = 'center';
+                  el.style.background = idx === start ? 'var(--accent-green)' : 'var(--bg-secondary)';
+                  if (idx === start) el.style.color = 'black';
+                  
+                  if (idx === i && !isDone) {
+                      el.style.border = '3px solid var(--accent-purple)';
+                      el.style.transform = 'translateY(-5px)';
+                  } else {
+                      el.style.border = '2px solid var(--border-primary)';
+                  }
+                  
+                  el.style.borderRadius = '8px';
+                  el.innerHTML = `<span style="font-size:0.7rem;opacity:0.8;">Station ${idx}</span><b style="margin-top:4px;">G:${g}</b><b style="color:var(--accent-orange);">C:${cost[idx]}</b>`;
+                  stCont.appendChild(el);
+              });
+              
+              vTotal.textContent = total;
+              vCurr.textContent = curr;
+              vStart.textContent = start;
+          }
+
+          function step() {
+              if (isDone) return;
+              if (i >= gas.length) {
+                  if (total >= 0) {
+                      log.innerHTML = `🎉 <strong>Complete!</strong> Total >= 0. The starting station is <strong>${start}</strong>.`;
+                  } else {
+                      log.innerHTML = `❌ <strong>Failed.</strong> Total < 0. Impossible to complete circuit.`;
+                  }
+                  isDone = true;
+                  render();
+                  return;
+              }
+              
+              const diff = gas[i] - cost[i];
+              total += diff;
+              curr += diff;
+              
+              let desc = `At Station <strong>${i}</strong>: Gas = ${gas[i]}, Cost = ${cost[i]} &rarr; Net = <strong>${diff}</strong>.<br>Current Tank = ${curr - diff} + ${diff} = <strong>${curr}</strong>.`;
+              
+              if (curr < 0) {
+                  start = i + 1;
+                  curr = 0;
+                  desc += `<br><span style="color:var(--accent-orange);">Tank < 0!</span> Cannot reach next station. Resetting Start Index to <strong>${start}</strong> and Current Tank to 0.`;
+              }
+              
+              log.innerHTML = desc;
+              i++;
+              render();
+          }
+
+          document.getElementById('btn-step').addEventListener('click', step);
+          document.getElementById('btn-reset').addEventListener('click', init);
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: gas=[1,2,3,4,5], cost=[3,4,5,1,2]</div><div class='math-block' style='text-align:left;font-size:0.9rem;'>
+<pre style="color:var(--text-secondary)">
+Init: total=0, curr=0, start=0
+
+i=0: G=1, C=3 (Net=-2). curr=-2. Tank &lt; 0! Reset: start=1, curr=0. total=-2
+i=1: G=2, C=4 (Net=-2). curr=-2. Tank &lt; 0! Reset: start=2, curr=0. total=-4
+i=2: G=3, C=5 (Net=-2). curr=-2. Tank &lt; 0! Reset: start=3, curr=0. total=-6
+i=3: G=4, C=1 (Net=+3). curr=3. Tank >= 0. total=-3
+i=4: G=5, C=2 (Net=+3). curr=6. Tank >= 0. total=0
+
+End of array. total(0) >= 0. <span class="highlight">Return start = 3.</span>
+</pre></div></div></section>
+<!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    int canCompleteCircuit(vector&lt;int&gt;&amp; gas, vector&lt;int&gt;&amp; cost) {
+        int total = 0, curr = 0, start = 0;
+        for (int i = 0; i &lt; gas.size(); i++) {
+            int diff = gas[i] - cost[i];
+            total += diff; curr += diff;
+            if (curr &lt; 0) { start = i + 1; curr = 0; }
+        }
+        return total &gt;= 0 ? start : -1;
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def canCompleteCircuit(self, gas, cost):
+        total = curr = start = 0
+        for i in range(len(gas)):
+            diff = gas[i] - cost[i]
+            total += diff; curr += diff
+            if curr &lt; 0:
+                start = i + 1; curr = 0
+        return start if total &gt;= 0 else -1</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>

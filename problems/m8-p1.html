@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evaluate Reverse Polish Notation - CP-II Lab</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/problem.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
+</head>
+<body class="bg-dots">
+  <nav class="navbar" id="navbar"><div class="navbar__inner"><a href="../index.html" class="navbar__brand"><span class="navbar__brand-icon">&#x26A1;</span><span>CP-II Lab</span></a><div class="navbar__nav"><a href="../modules/module-08-stack-queue.html" class="navbar__link">&#8592; Back to Module 08: Stack & Queue</a></div><div class="navbar__actions"><button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button></div></div></nav>
+
+  <main class="problem-page">
+    <header class="problem-header">
+      <div class="breadcrumb"><a href="../index.html">Home</a><span class="breadcrumb__sep">&#8250;</span><a href="../modules/module-08-stack-queue.html">Module 08: Stack & Queue</a><span class="breadcrumb__sep">&#8250;</span><span class="breadcrumb__current">Evaluate Reverse Polish Notation</span></div>
+      <h1 class="problem-header__title">Evaluate Reverse Polish Notation</h1>
+      <div class="problem-header__meta">
+        <span class="badge badge--medium">Medium</span>
+        <a href="https://leetcode.com/problems/evaluate-reverse-polish-notation/description/" target="_blank" class="badge" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-primary);text-decoration:none;">&#128279; LeetCode</a>
+      </div>
+    </header>
+
+    <!-- 1. Problem Statement -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128220;</span> Problem Statement</h2>
+      <div style="color:var(--text-secondary);line-height:1.8;"><p>Evaluate the value of an arithmetic expression in Reverse Polish Notation. Valid operators are <code>+</code>, <code>-</code>, <code>*</code>, and <code>/</code>.</p><p><strong>Example:</strong> <code>["2","1","+","3","*"]</code> &rarr; <code>((2 + 1) * 3) = 9</code></p></div>
+    </section>
+
+    <!-- 2. Mathematical Foundation -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2><div class='math-block'><div class='formula'>Postfix Notation: Operators follow their operands.</div><p style='font-size:0.9rem;margin-top:0.5rem;'>Using a Stack: Push operands. When an operator is seen, pop two operands, apply the operator, and push the result back.</p></div></section>
+
+    <!-- 3. Approach Progression -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128161;</span> Approach Progression: Brute Force &#8594; Optimal</h2>
+      
+    <div class="approach-card approach-card--brute">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 1</span></div>
+        <div class="approach-card__title">Recursion / Find and Replace</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Repeatedly scan the array for the first operator, apply it to the two preceding numbers, replace the three tokens with the result.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> evalRPN(tokens):<br>&nbsp;&nbsp;<span class='keyword'>while</span> len(tokens) > 1:<br>&nbsp;&nbsp;&nbsp;&nbsp;i = findFirstOperator(tokens)<br>&nbsp;&nbsp;&nbsp;&nbsp;val = apply(tokens[i], tokens[i-2], tokens[i-1])<br>&nbsp;&nbsp;&nbsp;&nbsp;tokens = tokens[0..i-3] + [val] + tokens[i+1..]<br>&nbsp;&nbsp;<span class='keyword'>return</span> tokens[0]</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n<sup>2</sup>)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Simple concept</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>O(n^2) due to array shifting</li><li>Modifies array repeatedly</li></ul>
+          </div>
+        </div>
+        <div class="why-optimize"><div class="why-optimize__title">Why do we need a better approach?</div><div class="why-optimize__body">A Stack is the perfect data structure for this, processing in O(n) time with a single pass.</div></div>
+      </div>
+    </div>
+
+    <div class="approach-card approach-card--optimal">
+      <div class="approach-card__header">
+        <div><span class="approach-card__label">Approach 2</span></div>
+        <div class="approach-card__title">Stack</div>
+      </div>
+      <div class="approach-card__body">
+        <p style="color:var(--text-secondary);line-height:1.7;margin-bottom:1rem;">Iterate tokens. Push numbers to stack. On operator, pop top two numbers, evaluate, and push result. Final answer is the only item left in stack.</p>
+        <div class="pseudocode-block"><span class='keyword'>function</span> evalRPN(tokens):<br>&nbsp;&nbsp;stack = []<br>&nbsp;&nbsp;<span class='keyword'>for</span> t in tokens:<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> isNumber(t): stack.push(t)<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>else</span>:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b = stack.pop(), a = stack.pop()<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>if</span> t == '+': stack.push(a + b)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>elif</span> t == '-': stack.push(a - b)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>elif</span> t == '*': stack.push(a * b)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class='keyword'>elif</span> t == '/': stack.push(trunc(a / b))<br>&nbsp;&nbsp;<span class='keyword'>return</span> stack.pop()</div>
+        <div style="display:flex;gap:1rem;margin:1rem 0;flex-wrap:wrap;">
+          <span class="cx-badge cx-badge--time">Time: O(n)</span>
+          <span class="cx-badge cx-badge--space">Space: O(n)</span>
+        </div>
+        <div class="pros-cons">
+          <div class="pros-cons__col pros-cons__col--pros">
+            <div class="pros-cons__title">Pros</div>
+            <ul class="pros-cons__list"><li>Single pass</li><li>Classic use case for a Stack</li><li>O(n) time and space</li></ul>
+          </div>
+          <div class="pros-cons__col pros-cons__col--cons">
+            <div class="pros-cons__title">Cons</div>
+            <ul class="pros-cons__list"><li>Integer division truncation rules can be tricky</li></ul>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    </section>
+
+    <!-- 4. Interactive Visualization -->
+    <section class="problem-section" id="visualization">
+      <h2 class="problem-section__title"><span class="icon">✨</span> Interactive Visualization</h2>
+      <div class="visualizer" id="stack-viz">
+        <div class="visualizer__controls">
+          <button class="btn btn--primary" id="btn-step">Step Evaluation</button>
+          <button class="btn btn--outline" id="btn-reset">Reset</button>
+        </div>
+        
+        <div style="display: flex; gap: 2rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap;">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">Tokens</div>
+                <div id="tokens-container" style="display: flex; gap: 0.5rem;"></div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div style="font-family: var(--font-mono); color: var(--text-secondary); margin-bottom: 0.5rem;">Stack</div>
+                <div id="stack-container" style="display: flex; flex-direction: column-reverse; gap: 0.5rem; width: 100px; min-height: 150px; border-bottom: 2px solid var(--border-primary); padding-bottom: 0.5rem;"></div>
+            </div>
+        </div>
+
+        <div class="visualizer__log" id="viz-log" style="background:var(--bg-elevated); padding:1rem; border-radius:var(--radius-md); font-family:var(--font-mono); color:var(--text-secondary); line-height: 1.6; margin-top: 2rem;">
+          Click 'Step Evaluation' to begin processing the tokens.
+        </div>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const tokens = ["2", "1", "+", "3", "*"];
+          let stack = [];
+          let currentIdx = 0;
+          let isDone = false;
+          
+          const tokensCont = document.getElementById('tokens-container');
+          const stackCont = document.getElementById('stack-container');
+          const log = document.getElementById('viz-log');
+
+          function init() {
+              stack = [];
+              currentIdx = 0;
+              isDone = false;
+              render();
+              log.innerHTML = "Click 'Step Evaluation' to begin processing the tokens.";
+          }
+
+          function render() {
+              tokensCont.innerHTML = '';
+              tokens.forEach((t, i) => {
+                  const el = document.createElement('div');
+                  el.className = 'array-item';
+                  el.style.width = '40px';
+                  el.style.height = '40px';
+                  el.style.display = 'flex';
+                  el.style.alignItems = 'center';
+                  el.style.justifyContent = 'center';
+                  el.style.border = '2px solid var(--border-primary)';
+                  el.style.borderRadius = '8px';
+                  el.textContent = t;
+                  
+                  if (i === currentIdx && !isDone) {
+                      el.style.background = 'var(--accent-purple)';
+                      el.style.color = 'black';
+                      el.style.transform = 'translateY(-5px)';
+                  } else if (i < currentIdx) {
+                      el.style.background = 'var(--bg-secondary)';
+                      el.style.color = 'var(--text-secondary)';
+                  }
+                  
+                  tokensCont.appendChild(el);
+              });
+              
+              stackCont.innerHTML = '';
+              stack.forEach((val, i) => {
+                  const el = document.createElement('div');
+                  el.style.width = '100%';
+                  el.style.height = '40px';
+                  el.style.display = 'flex';
+                  el.style.alignItems = 'center';
+                  el.style.justifyContent = 'center';
+                  el.style.background = (i === stack.length - 1) ? 'var(--accent-green)' : 'var(--bg-secondary)';
+                  if (i === stack.length - 1) el.style.color = 'black';
+                  el.style.border = '2px solid var(--border-primary)';
+                  el.style.borderRadius = '8px';
+                  el.textContent = val;
+                  stackCont.appendChild(el);
+              });
+          }
+
+          function step() {
+              if (isDone) return;
+              
+              if (currentIdx >= tokens.length) {
+                  log.innerHTML = `🎉 <strong>Evaluation Complete!</strong> Result is <strong>${stack[0]}</strong>.`;
+                  isDone = true;
+                  render();
+                  return;
+              }
+              
+              const t = tokens[currentIdx];
+              if (["+", "-", "*", "/"].includes(t)) {
+                  if (stack.length < 2) {
+                      log.innerHTML = `Error: Not enough operands for operator '${t}'.`;
+                      isDone = true;
+                      return;
+                  }
+                  const b = stack.pop();
+                  const a = stack.pop();
+                  let res = 0;
+                  if (t === '+') res = a + b;
+                  else if (t === '-') res = a - b;
+                  else if (t === '*') res = a * b;
+                  else res = Math.trunc(a / b);
+                  
+                  stack.push(res);
+                  log.innerHTML = `Operator <strong>${t}</strong>: Popped <code>${b}</code> and <code>${a}</code>. Evaluated <code>${a} ${t} ${b} = ${res}</code>. Pushed <strong>${res}</strong> to stack.`;
+              } else {
+                  stack.push(parseInt(t));
+                  log.innerHTML = `Operand <strong>${t}</strong>: Pushed to stack.`;
+              }
+              
+              currentIdx++;
+              
+              if (currentIdx === tokens.length) {
+                  log.innerHTML += `<br><em>Array processed. Click Step again to finish.</em>`;
+              }
+              
+              render();
+          }
+
+          document.getElementById('btn-step').addEventListener('click', step);
+          document.getElementById('btn-reset').addEventListener('click', init);
+          init();
+      });
+      </script>
+    </section>
+
+    <!-- 5. Step-by-Step Walkthrough -->
+    <section class="problem-section"><h2 class="problem-section__title"><span class="icon">&#128064;</span> Step-by-Step Walkthrough</h2><div class='walkthrough-step'><div class='walkthrough-step__desc'>Trace: ["2", "1", "+", "3", "*"]</div><div class='math-block' style='text-align:left;font-size:0.9rem;'>1. Token "2" &rarr; stack: [2]<br>2. Token "1" &rarr; stack: [2, 1]<br>3. Token "+" &rarr; pop 1, pop 2. 2+1 = 3 &rarr; stack: [3]<br>4. Token "3" &rarr; stack: [3, 3]<br>5. Token "*" &rarr; pop 3, pop 3. 3*3 = 9 &rarr; stack: [9]<br>End &rarr; return <span class='highlight'>9</span></div></div></section>
+
+    <!-- 6. Approach Comparison -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128202;</span> Approach Comparison</h2>
+      
+    <table class="comparison-table">
+      <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Verdict</th></tr></thead>
+      <tbody><tr><td>Array Replace</td><td><code>O(n<sup>2</sup>)</code></td><td><code>O(n)</code></td><td>Too slow</td></tr>
+<tr class="row--optimal"><td>Stack</td><td><code>O(n)</code></td><td><code>O(n)</code></td><td>Optimal</td></tr></tbody>
+    </table>
+    </section>
+
+    <!-- 7. Implementation -->
+    <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+public:
+    int evalRPN(vector&lt;string&gt;&amp; tokens) {
+        stack&lt;long&gt; st;
+        for (string&amp; t : tokens) {
+            if (t == "+" || t == "-" || t == "*" || t == "/") {
+                long b = st.top(); st.pop();
+                long a = st.top(); st.pop();
+                if (t == "+") st.push(a + b);
+                else if (t == "-") st.push(a - b);
+                else if (t == "*") st.push(a * b);
+                else st.push(a / b);
+            } else st.push(stol(t));
+        }
+        return st.top();
+    }
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+    def evalRPN(self, tokens):
+        stack = []
+        for t in tokens:
+            if t not in {"+", "-", "*", "/"}:
+                stack.append(int(t))
+            else:
+                b, a = stack.pop(), stack.pop()
+                if t == "+": stack.append(a + b)
+                elif t == "-": stack.append(a - b)
+                elif t == "*": stack.append(a * b)
+                else: stack.append(int(float(a) / b))
+        return stack[0]</code></pre></div></div></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="../js/main.js"></script>
+  <script src="../js/code-runner.js"></script>
+</body>
+</html>
