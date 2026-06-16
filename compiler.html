@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Online C++ and Python Compiler for CP-II Lab">
+  <title>Online Compiler — CP-II Lab</title>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/compiler.css">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
+</head>
+<body class="bg-grid">
+
+  <!-- ====== Navigation ====== -->
+  <nav class="navbar" id="navbar">
+    <div class="navbar__inner">
+      <a href="index.html" class="navbar__brand">
+        <span class="navbar__brand-icon">⚡</span>
+        <span>CP-II Lab</span>
+      </a>
+
+      <div class="navbar__nav" id="nav-menu">
+        <a href="index.html#modules" class="navbar__link">📚 Modules</a>
+        <a href="index.html#objectives" class="navbar__link">🎯 Objectives</a>
+        <a href="index.html#resources" class="navbar__link">📖 Resources</a>
+        <a href="compiler.html" class="navbar__link active">💻 Compiler</a>
+      </div>
+
+      <div class="navbar__actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme"></button>
+        <button class="navbar__hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ====== Main Compiler Area ====== -->
+  <main class="compiler-page animate-fade-in">
+    <div class="container container--wide">
+      <div class="compiler-header">
+        <div>
+          <h1 class="compiler-title"><span class="text-gradient">Online</span> Compiler</h1>
+          <p class="compiler-subtitle">Write, run, and test your C++ and Python code directly in the browser.</p>
+        </div>
+        <div class="compiler-tabs">
+          <button class="compiler-tab active" data-lang="cpp">C++ (GCC)</button>
+          <button class="compiler-tab" data-lang="python">Python 3</button>
+        </div>
+      </div>
+
+      <div class="compiler-workspace">
+        <!-- C++ JDoodle Embed -->
+        <div class="compiler-iframe-container active" id="iframe-cpp" style="padding: 1rem;">
+          <!-- Replace YOUR_CPP_EMBED_ID with the ID from your JDoodle dashboard -->
+          <div data-pym-src="https://www.jdoodle.com/embed/v1/YOUR_CPP_EMBED_ID?stdin=1&arg=0"></div>
+        </div>
+
+        <!-- Python JDoodle Embed -->
+        <div class="compiler-iframe-container" id="iframe-python" style="padding: 1rem;">
+          <!-- Replace YOUR_PYTHON_EMBED_ID with the ID from your JDoodle dashboard -->
+          <div data-pym-src="https://www.jdoodle.com/embed/v1/YOUR_PYTHON_EMBED_ID?stdin=1&arg=0"></div>
+        </div>
+        
+        <!-- JDoodle PyM Script (only need to include once) -->
+        <script src="https://www.jdoodle.com/assets/jdoodle-pym.min.js" type="text/javascript"></script>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
+  <script src="js/compiler.js"></script>
+</body>
+</html>

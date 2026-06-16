@@ -1,0 +1,110 @@
+/* compiler.css - Styles for the Online Compiler Page */
+
+.compiler-page {
+  padding-top: 100px;
+  padding-bottom: var(--space-8);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.compiler-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.compiler-title {
+  font-size: var(--fs-3xl);
+  margin-bottom: var(--space-2);
+}
+
+.compiler-subtitle {
+  color: var(--text-secondary);
+  font-size: var(--fs-md);
+  max-width: 600px;
+}
+
+/* Tab controls */
+.compiler-tabs {
+  display: flex;
+  background: var(--bg-elevated);
+  padding: 6px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.compiler-tab {
+  padding: 10px 24px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.compiler-tab:hover {
+  color: var(--text-primary);
+}
+
+.compiler-tab.active {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-secondary);
+}
+
+.compiler-tab[data-lang="cpp"].active {
+  color: var(--accent-blue);
+}
+
+.compiler-tab[data-lang="python"].active {
+  color: var(--accent-yellow);
+}
+
+/* Workspace area */
+.compiler-workspace {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  height: calc(100vh - 250px);
+  min-height: 600px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+}
+
+/* Theme sync for iframe (optional, mainly handled by URL parameters) */
+[data-theme="light"] .compiler-workspace {
+  border-color: var(--border-hover);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.compiler-iframe-container {
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+
+.compiler-iframe-container.active {
+  display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .compiler-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .compiler-workspace {
+    height: calc(100vh - 300px);
+    min-height: 500px;
+    border-radius: var(--radius-lg);
+  }
+}
