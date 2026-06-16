@@ -2,6 +2,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   initCompilerTabs();
+  syncThemeWithIframes();
 });
 
 function initCompilerTabs() {
@@ -37,5 +38,36 @@ function initCompilerTabs() {
   }
 }
 
-// Theme syncing is handled in the JDoodle dashboard for embeds, 
-// so we don't manually swap iframe srcs here anymore.
+function syncThemeWithIframes() {
+  // Listen for theme toggle clicks from the main navbar
+  const themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      // The theme toggle changes the data-theme on html element.
+      // We need to wait a tick for it to update, then update our iframes.
+      setTimeout(() => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        updateIframeThemes(currentTheme);
+      }, 50);
+    });
+  }
+}
+
+function updateIframeThemes(theme) {
+  // OneCompiler supports theme=dark and theme=light in the URL
+  const iframes = document.querySelectorAll('.compiler-iframe-container iframe');
+  
+  iframes.forEach(iframe => {
+    let src = iframe.src;
+    if (theme === 'light') {
+      src = src.replace('theme=dark', 'theme=light');
+    } else {
+      src = src.replace('theme=light', 'theme=dark');
+    }
+    
+    // Only reload iframe if theme actually changed in URL to prevent unnecessary reloads
+    if (iframe.src !== src) {
+      iframe.src = src;
+    }
+  });
+}
