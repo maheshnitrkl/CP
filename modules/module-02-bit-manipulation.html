@@ -99,20 +99,36 @@
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">int countSetBits(int n) {
     int count = 0;
+    // We will keep looping as long as n is not 0
     while (n) {
-        n &= (n - 1); // Remove lowest set bit
+        // This is Brian Kernighan's trick!
+        // Subtracting 1 from n flips all the bits after the rightmost '1', including the rightmost '1' itself.
+        // For example, if n = 12 (1100 in binary), then n-1 = 11 (1011 in binary).
+        // Doing a bitwise AND between n and (n-1) will turn off that rightmost '1'.
+        // 1100 & 1011 = 1000 (We just removed the rightmost 1!)
+        n &= (n - 1); 
+        
+        // Since we successfully removed a '1', we count it
         count++;
     }
     return count;
 }
-// Or: __builtin_popcount(n) in C++</code></pre></div>
+// Note: In competitive programming, C++ has a super fast built-in function for this: __builtin_popcount(n)</code></pre></div>
                   <div class="code-block__content" data-lang="python"><pre><code class="language-python">def count_set_bits(n):
     count = 0
+    # We will keep looping as long as n is not 0
     while n:
-        n &= (n - 1)  # Remove lowest set bit
+        # This is Brian Kernighan's trick!
+        # n & (n - 1) essentially drops the lowest set bit (the rightmost '1').
+        # This is much faster than checking every single bit one by one!
+        n &= (n - 1)  
+        
+        # Since we successfully removed a '1', we count it
         count += 1
     return count
-# Or: bin(n).count('1') in Python</code></pre></div>
+
+# Note: Python makes this really easy built-in:
+# bin(n).count('1') turns the number into a binary string and counts the '1's!</code></pre></div>
                 </div>
               </div>
             </div>

@@ -173,29 +173,38 @@
                   <div class="code-block__content active" data-lang="cpp">
                     <pre><code class="language-cpp">void bubbleSort(vector&lt;int&gt;& arr) {
     int n = arr.size();
+    // We do n-1 passes. In each pass, the largest remaining element "bubbles" to the end.
     for (int i = 0; i &lt; n - 1; i++) {
         bool swapped = false;
+        // Compare adjacent elements. We stop early (n - i - 1) because the last 'i' elements are already sorted!
         for (int j = 0; j &lt; n - i - 1; j++) {
+            // If the left element is bigger than the right element, they are out of order
             if (arr[j] > arr[j + 1]) {
-                swap(arr[j], arr[j + 1]);
-                swapped = true;
+                swap(arr[j], arr[j + 1]); // Swap them!
+                swapped = true;           // Remember that we had to make a swap
             }
         }
-        if (!swapped) break; // Optimization: already sorted
+        // If we went through the whole array without making a single swap, it's completely sorted!
+        if (!swapped) break;
     }
 }</code></pre>
                   </div>
                   <div class="code-block__content" data-lang="python">
                     <pre><code class="language-python">def bubble_sort(arr):
     n = len(arr)
+    # We do n-1 passes. In each pass, the largest remaining element "bubbles" to the end.
     for i in range(n - 1):
         swapped = False
+        # Compare adjacent elements. We stop early (n - i - 1) because the last 'i' elements are already sorted!
         for j in range(n - i - 1):
+            # If the left element is bigger than the right element, they are out of order
             if arr[j] > arr[j + 1]:
-                arr[j], arr[j + 1] = arr[j + 1], arr[j]
-                swapped = True
+                arr[j], arr[j + 1] = arr[j + 1], arr[j] # Python lets us swap in one line!
+                swapped = True                          # Remember that we had to make a swap
+                
+        # If we went through the whole array without making a single swap, it's completely sorted!
         if not swapped:
-            break  # Optimization: already sorted</code></pre>
+            break</code></pre>
                   </div>
                 </div>
               </div>
@@ -220,25 +229,36 @@
                   <div class="code-block__content active" data-lang="cpp">
                     <pre><code class="language-cpp">void insertionSort(vector&lt;int&gt;& arr) {
     int n = arr.size();
+    // Assume the first element (index 0) is already "sorted". Start from index 1.
     for (int i = 1; i &lt; n; i++) {
-        int key = arr[i];
-        int j = i - 1;
+        int key = arr[i]; // The card we want to insert into the sorted part
+        int j = i - 1;    // Start comparing with the element right before it
+        
+        // Move elements of the sorted part that are greater than the key
+        // one position ahead to make room for the key.
         while (j >= 0 && arr[j] > key) {
-            arr[j + 1] = arr[j];
-            j--;
+            arr[j + 1] = arr[j]; // Shift element to the right
+            j--;                 // Move backwards
         }
+        // Place the key into its correct sorted position
         arr[j + 1] = key;
     }
 }</code></pre>
                   </div>
                   <div class="code-block__content" data-lang="python">
                     <pre><code class="language-python">def insertion_sort(arr):
+    # Assume the first element (index 0) is already "sorted". Start from index 1.
     for i in range(1, len(arr)):
-        key = arr[i]
-        j = i - 1
+        key = arr[i]   # The card we want to insert into the sorted part
+        j = i - 1      # Start comparing with the element right before it
+        
+        # Move elements of the sorted part that are greater than the key
+        # one position ahead to make room for the key.
         while j >= 0 and arr[j] > key:
-            arr[j + 1] = arr[j]
-            j -= 1
+            arr[j + 1] = arr[j]  # Shift element to the right
+            j -= 1               # Move backwards
+            
+        # Place the key into its correct sorted position
         arr[j + 1] = key</code></pre>
                   </div>
                 </div>
@@ -266,44 +286,58 @@
                 </div>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
-                    <pre><code class="language-cpp">int partition(vector&lt;int&gt;& arr, int low, int high) {
-    int pivot = arr[high]; // Last element as pivot
-    int i = low - 1;
+                    <pre><code class="language-cpp">// This function chooses a pivot and moves smaller elements to the left, larger to the right
+int partition(vector&lt;int&gt;& arr, int low, int high) {
+    int pivot = arr[high]; // We choose the last element as our pivot
+    int i = low - 1;       // 'i' keeps track of where the smaller elements should go
     
     for (int j = low; j &lt; high; j++) {
+        // If the current element is smaller than or equal to our pivot
         if (arr[j] &lt;= pivot) {
-            i++;
-            swap(arr[i], arr[j]);
+            i++; // Move our "small element boundary" forward
+            swap(arr[i], arr[j]); // Swap the smaller element into the left side
         }
     }
+    // Finally, place the pivot exactly in the middle (between small and large elements)
     swap(arr[i + 1], arr[high]);
-    return i + 1;
+    return i + 1; // Return the pivot's final position
 }
 
 void quickSort(vector&lt;int&gt;& arr, int low, int high) {
+    // If the subarray has more than one element
     if (low &lt; high) {
+        // Partition the array and get the pivot index
         int pi = partition(arr, low, high);
+        
+        // Recursively sort the left part and the right part
         quickSort(arr, low, pi - 1);
         quickSort(arr, pi + 1, high);
     }
 }</code></pre>
                   </div>
                   <div class="code-block__content" data-lang="python">
-                    <pre><code class="language-python">def partition(arr, low, high):
-    pivot = arr[high]  # Last element as pivot
-    i = low - 1
+                    <pre><code class="language-python"># This function chooses a pivot and moves smaller elements to the left, larger to the right
+def partition(arr, low, high):
+    pivot = arr[high]  # We choose the last element as our pivot
+    i = low - 1        # 'i' keeps track of where the smaller elements should go
     
     for j in range(low, high):
+        # If the current element is smaller than or equal to our pivot
         if arr[j] &lt;= pivot:
-            i += 1
-            arr[i], arr[j] = arr[j], arr[i]
-    
+            i += 1     # Move our "small element boundary" forward
+            arr[i], arr[j] = arr[j], arr[i]  # Swap the smaller element into the left side
+            
+    # Finally, place the pivot exactly in the middle (between small and large elements)
     arr[i + 1], arr[high] = arr[high], arr[i + 1]
-    return i + 1
+    return i + 1       # Return the pivot's final position
 
 def quick_sort(arr, low, high):
+    # If the subarray has more than one element
     if low &lt; high:
+        # Partition the array and get the pivot index
         pi = partition(arr, low, high)
+        
+        # Recursively sort the left part and the right part
         quick_sort(arr, low, pi - 1)
         quick_sort(arr, pi + 1, high)</code></pre>
                   </div>
@@ -328,40 +362,62 @@ def quick_sort(arr, low, high):
                 </div>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
-                    <pre><code class="language-cpp">void merge(vector&lt;int&gt;& arr, int l, int m, int r) {
+                    <pre><code class="language-cpp">// This function takes two sorted halves and merges them into a single sorted array
+void merge(vector&lt;int&gt;& arr, int l, int m, int r) {
+    // Make temporary copies of the left and right halves
     vector&lt;int&gt; left(arr.begin() + l, arr.begin() + m + 1);
     vector&lt;int&gt; right(arr.begin() + m + 1, arr.begin() + r + 1);
     
-    int i = 0, j = 0, k = l;
+    int i = 0; // Pointer for left half
+    int j = 0; // Pointer for right half
+    int k = l; // Pointer for the main array
+    
+    // Compare elements from both halves and pick the smaller one
     while (i &lt; left.size() && j &lt; right.size()) {
         if (left[i] &lt;= right[j]) arr[k++] = left[i++];
         else arr[k++] = right[j++];
     }
+    
+    // If there are any remaining elements in the left half, copy them over
     while (i &lt; left.size()) arr[k++] = left[i++];
+    
+    // If there are any remaining elements in the right half, copy them over
     while (j &lt; right.size()) arr[k++] = right[j++];
 }
 
 void mergeSort(vector&lt;int&gt;& arr, int l, int r) {
+    // If we have at least 2 elements
     if (l &lt; r) {
+        // Find the middle point to divide the array into two halves
         int m = l + (r - l) / 2;
+        
+        // Recursively sort the first and second halves
         mergeSort(arr, l, m);
         mergeSort(arr, m + 1, r);
+        
+        // Merge the two sorted halves back together
         merge(arr, l, m, r);
     }
 }</code></pre>
                   </div>
                   <div class="code-block__content" data-lang="python">
                     <pre><code class="language-python">def merge_sort(arr):
+    # A list of 0 or 1 element is already sorted!
     if len(arr) &lt;= 1:
         return arr
     
+    # Find the middle point to divide the array into two halves
     mid = len(arr) // 2
+    
+    # Recursively sort the first and second halves
     left = merge_sort(arr[:mid])
     right = merge_sort(arr[mid:])
     
-    # Merge two sorted halves
+    # Merge the two sorted halves back together into 'result'
     result = []
     i = j = 0
+    
+    # Compare elements from both halves and pick the smaller one
     while i &lt; len(left) and j &lt; len(right):
         if left[i] &lt;= right[j]:
             result.append(left[i])
@@ -369,9 +425,13 @@ void mergeSort(vector&lt;int&gt;& arr, int l, int r) {
         else:
             result.append(right[j])
             j += 1
-    
+            
+    # If there are any remaining elements in the left half, add them
     result.extend(left[i:])
+    
+    # If there are any remaining elements in the right half, add them
     result.extend(right[j:])
+    
     return result</code></pre>
                   </div>
                 </div>
@@ -398,24 +458,30 @@ void mergeSort(vector&lt;int&gt;& arr, int l, int r) {
                     <pre><code class="language-cpp">void countingSort(vector&lt;int&gt;& arr) {
     if (arr.empty()) return;
     
+    // Find the largest and smallest numbers to know our range
     int maxVal = *max_element(arr.begin(), arr.end());
     int minVal = *min_element(arr.begin(), arr.end());
     int range = maxVal - minVal + 1;
     
+    // count array stores how many times each number appears
+    // output array will store our final sorted result
     vector&lt;int&gt; count(range, 0), output(arr.size());
     
-    // Count occurrences
+    // Step 1: Count how many times each number appears in the array
     for (int x : arr) count[x - minVal]++;
     
-    // Cumulative count
+    // Step 2: Cumulative count. This tells us the exact position 
+    // of each element in the output array.
     for (int i = 1; i &lt; range; i++) count[i] += count[i-1];
     
-    // Build output (traverse in reverse for stability)
+    // Step 3: Build the output array. We go backwards to keep the sort 'stable'
+    // (meaning identical numbers keep their original relative order)
     for (int i = arr.size() - 1; i >= 0; i--) {
         output[count[arr[i] - minVal] - 1] = arr[i];
         count[arr[i] - minVal]--;
     }
     
+    // Copy the sorted elements back into the original array
     arr = output;
 }</code></pre>
                   </div>
@@ -424,21 +490,26 @@ void mergeSort(vector&lt;int&gt;& arr, int l, int r) {
     if not arr:
         return arr
     
+    # Find the largest and smallest numbers to know our range
     min_val, max_val = min(arr), max(arr)
     range_size = max_val - min_val + 1
     
+    # count array stores how many times each number appears
+    # output array will store our final sorted result
     count = [0] * range_size
     output = [0] * len(arr)
     
-    # Count occurrences
+    # Step 1: Count how many times each number appears in the array
     for x in arr:
         count[x - min_val] += 1
     
-    # Cumulative count
+    # Step 2: Cumulative count. This tells us the exact position 
+    # of each element in the output array.
     for i in range(1, range_size):
         count[i] += count[i - 1]
     
-    # Build output (reverse for stability)
+    # Step 3: Build the output array. We go backwards to keep the sort 'stable'
+    # (meaning identical numbers keep their original relative order)
     for i in range(len(arr) - 1, -1, -1):
         output[count[arr[i] - min_val] - 1] = arr[i]
         count[arr[i] - min_val] -= 1

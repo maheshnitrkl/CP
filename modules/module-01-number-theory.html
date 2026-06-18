@@ -123,29 +123,51 @@
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
                     <pre><code class="language-cpp">bool isPrime(int n) {
+    // 0 and 1 are not considered prime numbers
     if (n <= 1) return false;
+    
+    // 2 and 3 are the first two prime numbers
     if (n <= 3) return true;
+    
+    // Quickly eliminate all multiples of 2 and 3 to save time
     if (n % 2 == 0 || n % 3 == 0) return false;
+    
+    // We only need to check numbers up to the square root of n (i * i <= n).
+    // Also, all primes greater than 3 can be written as 6k-1 or 6k+1.
+    // So we start at 5, and check 5 and 7, then jump by 6 to check 11 and 13, etc.
     for (int i = 5; i * i <= n; i += 6) {
         if (n % i == 0 || n % (i + 2) == 0)
-            return false;
+            return false; // Found a factor, so it's not prime
     }
+    
+    // If no factors were found, the number must be prime!
     return true;
 }</code></pre>
                   </div>
                   <div class="code-block__content" data-lang="python">
                     <pre><code class="language-python">def is_prime(n):
+    # 0 and 1 are not considered prime numbers
     if n <= 1:
         return False
+        
+    # 2 and 3 are the first two prime numbers
     if n <= 3:
         return True
+        
+    # Quickly eliminate all multiples of 2 and 3 to save time
     if n % 2 == 0 or n % 3 == 0:
         return False
+        
+    # We only need to check numbers up to the square root of n (i * i <= n).
+    # Also, all primes greater than 3 can be written as 6k-1 or 6k+1.
+    # So we start at 5, and check 5 and 7, then jump by 6 to check 11 and 13, etc.
     i = 5
     while i * i <= n:
         if n % i == 0 or n % (i + 2) == 0:
-            return False
+            return False  # Found a factor, so it's not prime
         i += 6
+        
+    # If no factors were found, the number must be prime!
     return True</code></pre>
                   </div>
                 </div>
@@ -195,12 +217,19 @@
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
                     <pre><code class="language-cpp">vector&lt;bool&gt; sieve(int n) {
+    // Create an array of size (n+1) and assume all numbers are prime initially
     vector&lt;bool&gt; is_prime(n + 1, true);
+    
+    // 0 and 1 are mathematically not prime numbers, so mark them false
     is_prime[0] = is_prime[1] = false;
     
+    // Start checking from the first prime number (2) up to the square root of n
     for (int p = 2; p * p <= n; p++) {
+        // If we haven't crossed out 'p' yet, it must be a prime number!
         if (is_prime[p]) {
-            // Mark multiples of p starting from p²
+            // Mark all multiples of 'p' as NOT prime (composite)
+            // We can safely start marking from p * p because smaller multiples 
+            // like (p * 2) or (p * 3) were already marked by earlier primes (2, 3...)
             for (int j = p * p; j <= n; j += p) {
                 is_prime[j] = false;
             }
@@ -209,7 +238,7 @@
     return is_prime;
 }
 
-// Usage: Find all primes up to 100
+// Usage Example: Find and print all prime numbers up to 100
 vector&lt;bool&gt; primes = sieve(100);
 for (int i = 2; i <= 100; i++) {
     if (primes[i]) cout &lt;&lt; i &lt;&lt; " ";
@@ -217,20 +246,29 @@ for (int i = 2; i <= 100; i++) {
                   </div>
                   <div class="code-block__content" data-lang="python">
                     <pre><code class="language-python">def sieve_of_eratosthenes(n):
+    # Create an array of size (n+1) and assume all numbers are prime initially
     is_prime = [True] * (n + 1)
+    
+    # 0 and 1 are mathematically not prime numbers, so mark them false
     is_prime[0] = is_prime[1] = False
     
+    # Start checking from the first prime number (2)
     p = 2
+    # We only need to check up to the square root of n
     while p * p <= n:
+        # If we haven't crossed out 'p' yet, it must be a prime number!
         if is_prime[p]:
-            # Mark multiples of p starting from p²
+            # Mark all multiples of 'p' as NOT prime (composite)
+            # We can safely start marking from p * p because smaller multiples 
+            # like (p * 2) or (p * 3) were already marked by earlier primes (2, 3...)
             for j in range(p * p, n + 1, p):
                 is_prime[j] = False
         p += 1
     
+    # Return a list of all numbers that are still marked as True
     return [i for i in range(2, n + 1) if is_prime[i]]
 
-# Usage: Find all primes up to 100
+# Usage Example: Find and print all prime numbers up to 100
 primes = sieve_of_eratosthenes(100)
 print(primes)</code></pre>
                   </div>
@@ -262,21 +300,33 @@ print(primes)</code></pre>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
                     <pre><code class="language-cpp">vector&lt;pair&lt;int,int&gt;&gt; primeFactors(int n) {
+    // We will store pairs of {prime_factor, count}
     vector&lt;pair&lt;int,int&gt;&gt; factors;
     
-    // Check for 2
+    // Step 1: Extract all 2s from the number
     int count = 0;
-    while (n % 2 == 0) { count++; n /= 2; }
+    while (n % 2 == 0) { 
+        count++; 
+        n /= 2; // Divide n by 2 each time
+    }
+    // If 2 was a factor, add it to our list
     if (count) factors.push_back({2, count});
     
-    // Check odd factors up to √n
+    // Step 2: Now n must be odd. We can check odd numbers from 3 upwards.
+    // We only need to check up to the square root of n.
     for (int i = 3; i * i <= n; i += 2) {
         count = 0;
-        while (n % i == 0) { count++; n /= i; }
+        // Keep dividing n by 'i' as long as it divides evenly
+        while (n % i == 0) { 
+            count++; 
+            n /= i; 
+        }
+        // If 'i' was a factor, add it to our list
         if (count) factors.push_back({i, count});
     }
     
-    // If n is still > 1, then it's a prime factor
+    // Step 3: If n is still greater than 1 after the loop, 
+    // it means n itself is a prime number and is the final factor.
     if (n > 1) factors.push_back({n, 1});
     
     return factors;
@@ -284,28 +334,34 @@ print(primes)</code></pre>
                   </div>
                   <div class="code-block__content" data-lang="python">
                     <pre><code class="language-python">def prime_factors(n):
+    # We will store tuples of (prime_factor, count)
     factors = []
     
-    # Check for 2
+    # Step 1: Extract all 2s from the number
     count = 0
     while n % 2 == 0:
         count += 1
-        n //= 2
+        n //= 2  # Divide n by 2 each time
+    # If 2 was a factor, add it to our list
     if count:
         factors.append((2, count))
     
-    # Check odd factors up to √n
+    # Step 2: Now n must be odd. We can check odd numbers from 3 upwards.
+    # We only need to check up to the square root of n.
     i = 3
     while i * i <= n:
         count = 0
+        # Keep dividing n by 'i' as long as it divides evenly
         while n % i == 0:
             count += 1
             n //= i
+        # If 'i' was a factor, add it to our list
         if count:
             factors.append((i, count))
         i += 2
     
-    # If n is still > 1, it's a prime factor
+    # Step 3: If n is still greater than 1 after the loop,
+    # it means n itself is a prime number and is the final factor.
     if n > 1:
         factors.append((n, 1))
     
@@ -346,39 +402,46 @@ print(primes)</code></pre>
                 </div>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
-                    <pre><code class="language-cpp">// GCD using Euclidean Algorithm
+                    <pre><code class="language-cpp">// GCD (Greatest Common Divisor) using the Euclidean Algorithm
+// The algorithm repeatedly replaces (a, b) with (b, remainder of a/b)
 int gcd(int a, int b) {
-    while (b) {
-        a %= b;
-        swap(a, b);
+    while (b) {          // Loop until b becomes 0
+        a %= b;          // 'a' becomes the remainder of a divided by b
+        swap(a, b);      // Swap 'a' and 'b' so 'b' holds the remainder for the next step
     }
-    return a;
+    return a;            // When b is 0, 'a' holds the greatest common divisor
 }
 
-// LCM using GCD
+// LCM (Least Common Multiple) using the relationship: LCM(a,b) = (a * b) / GCD(a,b)
 int lcm(int a, int b) {
-    return (a / gcd(a, b)) * b; // divide first to avoid overflow
+    // We divide 'a' by the GCD first before multiplying by 'b'.
+    // This is a neat trick to prevent integer overflow when numbers are large!
+    return (a / gcd(a, b)) * b;
 }
 
-// Note: C++17 has __gcd(a, b) and C++17 has std::gcd(a, b)</code></pre>
+// Note: C++ has built-in functions: std::__gcd(a, b) and std::gcd(a, b) (C++17)</code></pre>
                   </div>
                   <div class="code-block__content" data-lang="python">
                     <pre><code class="language-python">import math
 
-# GCD using Euclidean Algorithm
+# GCD (Greatest Common Divisor) using the Euclidean Algorithm
+# The algorithm repeatedly replaces (a, b) with (b, remainder of a/b)
 def gcd(a, b):
-    while b:
-        a, b = b, a % b
-    return a
+    while b:                    # Loop until b becomes 0
+        a, b = b, a % b         # Python makes swapping and updating easy in one line!
+    return a                    # When b is 0, 'a' holds the greatest common divisor
 
-# LCM using GCD
+# LCM (Least Common Multiple) using the relationship: LCM(a,b) = (a * b) / GCD(a,b)
 def lcm(a, b):
+    # We use integer division // here.
+    # Dividing first before multiplying prevents huge numbers (though Python handles large ints well).
     return (a // gcd(a, b)) * b
 
+# Fun Fact: Python's 'math' module has these built-in!
 # Python 3.5+ has math.gcd(a, b)
 # Python 3.9+ has math.lcm(a, b)
-print(math.gcd(12, 8))   # 4
-print(math.lcm(12, 8))   # 24</code></pre>
+print(math.gcd(12, 8))   # Outputs: 4
+print(math.lcm(12, 8))   # Outputs: 24</code></pre>
                   </div>
                 </div>
               </div>

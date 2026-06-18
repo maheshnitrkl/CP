@@ -48,15 +48,24 @@
 <p><strong>When to use:</strong> Unsorted arrays, small datasets, or when you need to find all occurrences.</p>
 <div class="formula-box"><span class="label">Time:</span> O(n) — Must check each element</div>
               <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">int linearSearch(vector&lt;int&gt;&amp; arr, int target) {
+    // Loop through every single element in the array from start to finish
     for (int i = 0; i &lt; arr.size(); i++) {
-        if (arr[i] == target) return i;
+        // If the current element matches what we are looking for
+        if (arr[i] == target) {
+            return i; // Success! Return the position (index)
+        }
     }
-    return -1; // Not found
+    // If the loop finishes and we haven't returned, the element is not here
+    return -1;
 }</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">def linear_search(arr, target):
+    # enumerate gives us both the index (i) and the value (val)
     for i, val in enumerate(arr):
+        # If the current value matches our target
         if val == target:
-            return i
-    return -1  # Not found</code></pre></div></div></div>
+            return i  # Success! Return the position (index)
+            
+    # If the loop finishes without returning, the target isn't in the array
+    return -1</code></pre></div></div></div>
             </div>
           </div>
 
@@ -76,25 +85,53 @@
 <div class="formula-box"><span class="label">Time:</span> O(log n) — Halving search space each step</div>
 <div class="callout callout--warning"><div class="callout__title">⚠️ Avoid Overflow</div><div class="callout__body">Use <code>mid = low + (high - low) / 2</code> instead of <code>(low + high) / 2</code> to prevent integer overflow!</div></div>
               <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">int binarySearch(vector&lt;int&gt;&amp; arr, int target) {
+    // low and high act as our search boundaries
     int low = 0, high = arr.size() - 1;
+    
+    // Keep searching as long as our boundaries haven't crossed
     while (low &lt;= high) {
+        // Find the middle element.
+        // We use low + (high - low) / 2 instead of (low + high) / 2
+        // to prevent integer overflow if low and high are very large!
         int mid = low + (high - low) / 2;
-        if (arr[mid] == target) return mid;
-        else if (arr[mid] &lt; target) low = mid + 1;
-        else high = mid - 1;
+        
+        if (arr[mid] == target) {
+            return mid; // Jackpot! We found the target
+        }
+        else if (arr[mid] &lt; target) {
+            // Target is strictly greater than the middle element.
+            // Since the array is sorted, we can ignore the entire left half!
+            low = mid + 1;
+        }
+        else {
+            // Target is strictly smaller than the middle element.
+            // We can ignore the entire right half!
+            high = mid - 1;
+        }
     }
-    return -1; // Not found
+    // Boundaries crossed, meaning the target isn't in the array
+    return -1;
 }</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">def binary_search(arr, target):
+    # low and high act as our search boundaries
     low, high = 0, len(arr) - 1
+    
+    # Keep searching as long as our boundaries haven't crossed
     while low &lt;= high:
+        # Find the middle index. 
+        # // is integer division in Python.
         mid = low + (high - low) // 2
+        
         if arr[mid] == target:
-            return mid
+            return mid  # Jackpot! We found the target
         elif arr[mid] &lt; target:
+            # Target is larger. The left half is useless now.
             low = mid + 1
         else:
+            # Target is smaller. The right half is useless now.
             high = mid - 1
-    return -1  # Not found</code></pre></div></div></div>
+            
+    # Boundaries crossed, meaning the target isn't in the array
+    return -1</code></pre></div></div></div>
             </div>
           </div>
         </section>
