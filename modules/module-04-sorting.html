@@ -171,13 +171,26 @@
                 </div>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
-                    <pre><code class="language-cpp">void bubbleSort(vector&lt;int&gt;& arr) {
-    int n = arr.size();
+                    <pre><code class="language-cpp">#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n;
+    cout << "Enter number of elements: ";
+    cin >> n;
+    
+    vector<int> arr(n);
+    cout << "Enter " << n << " elements: ";
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+    
     // We do n-1 passes. In each pass, the largest remaining element "bubbles" to the end.
-    for (int i = 0; i &lt; n - 1; i++) {
+    for (int i = 0; i < n - 1; i++) {
         bool swapped = false;
         // Compare adjacent elements. We stop early (n - i - 1) because the last 'i' elements are already sorted!
-        for (int j = 0; j &lt; n - i - 1; j++) {
+        for (int j = 0; j < n - i - 1; j++) {
             // If the left element is bigger than the right element, they are out of order
             if (arr[j] > arr[j + 1]) {
                 swap(arr[j], arr[j + 1]); // Swap them!
@@ -187,24 +200,31 @@
         // If we went through the whole array without making a single swap, it's completely sorted!
         if (!swapped) break;
     }
+    
+    cout << "Sorted array: ";
+    for (int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    return 0;
 }</code></pre>
                   </div>
                   <div class="code-block__content" data-lang="python">
-                    <pre><code class="language-python">def bubble_sort(arr):
-    n = len(arr)
-    # We do n-1 passes. In each pass, the largest remaining element "bubbles" to the end.
-    for i in range(n - 1):
+                    <pre><code class="language-python">if __name__ == "__main__":
+    n = int(input("Enter number of elements: "))
+    arr = list(map(int, input("Enter elements: ").split()))
+    
+    for i in range(len(arr) - 1):
         swapped = False
-        # Compare adjacent elements. We stop early (n - i - 1) because the last 'i' elements are already sorted!
-        for j in range(n - i - 1):
-            # If the left element is bigger than the right element, they are out of order
+        for j in range(len(arr) - i - 1):
             if arr[j] > arr[j + 1]:
-                arr[j], arr[j + 1] = arr[j + 1], arr[j] # Python lets us swap in one line!
-                swapped = True                          # Remember that we had to make a swap
-                
-        # If we went through the whole array without making a single swap, it's completely sorted!
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
         if not swapped:
-            break</code></pre>
+            break
+            
+    print("Sorted array:", *arr)</code></pre>
                   </div>
                 </div>
               </div>
@@ -227,10 +247,23 @@
                 </div>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
-                    <pre><code class="language-cpp">void insertionSort(vector&lt;int&gt;& arr) {
-    int n = arr.size();
+                    <pre><code class="language-cpp">#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n;
+    cout << "Enter number of elements: ";
+    cin >> n;
+    
+    vector<int> arr(n);
+    cout << "Enter " << n << " elements: ";
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+    
     // Assume the first element (index 0) is already "sorted". Start from index 1.
-    for (int i = 1; i &lt; n; i++) {
+    for (int i = 1; i < n; i++) {
         int key = arr[i]; // The card we want to insert into the sorted part
         int j = i - 1;    // Start comparing with the element right before it
         
@@ -243,10 +276,22 @@
         // Place the key into its correct sorted position
         arr[j + 1] = key;
     }
+    
+    cout << "Sorted array: ";
+    for (int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    return 0;
 }</code></pre>
                   </div>
                   <div class="code-block__content" data-lang="python">
-                    <pre><code class="language-python">def insertion_sort(arr):
+                    <pre><code class="language-python">if __name__ == "__main__":
+    n = int(input("Enter number of elements: "))
+    print(f"Enter {n} elements separated by space: ")
+    arr = list(map(int, input().split()))
+    
     # Assume the first element (index 0) is already "sorted". Start from index 1.
     for i in range(1, len(arr)):
         key = arr[i]   # The card we want to insert into the sorted part
@@ -259,7 +304,9 @@
             j -= 1               # Move backwards
             
         # Place the key into its correct sorted position
-        arr[j + 1] = key</code></pre>
+        arr[j + 1] = key
+        
+    print("Sorted array:", *arr)</code></pre>
                   </div>
                 </div>
               </div>
@@ -286,14 +333,18 @@
                 </div>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
-                    <pre><code class="language-cpp">// This function chooses a pivot and moves smaller elements to the left, larger to the right
-int partition(vector&lt;int&gt;& arr, int low, int high) {
+                    <pre><code class="language-cpp">#include <iostream>
+#include <vector>
+using namespace std;
+
+// This function chooses a pivot and moves smaller elements to the left, larger to the right
+int partition(vector<int>& arr, int low, int high) {
     int pivot = arr[high]; // We choose the last element as our pivot
     int i = low - 1;       // 'i' keeps track of where the smaller elements should go
     
-    for (int j = low; j &lt; high; j++) {
+    for (int j = low; j < high; j++) {
         // If the current element is smaller than or equal to our pivot
-        if (arr[j] &lt;= pivot) {
+        if (arr[j] <= pivot) {
             i++; // Move our "small element boundary" forward
             swap(arr[i], arr[j]); // Swap the smaller element into the left side
         }
@@ -303,9 +354,9 @@ int partition(vector&lt;int&gt;& arr, int low, int high) {
     return i + 1; // Return the pivot's final position
 }
 
-void quickSort(vector&lt;int&gt;& arr, int low, int high) {
+void quickSort(vector<int>& arr, int low, int high) {
     // If the subarray has more than one element
-    if (low &lt; high) {
+    if (low < high) {
         // Partition the array and get the pivot index
         int pi = partition(arr, low, high);
         
@@ -313,6 +364,28 @@ void quickSort(vector&lt;int&gt;& arr, int low, int high) {
         quickSort(arr, low, pi - 1);
         quickSort(arr, pi + 1, high);
     }
+}
+
+int main() {
+    int n;
+    cout << "Enter number of elements: ";
+    cin >> n;
+    
+    vector<int> arr(n);
+    cout << "Enter " << n << " elements: ";
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+    
+    quickSort(arr, 0, n - 1);
+    
+    cout << "Sorted array: ";
+    for (int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    return 0;
 }</code></pre>
                   </div>
                   <div class="code-block__content" data-lang="python">
@@ -323,7 +396,7 @@ def partition(arr, low, high):
     
     for j in range(low, high):
         # If the current element is smaller than or equal to our pivot
-        if arr[j] &lt;= pivot:
+        if arr[j] <= pivot:
             i += 1     # Move our "small element boundary" forward
             arr[i], arr[j] = arr[j], arr[i]  # Swap the smaller element into the left side
             
@@ -333,13 +406,21 @@ def partition(arr, low, high):
 
 def quick_sort(arr, low, high):
     # If the subarray has more than one element
-    if low &lt; high:
+    if low < high:
         # Partition the array and get the pivot index
         pi = partition(arr, low, high)
         
         # Recursively sort the left part and the right part
         quick_sort(arr, low, pi - 1)
-        quick_sort(arr, pi + 1, high)</code></pre>
+        quick_sort(arr, pi + 1, high)
+
+if __name__ == "__main__":
+    n = int(input("Enter number of elements: "))
+    print(f"Enter {n} elements separated by space: ")
+    arr = list(map(int, input().split()))
+    
+    quick_sort(arr, 0, len(arr) - 1)
+    print("Sorted array:", *arr)</code></pre>
                   </div>
                 </div>
               </div>
@@ -362,32 +443,36 @@ def quick_sort(arr, low, high):
                 </div>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
-                    <pre><code class="language-cpp">// This function takes two sorted halves and merges them into a single sorted array
-void merge(vector&lt;int&gt;& arr, int l, int m, int r) {
+                    <pre><code class="language-cpp">#include <iostream>
+#include <vector>
+using namespace std;
+
+// This function takes two sorted halves and merges them into a single sorted array
+void merge(vector<int>& arr, int l, int m, int r) {
     // Make temporary copies of the left and right halves
-    vector&lt;int&gt; left(arr.begin() + l, arr.begin() + m + 1);
-    vector&lt;int&gt; right(arr.begin() + m + 1, arr.begin() + r + 1);
+    vector<int> left(arr.begin() + l, arr.begin() + m + 1);
+    vector<int> right(arr.begin() + m + 1, arr.begin() + r + 1);
     
     int i = 0; // Pointer for left half
     int j = 0; // Pointer for right half
     int k = l; // Pointer for the main array
     
     // Compare elements from both halves and pick the smaller one
-    while (i &lt; left.size() && j &lt; right.size()) {
-        if (left[i] &lt;= right[j]) arr[k++] = left[i++];
+    while (i < left.size() && j < right.size()) {
+        if (left[i] <= right[j]) arr[k++] = left[i++];
         else arr[k++] = right[j++];
     }
     
     // If there are any remaining elements in the left half, copy them over
-    while (i &lt; left.size()) arr[k++] = left[i++];
+    while (i < left.size()) arr[k++] = left[i++];
     
     // If there are any remaining elements in the right half, copy them over
-    while (j &lt; right.size()) arr[k++] = right[j++];
+    while (j < right.size()) arr[k++] = right[j++];
 }
 
-void mergeSort(vector&lt;int&gt;& arr, int l, int r) {
+void mergeSort(vector<int>& arr, int l, int r) {
     // If we have at least 2 elements
-    if (l &lt; r) {
+    if (l < r) {
         // Find the middle point to divide the array into two halves
         int m = l + (r - l) / 2;
         
@@ -398,12 +483,34 @@ void mergeSort(vector&lt;int&gt;& arr, int l, int r) {
         // Merge the two sorted halves back together
         merge(arr, l, m, r);
     }
+}
+
+int main() {
+    int n;
+    cout << "Enter number of elements: ";
+    cin >> n;
+    
+    vector<int> arr(n);
+    cout << "Enter " << n << " elements: ";
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+    
+    mergeSort(arr, 0, n - 1);
+    
+    cout << "Sorted array: ";
+    for (int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    return 0;
 }</code></pre>
                   </div>
                   <div class="code-block__content" data-lang="python">
                     <pre><code class="language-python">def merge_sort(arr):
     # A list of 0 or 1 element is already sorted!
-    if len(arr) &lt;= 1:
+    if len(arr) <= 1:
         return arr
     
     # Find the middle point to divide the array into two halves
@@ -418,8 +525,8 @@ void mergeSort(vector&lt;int&gt;& arr, int l, int r) {
     i = j = 0
     
     # Compare elements from both halves and pick the smaller one
-    while i &lt; len(left) and j &lt; len(right):
-        if left[i] &lt;= right[j]:
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
             result.append(left[i])
             i += 1
         else:
@@ -432,7 +539,15 @@ void mergeSort(vector&lt;int&gt;& arr, int l, int r) {
     # If there are any remaining elements in the right half, add them
     result.extend(right[j:])
     
-    return result</code></pre>
+    return result
+
+if __name__ == "__main__":
+    n = int(input("Enter number of elements: "))
+    print(f"Enter {n} elements separated by space: ")
+    arr = list(map(int, input().split()))
+    
+    sorted_arr = merge_sort(arr)
+    print("Sorted array:", *sorted_arr)</code></pre>
                   </div>
                 </div>
               </div>
@@ -455,7 +570,12 @@ void mergeSort(vector&lt;int&gt;& arr, int l, int r) {
                 </div>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
-                    <pre><code class="language-cpp">void countingSort(vector&lt;int&gt;& arr) {
+                    <pre><code class="language-cpp">#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+void countingSort(vector<int>& arr) {
     if (arr.empty()) return;
     
     // Find the largest and smallest numbers to know our range
@@ -465,14 +585,14 @@ void mergeSort(vector&lt;int&gt;& arr, int l, int r) {
     
     // count array stores how many times each number appears
     // output array will store our final sorted result
-    vector&lt;int&gt; count(range, 0), output(arr.size());
+    vector<int> count(range, 0), output(arr.size());
     
     // Step 1: Count how many times each number appears in the array
     for (int x : arr) count[x - minVal]++;
     
     // Step 2: Cumulative count. This tells us the exact position 
     // of each element in the output array.
-    for (int i = 1; i &lt; range; i++) count[i] += count[i-1];
+    for (int i = 1; i < range; i++) count[i] += count[i-1];
     
     // Step 3: Build the output array. We go backwards to keep the sort 'stable'
     // (meaning identical numbers keep their original relative order)
@@ -483,6 +603,28 @@ void mergeSort(vector&lt;int&gt;& arr, int l, int r) {
     
     // Copy the sorted elements back into the original array
     arr = output;
+}
+
+int main() {
+    int n;
+    cout << "Enter number of elements: ";
+    cin >> n;
+    
+    vector<int> arr(n);
+    cout << "Enter " << n << " elements: ";
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+    
+    countingSort(arr);
+    
+    cout << "Sorted array: ";
+    for (int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    
+    return 0;
 }</code></pre>
                   </div>
                   <div class="code-block__content" data-lang="python">
@@ -514,7 +656,15 @@ void mergeSort(vector&lt;int&gt;& arr, int l, int r) {
         output[count[arr[i] - min_val] - 1] = arr[i]
         count[arr[i] - min_val] -= 1
     
-    return output</code></pre>
+    return output
+
+if __name__ == "__main__":
+    n = int(input("Enter number of elements: "))
+    print(f"Enter {n} elements separated by space: ")
+    arr = list(map(int, input().split()))
+    
+    sorted_arr = counting_sort(arr)
+    print("Sorted array:", *sorted_arr)</code></pre>
                   </div>
                 </div>
               </div>
@@ -672,6 +822,7 @@ void mergeSort(vector&lt;int&gt;& arr, int l, int r) {
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/code-runner.js"></script>

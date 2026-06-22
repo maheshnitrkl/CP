@@ -122,53 +122,75 @@
                 </div>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
-                    <pre><code class="language-cpp">bool isPrime(int n) {
+                    <pre><code class="language-cpp">#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cout << "Enter a number: ";
+    cin >> n;
+    
+    bool is_prime = true;
+    
     // 0 and 1 are not considered prime numbers
-    if (n <= 1) return false;
-    
+    if (n <= 1) {
+        is_prime = false;
+    }
     // 2 and 3 are the first two prime numbers
-    if (n <= 3) return true;
-    
+    else if (n <= 3) {
+        is_prime = true;
+    }
     // Quickly eliminate all multiples of 2 and 3 to save time
-    if (n % 2 == 0 || n % 3 == 0) return false;
-    
-    // We only need to check numbers up to the square root of n (i * i <= n).
-    // Also, all primes greater than 3 can be written as 6k-1 or 6k+1.
-    // So we start at 5, and check 5 and 7, then jump by 6 to check 11 and 13, etc.
-    for (int i = 5; i * i <= n; i += 6) {
-        if (n % i == 0 || n % (i + 2) == 0)
-            return false; // Found a factor, so it's not prime
+    else if (n % 2 == 0 || n % 3 == 0) {
+        is_prime = false;
+    }
+    else {
+        // We only need to check numbers up to the square root of n (i * i <= n).
+        // Also, all primes greater than 3 can be written as 6k-1 or 6k+1.
+        for (int i = 5; i * i <= n; i += 6) {
+            if (n % i == 0 || n % (i + 2) == 0) {
+                is_prime = false; // Found a factor, so it's not prime
+                break;
+            }
+        }
     }
     
-    // If no factors were found, the number must be prime!
-    return true;
+    if (is_prime) {
+        cout << n << " is a prime number" << endl;
+    } else {
+        cout << n << " is not a prime number" << endl;
+    }
+    
+    return 0;
 }</code></pre>
                   </div>
                   <div class="code-block__content" data-lang="python">
-                    <pre><code class="language-python">def is_prime(n):
+                    <pre><code class="language-python">if __name__ == "__main__":
+    n = int(input("Enter a number: "))
+    is_prime = True
+    
     # 0 and 1 are not considered prime numbers
     if n <= 1:
-        return False
-        
+        is_prime = False
     # 2 and 3 are the first two prime numbers
-    if n <= 3:
-        return True
-        
+    elif n <= 3:
+        is_prime = True
     # Quickly eliminate all multiples of 2 and 3 to save time
-    if n % 2 == 0 or n % 3 == 0:
-        return False
-        
-    # We only need to check numbers up to the square root of n (i * i <= n).
-    # Also, all primes greater than 3 can be written as 6k-1 or 6k+1.
-    # So we start at 5, and check 5 and 7, then jump by 6 to check 11 and 13, etc.
-    i = 5
-    while i * i <= n:
-        if n % i == 0 or n % (i + 2) == 0:
-            return False  # Found a factor, so it's not prime
-        i += 6
-        
-    # If no factors were found, the number must be prime!
-    return True</code></pre>
+    elif n % 2 == 0 or n % 3 == 0:
+        is_prime = False
+    else:
+        # We only need to check numbers up to the square root of n
+        i = 5
+        while i * i <= n:
+            if n % i == 0 or n % (i + 2) == 0:
+                is_prime = False  # Found a factor, so it's not prime
+                break
+            i += 6
+            
+    if is_prime:
+        print(f"{n} is a prime number")
+    else:
+        print(f"{n} is not a prime number")</code></pre>
                   </div>
                 </div>
               </div>
@@ -216,9 +238,17 @@
                 </div>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
-                    <pre><code class="language-cpp">vector&lt;bool&gt; sieve(int n) {
+                    <pre><code class="language-cpp">#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n;
+    cout << "Enter the limit (n): ";
+    cin >> n;
+    
     // Create an array of size (n+1) and assume all numbers are prime initially
-    vector&lt;bool&gt; is_prime(n + 1, true);
+    vector<bool> is_prime(n + 1, true);
     
     // 0 and 1 are mathematically not prime numbers, so mark them false
     is_prime[0] = is_prime[1] = false;
@@ -228,29 +258,30 @@
         // If we haven't crossed out 'p' yet, it must be a prime number!
         if (is_prime[p]) {
             // Mark all multiples of 'p' as NOT prime (composite)
-            // We can safely start marking from p * p because smaller multiples 
-            // like (p * 2) or (p * 3) were already marked by earlier primes (2, 3...)
             for (int j = p * p; j <= n; j += p) {
                 is_prime[j] = false;
             }
         }
     }
-    return is_prime;
-}
-
-// Usage Example: Find and print all prime numbers up to 100
-vector&lt;bool&gt; primes = sieve(100);
-for (int i = 2; i <= 100; i++) {
-    if (primes[i]) cout &lt;&lt; i &lt;&lt; " ";
+    
+    cout << "Primes up to " << n << ": ";
+    for (int i = 2; i <= n; i++) {
+        if (is_prime[i]) cout << i << " ";
+    }
+    cout << endl;
+    return 0;
 }</code></pre>
                   </div>
                   <div class="code-block__content" data-lang="python">
-                    <pre><code class="language-python">def sieve_of_eratosthenes(n):
+                    <pre><code class="language-python">if __name__ == "__main__":
+    n = int(input("Enter the limit (n): "))
+    
     # Create an array of size (n+1) and assume all numbers are prime initially
     is_prime = [True] * (n + 1)
     
     # 0 and 1 are mathematically not prime numbers, so mark them false
-    is_prime[0] = is_prime[1] = False
+    if n >= 0: is_prime[0] = False
+    if n >= 1: is_prime[1] = False
     
     # Start checking from the first prime number (2)
     p = 2
@@ -265,12 +296,9 @@ for (int i = 2; i <= 100; i++) {
                 is_prime[j] = False
         p += 1
     
-    # Return a list of all numbers that are still marked as True
-    return [i for i in range(2, n + 1) if is_prime[i]]
-
-# Usage Example: Find and print all prime numbers up to 100
-primes = sieve_of_eratosthenes(100)
-print(primes)</code></pre>
+    # Print all numbers that are still marked as True
+    primes = [i for i in range(2, n + 1) if is_prime[i]]
+    print(f"Primes up to {n}: {primes}")</code></pre>
                   </div>
                 </div>
               </div>
@@ -299,9 +327,18 @@ print(primes)</code></pre>
                 </div>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
-                    <pre><code class="language-cpp">vector&lt;pair&lt;int,int&gt;&gt; primeFactors(int n) {
+                    <pre><code class="language-cpp">#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n;
+    cout << "Enter a number to factorize: ";
+    cin >> n;
+    
+    int original_n = n;
     // We will store pairs of {prime_factor, count}
-    vector&lt;pair&lt;int,int&gt;&gt; factors;
+    vector<pair<int,int>> factors;
     
     // Step 1: Extract all 2s from the number
     int count = 0;
@@ -329,11 +366,19 @@ print(primes)</code></pre>
     // it means n itself is a prime number and is the final factor.
     if (n > 1) factors.push_back({n, 1});
     
-    return factors;
+    cout << "Prime factors of " << original_n << " are: ";
+    for (auto p : factors) {
+        cout << "(" << p.first << "^" << p.second << ") ";
+    }
+    cout << endl;
+    return 0;
 }</code></pre>
                   </div>
                   <div class="code-block__content" data-lang="python">
-                    <pre><code class="language-python">def prime_factors(n):
+                    <pre><code class="language-python">if __name__ == "__main__":
+    n = int(input("Enter a number to factorize: "))
+    original_n = n
+    
     # We will store tuples of (prime_factor, count)
     factors = []
     
@@ -365,9 +410,7 @@ print(primes)</code></pre>
     if n > 1:
         factors.append((n, 1))
     
-    return factors
-
-# Example: prime_factors(60) → [(2, 2), (3, 1), (5, 1)]</code></pre>
+    print(f"Prime factors of {original_n}: {factors}")</code></pre>
                   </div>
                 </div>
               </div>
@@ -402,46 +445,56 @@ print(primes)</code></pre>
                 </div>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
-                    <pre><code class="language-cpp">// GCD (Greatest Common Divisor) using the Euclidean Algorithm
-// The algorithm repeatedly replaces (a, b) with (b, remainder of a/b)
-int gcd(int a, int b) {
-    while (b) {          // Loop until b becomes 0
+                    <pre><code class="language-cpp">#include <iostream>
+using namespace std;
+
+int main() {
+    int a, b;
+    cout << "Enter two numbers (a b): ";
+    cin >> a >> b;
+    
+    int original_a = a, original_b = b;
+    
+    // GCD (Greatest Common Divisor) using the Euclidean Algorithm
+    while (b) {
         a %= b;          // 'a' becomes the remainder of a divided by b
         swap(a, b);      // Swap 'a' and 'b' so 'b' holds the remainder for the next step
     }
-    return a;            // When b is 0, 'a' holds the greatest common divisor
-}
-
-// LCM (Least Common Multiple) using the relationship: LCM(a,b) = (a * b) / GCD(a,b)
-int lcm(int a, int b) {
-    // We divide 'a' by the GCD first before multiplying by 'b'.
-    // This is a neat trick to prevent integer overflow when numbers are large!
-    return (a / gcd(a, b)) * b;
-}
-
-// Note: C++ has built-in functions: std::__gcd(a, b) and std::gcd(a, b) (C++17)</code></pre>
+    int gcd_result = a;
+    
+    // LCM (Least Common Multiple)
+    // We divide by GCD first before multiplying to prevent integer overflow!
+    int lcm_result = (original_a / gcd_result) * original_b;
+    
+    cout << "GCD: " << gcd_result << endl;
+    cout << "LCM: " << lcm_result << endl;
+    
+    return 0;
+}</code></pre>
                   </div>
                   <div class="code-block__content" data-lang="python">
                     <pre><code class="language-python">import math
 
-# GCD (Greatest Common Divisor) using the Euclidean Algorithm
-# The algorithm repeatedly replaces (a, b) with (b, remainder of a/b)
-def gcd(a, b):
+if __name__ == "__main__":
+    a, b = map(int, input("Enter two numbers separated by space: ").split())
+    original_a, original_b = a, b
+    
+    # GCD (Greatest Common Divisor) using the Euclidean Algorithm
     while b:                    # Loop until b becomes 0
         a, b = b, a % b         # Python makes swapping and updating easy in one line!
-    return a                    # When b is 0, 'a' holds the greatest common divisor
-
-# LCM (Least Common Multiple) using the relationship: LCM(a,b) = (a * b) / GCD(a,b)
-def lcm(a, b):
+    gcd_result = a
+    
+    # LCM (Least Common Multiple)
     # We use integer division // here.
-    # Dividing first before multiplying prevents huge numbers (though Python handles large ints well).
-    return (a // gcd(a, b)) * b
-
-# Fun Fact: Python's 'math' module has these built-in!
-# Python 3.5+ has math.gcd(a, b)
-# Python 3.9+ has math.lcm(a, b)
-print(math.gcd(12, 8))   # Outputs: 4
-print(math.lcm(12, 8))   # Outputs: 24</code></pre>
+    # Dividing first before multiplying prevents huge numbers
+    lcm_result = (original_a // gcd_result) * original_b
+    
+    print(f"GCD: {gcd_result}")
+    print(f"LCM: {lcm_result}")
+    
+    # Fun Fact: Python's 'math' module has these built-in!
+    # print(math.gcd(original_a, original_b))
+    # print(math.lcm(original_a, original_b))</code></pre>
                   </div>
                 </div>
               </div>
@@ -646,6 +699,7 @@ print(math.lcm(12, 8))   # Outputs: 24</code></pre>
   <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/code-runner.js"></script>

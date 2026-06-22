@@ -137,11 +137,12 @@ function getCompletedModules() {
 }
 
 function toggleModuleComplete(moduleId) {
+  const id = String(moduleId);
   let completed = getCompletedModules();
-  if (completed.includes(moduleId)) {
-    completed = completed.filter(id => id !== moduleId);
+  if (completed.includes(id)) {
+    completed = completed.filter(c => c !== id);
   } else {
-    completed.push(moduleId);
+    completed.push(id);
   }
   localStorage.setItem('cp2-progress', JSON.stringify(completed));
   updateProgressUI();
@@ -164,7 +165,7 @@ function updateProgressUI() {
   // Update module card checkmarks
   document.querySelectorAll('.module-card').forEach(card => {
     const id = card.dataset.module;
-    if (id && completed.includes(id)) {
+    if (id && completed.includes(String(id))) {
       card.classList.add('completed');
     } else {
       card.classList.remove('completed');
@@ -224,7 +225,11 @@ document.addEventListener('click', (e) => {
   const link = e.target.closest('a[href^="#"]');
   if (!link) return;
 
-  const target = document.querySelector(link.getAttribute('href'));
+  const href = link.getAttribute('href');
+  // Only intercept pure hash links (e.g., "#modules"), not cross-page ones
+  if (!href || !href.startsWith('#')) return;
+
+  const target = document.querySelector(href);
   if (target) {
     e.preventDefault();
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
