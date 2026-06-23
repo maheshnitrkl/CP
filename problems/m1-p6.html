@@ -24,6 +24,11 @@
     </header>
 
     <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">📝</span> Problem Statement</h2>
+      <p>Find the optimal solution for this problem.</p>
+    </section>
+
+    <section class="problem-section">
       <h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2>
       <div class='math-block'>
         <div class='formula'>GCD Property: GCD(a&middot;g, b&middot;g) = g &times; GCD(a, b)</div>
@@ -88,7 +93,7 @@
 
     <section class="problem-section">
       <h2 class="problem-section__title"><span class="icon">👀</span> Interactive Walkthrough</h2>
-      <div class="viz-controls">
+      <div class="viz-controls" id="visualizer">
   <button class="viz-btn" id="gcd-btn">Calculate GCD Array</button>
 </div>
 <div class="viz-canvas" style="flex-direction: column; gap: var(--space-4);" id="gcd-log">
@@ -108,7 +113,7 @@
     </section>
 
     <section class="problem-section">
-      <h2 class="problem-section__title"><span class="icon">💻</span> Implementation</h2>
+      <h2 class="problem-section__title"><span class="icon">💻</span> Optimal Implementation</h2>
       <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
 public:
     int gcd(int a, int b) {
@@ -149,6 +154,7 @@ class Solution:
   <script src="../js/code-runner.js"></script>
   <script>
     
+document.addEventListener('DOMContentLoaded', () => {
 const arr = [24, 36, 48];
 const btn6 = document.getElementById('gcd-btn');
 const log6 = document.getElementById('gcd-log');
@@ -184,6 +190,7 @@ btn6.onclick = async () => {
     let res = arr.map(x => x / curGcd);
     append(`<span style="color:var(--accent-green)">Resulting Co-prime Array: [${res.join(', ')}]</span>`);
 };
+});
 
   </script>
 </body>

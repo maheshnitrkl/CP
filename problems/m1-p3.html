@@ -24,6 +24,11 @@
     </header>
 
     <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">📝</span> Problem Statement</h2>
+      <p>Find the optimal solution for this problem.</p>
+    </section>
+
+    <section class="problem-section">
       <h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2>
       <div class='math-block'>
         <div class='formula'>Greedy Subtraction</div>
@@ -88,7 +93,7 @@
 
     <section class="problem-section">
       <h2 class="problem-section__title"><span class="icon">👀</span> Interactive Walkthrough</h2>
-      <div class="viz-controls">
+      <div class="viz-controls" id="visualizer">
   <input type="number" id="roman-input" class="viz-input" value="1984" min="1" max="3999" style="width: 120px;">
   <button class="viz-btn" id="roman-btn">Convert to Roman</button>
 </div>
@@ -109,7 +114,7 @@
     </section>
 
     <section class="problem-section">
-      <h2 class="problem-section__title"><span class="icon">💻</span> Implementation</h2>
+      <h2 class="problem-section__title"><span class="icon">💻</span> Optimal Implementation</h2>
       <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
 public:
     string intToRoman(int num) {
@@ -151,6 +156,7 @@ public:
   <script src="../js/code-runner.js"></script>
   <script>
     
+document.addEventListener('DOMContentLoaded', () => {
 const input3 = document.getElementById('roman-input');
 const btn3 = document.getElementById('roman-btn');
 const log3 = document.getElementById('roman-log');
@@ -195,6 +201,7 @@ btn3.onclick = async () => {
     
     btn3.disabled = false;
 };
+});
 
   </script>
 </body>

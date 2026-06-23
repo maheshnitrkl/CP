@@ -24,6 +24,11 @@
     </header>
 
     <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">📝</span> Problem Statement</h2>
+      <p>Find the optimal solution for this problem.</p>
+    </section>
+
+    <section class="problem-section">
       <h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2>
       <div class='math-block'>
         <div class='formula'>Fundamental Theorem of Arithmetic</div>
@@ -113,7 +118,7 @@
 
     <section class="problem-section">
       <h2 class="problem-section__title"><span class="icon">👀</span> Interactive Walkthrough</h2>
-      <div class="viz-controls">
+      <div class="viz-controls" id="visualizer">
   <input type="number" id="factor-input" class="viz-input" value="315" min="2" style="width: 120px;">
   <button class="viz-btn" id="factor-btn">Find Largest Factor</button>
 </div>
@@ -133,7 +138,7 @@
     </section>
 
     <section class="problem-section">
-      <h2 class="problem-section__title"><span class="icon">💻</span> Implementation</h2>
+      <h2 class="problem-section__title"><span class="icon">💻</span> Optimal Implementation</h2>
       <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
 public:
     long long largestPrimeFactor(int n) {
@@ -177,6 +182,7 @@ public:
   <script src="../js/code-runner.js"></script>
   <script>
     
+document.addEventListener('DOMContentLoaded', () => {
 const input2 = document.getElementById('factor-input');
 const btn2 = document.getElementById('factor-btn');
 const log2 = document.getElementById('factor-log');
@@ -226,6 +232,7 @@ btn2.onclick = async () => {
     append(`<span style="color:var(--accent-green)">Largest Prime Factor is ${maxPrime} ✅</span>`);
     btn2.disabled = false;
 };
+});
 
   </script>
 </body>

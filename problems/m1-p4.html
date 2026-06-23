@@ -24,6 +24,11 @@
     </header>
 
     <section class="problem-section">
+      <h2 class="problem-section__title"><span class="icon">📝</span> Problem Statement</h2>
+      <p>Find the optimal solution for this problem.</p>
+    </section>
+
+    <section class="problem-section">
       <h2 class="problem-section__title"><span class="icon">&#128290;</span> Mathematical Foundation</h2>
       <div class='math-block'>
         <div class='formula'>Paired Divisors up to &radic;n</div>
@@ -88,7 +93,7 @@
 
     <section class="problem-section">
       <h2 class="problem-section__title"><span class="icon">👀</span> Interactive Walkthrough</h2>
-      <div class="viz-controls">
+      <div class="viz-controls" id="visualizer">
   <input type="number" id="div-input" class="viz-input" value="36" min="1" max="10000" style="width: 120px;">
   <button class="viz-btn" id="div-btn">Find Divisors Sum</button>
 </div>
@@ -109,7 +114,7 @@
     </section>
 
     <section class="problem-section">
-      <h2 class="problem-section__title"><span class="icon">💻</span> Implementation</h2>
+      <h2 class="problem-section__title"><span class="icon">💻</span> Optimal Implementation</h2>
       <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
 public:
     long long totalChocolates(int n) {
@@ -146,6 +151,7 @@ public:
   <script src="../js/code-runner.js"></script>
   <script>
     
+document.addEventListener('DOMContentLoaded', () => {
 const input4 = document.getElementById('div-input');
 const btn4 = document.getElementById('div-btn');
 const log4 = document.getElementById('div-log');
@@ -184,6 +190,7 @@ btn4.onclick = async () => {
     }
     btn4.disabled = false;
 };
+});
 
   </script>
 </body>

@@ -46,6 +46,7 @@ nav_issues     = []
 
 for f in problem_files:
     content = open(f, encoding="utf-8").read()
+    content = re.sub(r'<!--.*?-->', '', content, flags=re.DOTALL)
     bname   = os.path.basename(f)
 
     # --- Required sections present?
