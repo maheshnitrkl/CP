@@ -340,6 +340,11 @@ int main() {
     // We will store pairs of {prime_factor, count}
     vector<pair<int,int>> factors;
     
+    if (n <= 1) {
+        cout << "Number must be strictly greater than 1." << endl;
+        return 0;
+    }
+    
     // Step 1: Extract all 2s from the number
     int count = 0;
     while (n % 2 == 0) { 
@@ -379,6 +384,10 @@ int main() {
     n = int(input("Enter a number to factorize: "))
     original_n = n
     
+    if n <= 1:
+        print("Number must be strictly greater than 1.")
+        exit()
+        
     # We will store tuples of (prime_factor, count)
     factors = []
     
@@ -454,6 +463,8 @@ int main() {
     cin >> a >> b;
     
     int original_a = a, original_b = b;
+    a = a < 0 ? -a : a; // Use absolute value for GCD
+    b = b < 0 ? -b : b;
     
     // GCD (Greatest Common Divisor) using the Euclidean Algorithm
     while (b) {
@@ -464,7 +475,9 @@ int main() {
     
     // LCM (Least Common Multiple)
     // We divide by GCD first before multiplying to prevent integer overflow!
-    int lcm_result = (original_a / gcd_result) * original_b;
+    int abs_a = original_a < 0 ? -original_a : original_a;
+    int abs_b = original_b < 0 ? -original_b : original_b;
+    int lcm_result = (gcd_result == 0) ? 0 : (abs_a / gcd_result) * abs_b;
     
     cout << "GCD: " << gcd_result << endl;
     cout << "LCM: " << lcm_result << endl;
@@ -478,6 +491,7 @@ int main() {
 if __name__ == "__main__":
     a, b = map(int, input("Enter two numbers separated by space: ").split())
     original_a, original_b = a, b
+    a, b = abs(a), abs(b)  # Use absolute value for GCD
     
     # GCD (Greatest Common Divisor) using the Euclidean Algorithm
     while b:                    # Loop until b becomes 0
@@ -487,7 +501,7 @@ if __name__ == "__main__":
     # LCM (Least Common Multiple)
     # We use integer division // here.
     # Dividing first before multiplying prevents huge numbers
-    lcm_result = (original_a // gcd_result) * original_b
+    lcm_result = 0 if gcd_result == 0 else (abs(original_a) // gcd_result) * abs(original_b)
     
     print(f"GCD: {gcd_result}")
     print(f"LCM: {lcm_result}")

@@ -82,7 +82,7 @@
               <table class="complexity-table">
                 <thead><tr><th>Operation</th><th>Expression</th><th>Example</th></tr></thead>
                 <tbody>
-                  <tr><td>Check if n is power of 2</td><td><code>n &amp; (n-1) == 0</code></td><td><code>8 &amp; 7 = 0 ✅</code></td></tr>
+                  <tr><td>Check if n is power of 2</td><td><code>n &gt; 0 &amp;&amp; (n &amp; (n-1)) == 0</code></td><td><code>8 &amp; 7 = 0 ✅</code></td></tr>
                   <tr><td>Get i-th bit</td><td><code>(n &gt;&gt; i) &amp; 1</code></td><td>Get bit 2 of 5: <code>(101&gt;&gt;2)&amp;1 = 1</code></td></tr>
                   <tr><td>Set i-th bit</td><td><code>n | (1 &lt;&lt; i)</code></td><td>Set bit 1 of 5: <code>101|010 = 111 = 7</code></td></tr>
                   <tr><td>Clear i-th bit</td><td><code>n &amp; ~(1 &lt;&lt; i)</code></td><td>Clear bit 0 of 5: <code>101&amp;110 = 100 = 4</code></td></tr>
@@ -111,7 +111,7 @@ int main() {
     // We will keep looping as long as n is not 0
     while (n) {
         // This is Brian Kernighan's trick!
-        // Subtracting 1 from n flips all the bits after the rightmost '1', including the rightmost '1' itself.
+        // Subtracting 1 from n flips all the bits after the rightmost '1', including the rightmost '1' itself.
         // For example, if n = 12 (1100 in binary), then n-1 = 11 (1011 in binary).
         // Doing a bitwise AND between n and (n-1) will turn off that rightmost '1'.
         // 1100 & 1011 = 1000 (We just removed the rightmost 1!)
@@ -129,6 +129,10 @@ int main() {
     n = int(input("Enter a number: "))
     original_n = n
     count = 0
+    
+    # Python integers have infinite precision.
+    # We mask to 32 bits to handle negative numbers properly.
+    n = n & 0xFFFFFFFF
     
     # We will keep looping as long as n is not 0
     while n:
