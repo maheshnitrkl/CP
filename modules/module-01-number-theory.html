@@ -122,22 +122,22 @@
                 </div>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
-                    <pre><code class="language-cpp">#include <iostream>
+                    <pre><code class="language-cpp">#include &lt;iostream&gt;
 using namespace std;
 
 int main() {
     int n;
-    cout << "Enter a number: ";
-    cin >> n;
+    cout &lt;&lt; "Enter a number: ";
+    cin &gt;&gt; n;
     
     bool is_prime = true;
     
     // 0 and 1 are not considered prime numbers
-    if (n <= 1) {
+    if (n &lt;= 1) {
         is_prime = false;
     }
     // 2 and 3 are the first two prime numbers
-    else if (n <= 3) {
+    else if (n &lt;= 3) {
         is_prime = true;
     }
     // Quickly eliminate all multiples of 2 and 3 to save time
@@ -145,9 +145,9 @@ int main() {
         is_prime = false;
     }
     else {
-        // We only need to check numbers up to the square root of n (i * i <= n).
+        // We only need to check numbers up to the square root of n (i * i &lt;= n).
         // Also, all primes greater than 3 can be written as 6k-1 or 6k+1.
-        for (int i = 5; i * i <= n; i += 6) {
+        for (int i = 5; i * i &lt;= n; i += 6) {
             if (n % i == 0 || n % (i + 2) == 0) {
                 is_prime = false; // Found a factor, so it's not prime
                 break;
@@ -156,9 +156,9 @@ int main() {
     }
     
     if (is_prime) {
-        cout << n << " is a prime number" << endl;
+        cout &lt;&lt; n &lt;&lt; " is a prime number" &lt;&lt; endl;
     } else {
-        cout << n << " is not a prime number" << endl;
+        cout &lt;&lt; n &lt;&lt; " is not a prime number" &lt;&lt; endl;
     }
     
     return 0;
@@ -170,10 +170,10 @@ int main() {
     is_prime = True
     
     # 0 and 1 are not considered prime numbers
-    if n <= 1:
+    if n &lt;= 1:
         is_prime = False
     # 2 and 3 are the first two prime numbers
-    elif n <= 3:
+    elif n &lt;= 3:
         is_prime = True
     # Quickly eliminate all multiples of 2 and 3 to save time
     elif n % 2 == 0 or n % 3 == 0:
@@ -181,7 +181,7 @@ int main() {
     else:
         # We only need to check numbers up to the square root of n
         i = 5
-        while i * i <= n:
+        while i * i &lt;= n:
             if n % i == 0 or n % (i + 2) == 0:
                 is_prime = False  # Found a factor, so it's not prime
                 break
@@ -220,7 +220,7 @@ int main() {
                 <li>Start from <code>p = 2</code> (the first prime)</li>
                 <li>Mark all multiples of <code>p</code> (starting from <code>p²</code>) as composite</li>
                 <li>Find the next unmarked number and repeat</li>
-                <li>Continue until <code>p² > n</code></li>
+                <li>Continue until <code>p² &gt; n</code></li>
               </ol>
 
               <div class="formula-box">
@@ -238,37 +238,37 @@ int main() {
                 </div>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
-                    <pre><code class="language-cpp">#include <iostream>
-#include <vector>
+                    <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
 using namespace std;
 
 int main() {
     int n;
-    cout << "Enter the limit (n): ";
-    cin >> n;
+    cout &lt;&lt; "Enter the limit (n): ";
+    cin &gt;&gt; n;
     
     // Create an array of size (n+1) and assume all numbers are prime initially
-    vector<bool> is_prime(n + 1, true);
+    vector&lt;bool&gt; is_prime(n + 1, true);
     
     // 0 and 1 are mathematically not prime numbers, so mark them false
     is_prime[0] = is_prime[1] = false;
     
     // Start checking from the first prime number (2) up to the square root of n
-    for (int p = 2; p * p <= n; p++) {
+    for (int p = 2; p * p &lt;= n; p++) {
         // If we haven't crossed out 'p' yet, it must be a prime number!
         if (is_prime[p]) {
             // Mark all multiples of 'p' as NOT prime (composite)
-            for (int j = p * p; j <= n; j += p) {
+            for (int j = p * p; j &lt;= n; j += p) {
                 is_prime[j] = false;
             }
         }
     }
     
-    cout << "Primes up to " << n << ": ";
-    for (int i = 2; i <= n; i++) {
-        if (is_prime[i]) cout << i << " ";
+    cout &lt;&lt; "Primes up to " &lt;&lt; n &lt;&lt; ": ";
+    for (int i = 2; i &lt;= n; i++) {
+        if (is_prime[i]) cout &lt;&lt; i &lt;&lt; " ";
     }
-    cout << endl;
+    cout &lt;&lt; endl;
     return 0;
 }</code></pre>
                   </div>
@@ -280,13 +280,13 @@ int main() {
     is_prime = [True] * (n + 1)
     
     # 0 and 1 are mathematically not prime numbers, so mark them false
-    if n >= 0: is_prime[0] = False
-    if n >= 1: is_prime[1] = False
+    if n &gt;= 0: is_prime[0] = False
+    if n &gt;= 1: is_prime[1] = False
     
     # Start checking from the first prime number (2)
     p = 2
     # We only need to check up to the square root of n
-    while p * p <= n:
+    while p * p &lt;= n:
         # If we haven't crossed out 'p' yet, it must be a prime number!
         if is_prime[p]:
             # Mark all multiples of 'p' as NOT prime (composite)
@@ -327,21 +327,21 @@ int main() {
                 </div>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
-                    <pre><code class="language-cpp">#include <iostream>
-#include <vector>
+                    <pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
 using namespace std;
 
 int main() {
     int n;
-    cout << "Enter a number to factorize: ";
-    cin >> n;
+    cout &lt;&lt; "Enter a number to factorize: ";
+    cin &gt;&gt; n;
     
     int original_n = n;
     // We will store pairs of {prime_factor, count}
-    vector<pair<int,int>> factors;
+    vector&lt;pair&lt;int,int&gt;&gt; factors;
     
-    if (n <= 1) {
-        cout << "Number must be strictly greater than 1." << endl;
+    if (n &lt;= 1) {
+        cout &lt;&lt; "Number must be strictly greater than 1." &lt;&lt; endl;
         return 0;
     }
     
@@ -356,7 +356,7 @@ int main() {
     
     // Step 2: Now n must be odd. We can check odd numbers from 3 upwards.
     // We only need to check up to the square root of n.
-    for (int i = 3; i * i <= n; i += 2) {
+    for (int i = 3; i * i &lt;= n; i += 2) {
         count = 0;
         // Keep dividing n by 'i' as long as it divides evenly
         while (n % i == 0) { 
@@ -369,13 +369,13 @@ int main() {
     
     // Step 3: If n is still greater than 1 after the loop, 
     // it means n itself is a prime number and is the final factor.
-    if (n > 1) factors.push_back({n, 1});
+    if (n &gt; 1) factors.push_back({n, 1});
     
-    cout << "Prime factors of " << original_n << " are: ";
+    cout &lt;&lt; "Prime factors of " &lt;&lt; original_n &lt;&lt; " are: ";
     for (auto p : factors) {
-        cout << "(" << p.first << "^" << p.second << ") ";
+        cout &lt;&lt; "(" &lt;&lt; p.first &lt;&lt; "^" &lt;&lt; p.second &lt;&lt; ") ";
     }
-    cout << endl;
+    cout &lt;&lt; endl;
     return 0;
 }</code></pre>
                   </div>
@@ -384,7 +384,7 @@ int main() {
     n = int(input("Enter a number to factorize: "))
     original_n = n
     
-    if n <= 1:
+    if n &lt;= 1:
         print("Number must be strictly greater than 1.")
         exit()
         
@@ -403,7 +403,7 @@ int main() {
     # Step 2: Now n must be odd. We can check odd numbers from 3 upwards.
     # We only need to check up to the square root of n.
     i = 3
-    while i * i <= n:
+    while i * i &lt;= n:
         count = 0
         # Keep dividing n by 'i' as long as it divides evenly
         while n % i == 0:
@@ -416,7 +416,7 @@ int main() {
     
     # Step 3: If n is still greater than 1 after the loop,
     # it means n itself is a prime number and is the final factor.
-    if n > 1:
+    if n &gt; 1:
         factors.append((n, 1))
     
     print(f"Prime factors of {original_n}: {factors}")</code></pre>
@@ -454,17 +454,17 @@ int main() {
                 </div>
                 <div class="code-block__body">
                   <div class="code-block__content active" data-lang="cpp">
-                    <pre><code class="language-cpp">#include <iostream>
+                    <pre><code class="language-cpp">#include &lt;iostream&gt;
 using namespace std;
 
 int main() {
     int a, b;
-    cout << "Enter two numbers (a b): ";
-    cin >> a >> b;
+    cout &lt;&lt; "Enter two numbers (a b): ";
+    cin &gt;&gt; a &gt;&gt; b;
     
     int original_a = a, original_b = b;
-    a = a < 0 ? -a : a; // Use absolute value for GCD
-    b = b < 0 ? -b : b;
+    a = a &lt; 0 ? -a : a; // Use absolute value for GCD
+    b = b &lt; 0 ? -b : b;
     
     // GCD (Greatest Common Divisor) using the Euclidean Algorithm
     while (b) {
@@ -475,12 +475,12 @@ int main() {
     
     // LCM (Least Common Multiple)
     // We divide by GCD first before multiplying to prevent integer overflow!
-    int abs_a = original_a < 0 ? -original_a : original_a;
-    int abs_b = original_b < 0 ? -original_b : original_b;
+    int abs_a = original_a &lt; 0 ? -original_a : original_a;
+    int abs_b = original_b &lt; 0 ? -original_b : original_b;
     int lcm_result = (gcd_result == 0) ? 0 : (abs_a / gcd_result) * abs_b;
     
-    cout << "GCD: " << gcd_result << endl;
-    cout << "LCM: " << lcm_result << endl;
+    cout &lt;&lt; "GCD: " &lt;&lt; gcd_result &lt;&lt; endl;
+    cout &lt;&lt; "LCM: " &lt;&lt; lcm_result &lt;&lt; endl;
     
     return 0;
 }</code></pre>

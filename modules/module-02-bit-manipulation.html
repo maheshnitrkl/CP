@@ -55,7 +55,7 @@
               <table class="complexity-table">
                 <thead><tr><th>Operator</th><th>Symbol</th><th>Description</th><th>Example (5=101, 3=011)</th></tr></thead>
                 <tbody>
-                  <tr><td><strong>AND</strong></td><td><code>&</code></td><td>1 only if both bits are 1</td><td><code>5 & 3 = 1 (001)</code></td></tr>
+                  <tr><td><strong>AND</strong></td><td><code>&amp;</code></td><td>1 only if both bits are 1</td><td><code>5 &amp; 3 = 1 (001)</code></td></tr>
                   <tr><td><strong>OR</strong></td><td><code>|</code></td><td>1 if either bit is 1</td><td><code>5 | 3 = 7 (111)</code></td></tr>
                   <tr><td><strong>XOR</strong></td><td><code>^</code></td><td>1 if bits differ</td><td><code>5 ^ 3 = 6 (110)</code></td></tr>
                   <tr><td><strong>NOT</strong></td><td><code>~</code></td><td>Flips all bits</td><td><code>~5 = -6</code></td></tr>
@@ -97,13 +97,13 @@
               <div class="code-block">
                 <div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div>
                 <div class="code-block__body">
-                  <div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">#include <iostream>
+                  <div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">#include &lt;iostream&gt;
 using namespace std;
 
 int main() {
     int n;
-    cout << "Enter a number: ";
-    cin >> n;
+    cout &lt;&lt; "Enter a number: ";
+    cin &gt;&gt; n;
     
     int original_n = n;
     int count = 0;
@@ -111,17 +111,18 @@ int main() {
     // We will keep looping as long as n is not 0
     while (n) {
         // This is Brian Kernighan's trick!
-        // Subtracting 1 from n flips all the bits after the rightmost '1', including the rightmost '1' itself.
+
+        // Subtracting 1 from n flips all the bits after the rightmost '1', including the rightmost '1' itself.
         // For example, if n = 12 (1100 in binary), then n-1 = 11 (1011 in binary).
         // Doing a bitwise AND between n and (n-1) will turn off that rightmost '1'.
-        // 1100 & 1011 = 1000 (We just removed the rightmost 1!)
-        n &= (n - 1); 
+        // 1100 &amp; 1011 = 1000 (We just removed the rightmost 1!)
+        n &amp;= (n - 1); 
         
         // Since we successfully removed a '1', we count it
         count++;
     }
     
-    cout << "Number of set bits in " << original_n << " is: " << count << endl;
+    cout &lt;&lt; "Number of set bits in " &lt;&lt; original_n &lt;&lt; " is: " &lt;&lt; count &lt;&lt; endl;
     return 0;
 }
 // Note: In competitive programming, C++ has a super fast built-in function for this: __builtin_popcount(n)</code></pre></div>
@@ -132,14 +133,14 @@ int main() {
     
     # Python integers have infinite precision.
     # We mask to 32 bits to handle negative numbers properly.
-    n = n & 0xFFFFFFFF
+    n = n &amp; 0xFFFFFFFF
     
     # We will keep looping as long as n is not 0
     while n:
         # This is Brian Kernighan's trick!
-        # n & (n - 1) essentially drops the lowest set bit (the rightmost '1').
+        # n &amp; (n - 1) essentially drops the lowest set bit (the rightmost '1').
         # This is much faster than checking every single bit one by one!
-        n &= (n - 1)  
+        n &amp;= (n - 1)  
         
         # Since we successfully removed a '1', we count it
         count += 1

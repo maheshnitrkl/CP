@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const index = sum % 5;
         
         table[index].push(word);
-        log.innerHTML = `Hash Function: Sum of ASCII for "<strong>${word}</strong>" = ${sum}. <br><code>${sum} % 5 = <strong>Index ${index}</strong></code>`;
+        log.innerHTML = `Hash Function: Sum of ASCII for "<strong>${word}</strong>" = ${sum}. <br><code>${sum} % 5 = &lt;strong&gt;Index ${index}&lt;/strong&gt;</code>`;
         
         input.value = '';
         render();
