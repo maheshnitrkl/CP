@@ -459,15 +459,13 @@ const langTabs = document.querySelectorAll('.lang-tab');
 let currentLang = 'python';
 
 function updateLineNumbers() {
-    const lines = editor.value.split('
-').length;
+    const lines = editor.value.split('\n').length;
     lineNumbers.innerHTML = Array.from({length: lines}, (_, i) => {
         const ln = i + 1;
         const bpClass = activeBreakpoints.has(ln) ? ' breakpoint' : '';
         return `<div class="line-number${bpClass}" id="ln-${ln}">${ln}</div>`;
     }).join('');
     highlightSyntax();
-}, (_, i) => `<div class="line-number" id="ln-${i+1}">${i+1}</div>`).join('');
 }
 
 editor.addEventListener('input', updateLineNumbers);
