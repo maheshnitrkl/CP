@@ -120,20 +120,29 @@
             padding-left: calc(0.5rem - 2px);
         }
 
-        #code-input {
-            flex: 1;
-            background: transparent;
-            color: var(--text-primary);
-            font-family: var(--font-mono);
-            font-size: 14px;
-            line-height: 1.6;
-            padding: 1rem;
-            border: none;
-            resize: none;
-            outline: none;
-            white-space: pre;
-            overflow: auto;
-        }
+        
+        /* Editor Overlays & Breakpoints */
+        .line-number { cursor: pointer; position: relative; }
+        .line-number:hover { color: var(--accent-cyan); background: rgba(0, 229, 255, 0.05); }
+        .line-number.breakpoint { color: var(--accent-red); font-weight: bold; }
+        .line-number.breakpoint::before { content: '●'; position: absolute; left: -2px; color: var(--accent-red); font-size: 0.75rem; }
+        
+        .editor-container { position: relative; flex: 1; overflow: hidden; background: var(--bg-base); }
+        #code-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 1rem; margin: 0; border: none; outline: none; background: transparent; color: transparent; caret-color: var(--text-primary); font-family: var(--font-mono); font-size: 14px; line-height: 1.6; resize: none; white-space: pre; overflow: auto; z-index: 2; }
+        .syntax-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 1rem; margin: 0; border: none; background: transparent; color: var(--text-primary); font-family: var(--font-mono); font-size: 14px; line-height: 1.6; white-space: pre; overflow: hidden; pointer-events: none; z-index: 1; }
+        
+        /* Syntax Colors */
+        .syn-keyword { color: #ff79c6; }
+        .syn-string { color: #f1fa8c; }
+        .syn-number { color: #bd93f9; }
+        .syn-comment { color: #6272a4; font-style: italic; }
+        .syn-func { color: #50fa7b; }
+        
+        /* Utility Buttons */
+        .header-actions { display: flex; gap: 0.5rem; }
+        .btn-mini { padding: 0.2rem 0.5rem; font-size: 0.7rem; background: var(--bg-elevated); border: 1px solid var(--border-primary); color: var(--text-secondary); border-radius: 4px; cursor: pointer; }
+        .btn-mini:hover { color: var(--text-primary); background: #3a3a4d; }
+    
 
         /* Code Active Line Highlight (Overlay) */
         .editor-highlight {
@@ -180,92 +189,44 @@
 
         select.btn-secondary { appearance: none; padding-right: 2rem; background: var(--bg-elevated) url('data:image/svg+xml;utf8,<svg fill="%23fff" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 0.5rem center; }
 
-        /* Right Panel - Trace */
-        .trace-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: var(--bg-base);
-            min-width: 300px;
-            position: relative;
-        }
-
-        .trace-content {
-            flex: 1;
-            padding: 1.5rem;
-            overflow-y: auto;
-            scroll-behavior: smooth;
-        }
-
-        .step-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-primary);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            transition: all 0.3s ease;
-            opacity: 0.5;
-            transform: translateY(10px);
-        }
-        .step-card.current {
-            opacity: 1;
-            transform: translateY(0);
-            border-color: var(--border-active);
-            box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
-        }
-        .step-card.revealed {
-            opacity: 0.7;
-            transform: translateY(0);
-        }
-
-        .step-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.75rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px dashed var(--border-primary);
-        }
-        .step-line { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan); font-weight: 600; }
-        .step-desc { font-size: 0.9rem; color: var(--text-primary); font-weight: 500; }
-        .step-note { font-size: 0.8rem; color: var(--accent-yellow); font-style: italic; margin-top: 0.5rem; }
-
-        .vars-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .var-chip {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-primary);
-            padding: 0.2rem 0.6rem;
-            border-radius: 12px;
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-        .var-chip.changed {
-            border-color: var(--accent-green);
-            background: rgba(0, 230, 118, 0.1);
-        }
+        /* Right Panel - Dashboard */
+        .trace-panel { flex: 1; display: flex; flex-direction: column; background: var(--bg-base); min-width: 300px; position: relative; }
+        .dashboard-layout { display: grid; grid-template-rows: auto 1fr auto; height: 100%; overflow: hidden; }
+        .dashboard-header { padding: 1rem; background: var(--bg-surface); border-bottom: 1px solid var(--border-primary); display: flex; justify-content: space-between; align-items: center; }
+        .step-counter { font-size: 0.85rem; color: var(--text-tertiary); font-weight: 600; font-family: var(--font-mono); }
+        .step-action { font-size: 1rem; color: var(--text-primary); font-weight: 600; }
+        .step-note { font-size: 0.85rem; color: var(--accent-yellow); font-style: italic; margin-top: 0.25rem; }
+        
+        .dashboard-body { display: grid; grid-template-columns: 1fr 1fr; overflow-y: auto; gap: 1px; background: var(--border-primary); }
+        @media (max-width: 1024px) { .dashboard-body { grid-template-columns: 1fr; grid-template-rows: auto auto; } }
+        
+        .dashboard-section { background: var(--bg-base); display: flex; flex-direction: column; }
+        .section-title { padding: 0.5rem 1rem; font-size: 0.75rem; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; background: var(--bg-surface); border-bottom: 1px solid var(--border-primary); }
+        .section-content { padding: 1rem; flex: 1; overflow-y: auto; }
+        
+        /* Variables Table */
+        .var-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 0.85rem; }
+        .var-table th { text-align: left; padding: 0.5rem; color: var(--text-tertiary); border-bottom: 1px solid var(--border-primary); font-weight: normal; font-size: 0.75rem; }
+        .var-table td { padding: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .var-table tr.changed td { background: rgba(0, 230, 118, 0.1); color: var(--accent-green); }
         .var-name { color: var(--text-secondary); }
-        .var-val { color: var(--text-primary); font-weight: 600; }
-
-        .output-box {
-            background: #0a0a0d;
-            border-left: 2px solid var(--accent-cyan);
-            padding: 0.5rem 0.75rem;
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            color: #82aaff;
-            margin-top: 0.75rem;
-            border-radius: 0 4px 4px 0;
-            white-space: pre-wrap;
-        }
-
+        .var-val { color: var(--text-primary); }
+        
+        /* Arrays Visualizer */
+        .array-container { margin-bottom: 1.5rem; }
+        .array-title { font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+        .array-blocks { display: flex; flex-wrap: wrap; gap: 4px; }
+        .array-block { background: var(--bg-elevated); border: 1px solid var(--border-primary); min-width: 2.5rem; height: 2.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; border-radius: 4px; }
+        .array-block.changed { border-color: var(--accent-green); background: rgba(0, 230, 118, 0.1); color: var(--accent-green); box-shadow: 0 0 10px rgba(0,230,118,0.2); }
+        .array-val { font-family: var(--font-mono); font-size: 0.9rem; font-weight: 600; }
+        .array-idx { position: absolute; bottom: -1.2rem; font-size: 0.65rem; color: var(--text-tertiary); font-family: var(--font-mono); }
+        
+        .array-2d-row { display: flex; gap: 4px; margin-bottom: 4px; }
+        .array-2d-row-label { font-size: 0.65rem; color: var(--text-tertiary); font-family: var(--font-mono); display: flex; align-items: center; justify-content: center; width: 1rem; margin-right: 0.25rem; }
+        
+        /* Console Output */
+        .console-output { background: #0a0a0d; font-family: var(--font-mono); font-size: 0.85rem; color: #82aaff; padding: 1rem; height: 100%; white-space: pre-wrap; overflow-y: auto; }
+        
         /* Call Stack Bar */
         .call-stack-bar {
             background: var(--bg-surface);
@@ -329,6 +290,14 @@
             .visualizer-container { flex-direction: column; }
             .editor-panel, .trace-panel { min-height: 50vh; }
         }
+    
+        /* Timeline Scrubber */
+        .timeline-container { padding: 0.75rem 1rem; background: var(--bg-surface); border-top: 1px solid var(--border-primary); display: flex; align-items: center; gap: 1rem; }
+        .timeline-slider { flex: 1; -webkit-appearance: none; background: transparent; }
+        .timeline-slider::-webkit-slider-runnable-track { width: 100%; height: 4px; background: var(--border-primary); border-radius: 2px; }
+        .timeline-slider::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: var(--accent-cyan); cursor: pointer; margin-top: -6px; box-shadow: 0 0 10px rgba(0,229,255,0.4); }
+        .timeline-slider:disabled { opacity: 0.3; cursor: not-allowed; }
+    
     </style>
 </head>
 <body>
@@ -354,17 +323,24 @@
                     <div class="lang-tab" data-lang="cpp">C++</div>
                     <div class="lang-tab" data-lang="java">Java</div>
                 </div>
-                <span>SOURCE CODE</span>
+                <div class="header-actions">
+                    <button class="btn-mini" id="btn-copy">Copy</button>
+                    <button class="btn-mini" id="btn-download">Download</button>
+                </div>
             </div>
             
             <div class="editor-wrapper">
                 <div class="line-numbers" id="line-numbers"></div>
                 <div class="editor-highlight" id="editor-highlight"></div>
-                <textarea id="code-input" spellcheck="false"></textarea>
+                <div class="editor-container">
+                    <div class="syntax-overlay" id="syntax-overlay"></div>
+                    <textarea id="code-input" spellcheck="false"></textarea>
+                </div>
             </div>
 
             <div class="controls">
                 <button class="btn btn-primary" id="btn-run">▶ Run Trace</button>
+                <button class="btn btn-secondary" id="btn-run-bp" title="Run to next breakpoint" disabled>⏭ Breakpoint</button>
                 <button class="btn btn-secondary" id="btn-example">Example</button>
                 <button class="btn btn-secondary" id="btn-clear">Clear</button>
                 
@@ -385,19 +361,42 @@
         <!-- Trace Panel -->
         <div class="trace-panel">
             <div class="panel-header">
-                <span>EXECUTION TRACE</span>
+                <span>EXECUTION DASHBOARD</span>
             </div>
             
-            <div class="trace-content" id="trace-content">
-                <div style="color: var(--text-tertiary); text-align: center; margin-top: 2rem;">
-                    Ready — paste code and click Run Trace<br>
-                    <small>or press Ctrl+Enter</small>
+            <div class="dashboard-layout" id="dashboard-layout" style="display: none;">
+                <div class="dashboard-header">
+                    <div>
+                        <div class="step-counter" id="step-counter">Step 0 / 0</div>
+                        <div class="step-action" id="step-action">Ready</div>
+                        <div class="step-note" id="step-note"></div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-body">
+                    <div class="dashboard-section">
+                        <div class="section-title">Memory & Variables</div>
+                        <div class="section-content" id="memory-content">
+                            <!-- Memory Table & Arrays -->
+                        </div>
+                    </div>
+                    <div class="dashboard-section">
+                        <div class="section-title">Console Output</div>
+                        <div class="console-output" id="console-output"></div>
+                    </div>
+                </div>
+                
+                <div class="call-stack-bar" id="call-stack">
+                    <span class="call-stack-label">Call Stack</span>
+                </div>
+                
+                <div class="timeline-container">
+                    <input type="range" id="timeline-slider" class="timeline-slider" min="0" max="0" value="0" disabled>
                 </div>
             </div>
-
-            <div class="call-stack-bar" id="call-stack">
-                <span class="call-stack-label">Call Stack</span>
-                <!-- stack frames injected here -->
+            
+            <div id="welcome-message" style="display: flex; flex: 1; align-items: center; justify-content: center; color: var(--text-tertiary); text-align: center;">
+                <div>Ready — paste code and click Run Trace<br><small>or press Ctrl+Enter</small></div>
             </div>
         </div>
     </div>
@@ -460,8 +459,15 @@ const langTabs = document.querySelectorAll('.lang-tab');
 let currentLang = 'python';
 
 function updateLineNumbers() {
-    const lines = editor.value.split('\n').length;
-    lineNumbers.innerHTML = Array.from({length: lines}, (_, i) => `<div class="line-number" id="ln-${i+1}">${i+1}</div>`).join('');
+    const lines = editor.value.split('
+').length;
+    lineNumbers.innerHTML = Array.from({length: lines}, (_, i) => {
+        const ln = i + 1;
+        const bpClass = activeBreakpoints.has(ln) ? ' breakpoint' : '';
+        return `<div class="line-number${bpClass}" id="ln-${ln}">${ln}</div>`;
+    }).join('');
+    highlightSyntax();
+}, (_, i) => `<div class="line-number" id="ln-${i+1}">${i+1}</div>`).join('');
 }
 
 editor.addEventListener('input', updateLineNumbers);
@@ -517,6 +523,15 @@ document.getElementById('btn-clear').addEventListener('click', () => {
 /* ============================================================
    EVALUATOR UTILITY
    ============================================================ */
+
+function deepClone(obj) {
+    if (obj === null || typeof obj !== 'object') return obj;
+    if (Array.isArray(obj)) return obj.map(deepClone);
+    const cloned = {};
+    for (let key in obj) cloned[key] = deepClone(obj[key]);
+    return cloned;
+}
+
 function evalExpr(expr, scopeVars) {
     if (!expr) return undefined;
     let scopeStr = "";
@@ -581,9 +596,11 @@ function tracePython(code) {
             steps[steps.length-1].vars.forEach(v => prevScope[v.name] = v.value);
         }
         for (let k in currentScope) {
-            let val = String(currentScope[k]);
-            let changed = prevScope ? (prevScope[k] !== val) : true;
-            varsObj.push({name: k, value: val, changed});
+            let rawVal = deepClone(currentScope[k]);
+            let strVal = typeof rawVal === 'object' ? JSON.stringify(rawVal) : String(rawVal);
+            let prevStr = prevScope ? (typeof prevScope[k] === 'object' ? JSON.stringify(prevScope[k]) : String(prevScope[k])) : null;
+            let changed = prevScope ? (strVal !== prevStr) : true;
+            varsObj.push({name: k, rawValue: rawVal, stringValue: strVal, changed});
         }
         steps.push({
             line: lineNum + 1,
@@ -785,9 +802,11 @@ function traceCpp(code) {
         if (steps.length > 0) steps[steps.length-1].vars.forEach(v => prevScope[v.name] = v.value);
         
         for (let k in currentScope) {
-            let val = String(currentScope[k]);
-            let changed = prevScope ? (prevScope[k] !== val) : true;
-            varsObj.push({name: k, value: val, changed});
+            let rawVal = deepClone(currentScope[k]);
+            let strVal = typeof rawVal === 'object' ? JSON.stringify(rawVal) : String(rawVal);
+            let prevStr = prevScope ? (typeof prevScope[k] === 'object' ? JSON.stringify(prevScope[k]) : String(prevScope[k])) : null;
+            let changed = prevScope ? (strVal !== prevStr) : true;
+            varsObj.push({name: k, rawValue: rawVal, stringValue: strVal, changed});
         }
         steps.push({
             line: lineNum + 1, desc, vars: varsObj, output, note: "",
@@ -978,6 +997,7 @@ function startTrace() {
             while (currentStepIdx < currentSteps.length) renderStep(currentStepIdx++);
             finishTrace();
         } else {
+            btnRunBp.disabled = false;
             animTimer = setInterval(stepForward, speed);
         }
     } catch (e) {
@@ -990,6 +1010,7 @@ function stopAnimation() {
     if (animTimer) clearInterval(animTimer);
     animTimer = null;
     btnPrev.disabled = currentStepIdx === 0;
+    btnRunBp.disabled = currentStepIdx >= currentSteps.length - 1;
     btnNext.disabled = currentStepIdx >= currentSteps.length - 1;
 }
 
@@ -998,6 +1019,7 @@ function finishTrace() {
     setStatus('', 'Execution completed.');
     btnPrev.disabled = false;
     btnNext.disabled = true;
+    btnRunBp.disabled = false;
     highlightLine(0);
 }
 
@@ -1011,48 +1033,95 @@ function stepForward() {
     progressBar.style.width = `${(currentStepIdx / currentSteps.length) * 100}%`;
 }
 
+const dashboardLayout = document.getElementById('dashboard-layout');
+const welcomeMsg = document.getElementById('welcome-message');
+const stepCounter = document.getElementById('step-counter');
+const stepAction = document.getElementById('step-action');
+const stepNote = document.getElementById('step-note');
+const memoryContent = document.getElementById('memory-content');
+const consoleOutput = document.getElementById('console-output');
+const timelineSlider = document.getElementById('timeline-slider');
+
+timelineSlider.addEventListener('input', (e) => {
+    let val = parseInt(e.target.value);
+    if (val < currentSteps.length) {
+        currentStepIdx = val;
+        renderStep(currentStepIdx);
+    }
+});
+
 function renderStep(idx) {
     const step = currentSteps[idx];
     
-    // Mute previous cards
-    document.querySelectorAll('.step-card').forEach(c => {
-        c.classList.remove('current');
-        c.classList.add('revealed');
+    welcomeMsg.style.display = 'none';
+    dashboardLayout.style.display = 'grid';
+    
+    stepCounter.textContent = `Step ${idx + 1} / ${currentSteps.length}`;
+    stepAction.textContent = `Line ${step.line}: ${step.desc}`;
+    stepNote.textContent = step.note || '';
+    
+    // Process Variables
+    let primitivesHtml = `<table class="var-table"><tr><th>Variable</th><th>Value</th></tr>`;
+    let arraysHtml = '';
+    
+    let hasPrimitives = false;
+    
+    step.vars.forEach(v => {
+        if (v.rawValue !== null && typeof v.rawValue === 'object' && Array.isArray(v.rawValue)) {
+            // It's an Array
+            arraysHtml += `<div class="array-container">
+                <div class="array-title">${v.name} ${v.changed ? '<span style="color:var(--accent-green)">•</span>' : ''}</div>`;
+            
+            if (v.rawValue.length > 0 && Array.isArray(v.rawValue[0])) {
+                // 2D Array
+                v.rawValue.forEach((row, rowIdx) => {
+                    arraysHtml += `<div class="array-2d-row">
+                        <div class="array-2d-row-label">${rowIdx}</div>`;
+                    row.forEach((cell, colIdx) => {
+                        // Rough logic to check if a specific cell changed (we just mark the whole array if changed for now, or we could diff deeply)
+                        arraysHtml += `<div class="array-block ${v.changed ? 'changed' : ''}">
+                            <div class="array-val">${cell}</div>
+                        </div>`;
+                    });
+                    arraysHtml += `</div>`;
+                });
+            } else {
+                // 1D Array
+                arraysHtml += `<div class="array-blocks">`;
+                v.rawValue.forEach((cell, i) => {
+                    arraysHtml += `<div class="array-block ${v.changed ? 'changed' : ''}">
+                        <div class="array-val">${cell}</div>
+                        <div class="array-idx">${i}</div>
+                    </div>`;
+                });
+                arraysHtml += `</div>`;
+            }
+            arraysHtml += `</div>`;
+        } else {
+            // Primitive
+            hasPrimitives = true;
+            primitivesHtml += `<tr class="${v.changed ? 'changed' : ''}">
+                <td class="var-name">${v.name}</td>
+                <td class="var-val">${v.stringValue}</td>
+            </tr>`;
+        }
     });
     
-    // Build new card
-    const card = document.createElement('div');
-    card.className = 'step-card current';
-    card.id = `step-${idx}`;
+    primitivesHtml += `</table>`;
+    if (!hasPrimitives) primitivesHtml = '';
     
-    let varsHtml = step.vars.map(v => 
-        `<div class="var-chip ${v.changed ? 'changed' : ''}">
-            <span class="var-name">${v.name}:</span>
-            <span class="var-val">${v.value}</span>
-         </div>`
-    ).join('');
+    memoryContent.innerHTML = primitivesHtml + (arraysHtml ? '<div style="height:1rem"></div>' + arraysHtml : '');
     
-    let outputHtml = step.output ? `<div class="output-box">${step.output}</div>` : '';
-    let noteHtml = step.note ? `<div class="step-note">${step.note}</div>` : '';
-    
-    card.innerHTML = `
-        <div class="step-header">
-            <span class="step-line">Line ${step.line}</span>
-            <span class="step-desc">${step.desc}</span>
-        </div>
-        <div class="vars-container">${varsHtml}</div>
-        ${outputHtml}
-        ${noteHtml}
-    `;
-    
-    traceContent.appendChild(card);
-    card.scrollIntoView({behavior: 'smooth', block: 'end'});
+    consoleOutput.textContent = step.output || ' ';
     
     highlightLine(step.line);
     
-    // Update call stack
     callStackBar.innerHTML = '<span class="call-stack-label">Call Stack</span>' + 
         step.stack.map(frame => `<div class="stack-frame">${frame}</div>`).join(' → ');
+        
+    // Update slider
+    timelineSlider.value = idx;
+    progressBar.style.width = `${((idx + 1) / currentSteps.length) * 100}%`;
 }
 
 btnPrev.addEventListener('click', () => {
@@ -1079,6 +1148,82 @@ btnNext.addEventListener('click', () => {
     }
     btnPrev.disabled = false;
     if (currentStepIdx >= currentSteps.length) btnNext.disabled = true;
+});
+
+
+/* Syntax Highlighting */
+const syntaxOverlay = document.getElementById('syntax-overlay');
+function highlightSyntax() {
+    let text = editor.value;
+    text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    
+    // Simple Regex Highlighter
+    text = text.replace(/#.*$/gm, '<span class="syn-comment">$&</span>'); // Python comments
+    text = text.replace(/\/\/.*$/gm, '<span class="syn-comment">$&</span>'); // C++/Java comments
+    text = text.replace(/(['"].*?['"])/g, '<span class="syn-string">$1</span>'); // Strings
+    text = text.replace(/\b(\d+)\b/g, '<span class="syn-number">$1</span>'); // Numbers
+    
+    const keywords = ['def', 'if', 'else', 'elif', 'return', 'while', 'for', 'class', 'public', 'static', 'void', 'int', 'bool', 'string', 'double', 'float', 'auto', 'True', 'False', 'None', 'true', 'false'];
+    const kwRegex = new RegExp(`\\b(${keywords.join('|')})\\b`, 'g');
+    text = text.replace(kwRegex, '<span class="syn-keyword">$1</span>');
+    
+    text = text.replace(/\b([a-zA-Z_]\w*)\s*(?=\()/g, '<span class="syn-func">$1</span>'); // Functions
+    
+    syntaxOverlay.innerHTML = text + '<br>';
+}
+editor.addEventListener('input', highlightSyntax);
+editor.addEventListener('scroll', () => {
+    syntaxOverlay.scrollTop = editor.scrollTop;
+    syntaxOverlay.scrollLeft = editor.scrollLeft;
+});
+
+/* Breakpoints */
+const activeBreakpoints = new Set();
+lineNumbers.addEventListener('click', (e) => {
+    if (e.target.classList.contains('line-number')) {
+        const ln = parseInt(e.target.textContent);
+        if (activeBreakpoints.has(ln)) {
+            activeBreakpoints.delete(ln);
+            e.target.classList.remove('breakpoint');
+        } else {
+            activeBreakpoints.add(ln);
+            e.target.classList.add('breakpoint');
+        }
+    }
+});
+
+/* Copy & Download */
+document.getElementById('btn-copy').addEventListener('click', () => {
+    navigator.clipboard.writeText(editor.value);
+    setStatus('running', 'Code copied to clipboard!');
+    setTimeout(() => setStatus('idle', 'Idle'), 2000);
+});
+
+document.getElementById('btn-download').addEventListener('click', () => {
+    const ext = currentLang === 'python' ? 'py' : (currentLang === 'cpp' ? 'cpp' : 'java');
+    const blob = new Blob([editor.value], {type: 'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `solution.${ext}`;
+    a.click();
+});
+
+/* Run to Breakpoint Logic */
+const btnRunBp = document.getElementById('btn-run-bp');
+btnRunBp.addEventListener('click', () => {
+    if (currentSteps.length === 0) return;
+    let targetIdx = currentStepIdx + 1;
+    while (targetIdx < currentSteps.length) {
+        if (activeBreakpoints.has(currentSteps[targetIdx].line)) {
+            currentStepIdx = targetIdx;
+            renderStep(currentStepIdx);
+            return;
+        }
+        targetIdx++;
+    }
+    // If no more breakpoints, go to end
+    currentStepIdx = currentSteps.length - 1;
+    renderStep(currentStepIdx);
 });
 
 // Init
