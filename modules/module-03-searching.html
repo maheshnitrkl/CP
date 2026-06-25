@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../css/components.css">
   <link rel="stylesheet" href="../css/module.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 </head>
 <body class="bg-dots">
@@ -26,8 +27,27 @@
           <span class="module-hero__meta-item"><span class="icon">📝</span> 6 Problems</span>
           <span class="module-hero__meta-item"><span class="icon">⏱️</span> ~3 hours</span>
           <span class="module-hero__meta-item"><span class="icon">📊</span> Easy to Hard</span>
+            <span class="module-hero__meta-item"><span class="icon">📈</span> <span class="difficulty-dist"><span class="difficulty-dist__badge difficulty-dist__badge--medium">5 Medium</span> · <span class="difficulty-dist__badge difficulty-dist__badge--hard">1 Hard</span></span></span>
         </div>
       </div></div>
+    </section>
+
+    
+    <!-- Learning Objectives -->
+    <section class="module-objectives">
+      <div class="container">
+        <div class="objectives-card">
+          <h2 class="objectives-card__title">🎯 Learning Objectives</h2>
+          <p class="objectives-card__subtitle">After completing this module, you should be able to:</p>
+          <ul class="objectives-card__list">
+          <li>Implement Linear Search and understand its O(n) complexity</li>
+          <li>Implement Binary Search on sorted arrays in O(log n)</li>
+          <li>Apply Binary Search to rotated sorted arrays</li>
+          <li>Find peak elements and search in 2D matrices</li>
+          <li>Recognize when to use Binary Search on answer space</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
     <div class="module-layout">
@@ -47,7 +67,7 @@
               <p><strong>Linear Search</strong> checks every element sequentially until the target is found or the array ends.</p>
 <p><strong>When to use:</strong> Unsorted arrays, small datasets, or when you need to find all occurrences.</p>
 <div class="formula-box"><span class="label">Time:</span> O(n) — Must check each element</div>
-              <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">#include &lt;iostream&gt;
+              <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre class="line-numbers"><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;vector&gt;
 using namespace std;
 
@@ -82,7 +102,7 @@ int main() {
     }
     
     return 0;
-}</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">if __name__ == "__main__":
+}</code></pre></div><div class="code-block__content" data-lang="python"><pre class="line-numbers"><code class="language-python">if __name__ == "__main__":
     n = int(input("Enter number of elements: "))
     
     print(f"Enter {n} elements separated by space: ")
@@ -120,7 +140,7 @@ int main() {
 </ol>
 <div class="formula-box"><span class="label">Time:</span> O(log n) — Halving search space each step</div>
 <div class="callout callout--warning"><div class="callout__title">⚠️ Avoid Overflow</div><div class="callout__body">Use <code>mid = low + (high - low) / 2</code> instead of <code>(low + high) / 2</code> to prevent integer overflow!</div></div>
-              <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">#include &lt;iostream&gt;
+              <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">📋 Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre class="line-numbers"><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;vector&gt;
 using namespace std;
 
@@ -172,7 +192,7 @@ int main() {
     }
     
     return 0;
-}</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">if __name__ == "__main__":
+}</code></pre></div><div class="code-block__content" data-lang="python"><pre class="line-numbers"><code class="language-python">if __name__ == "__main__":
     n = int(input("Enter number of elements (must be sorted): "))
     
     print(f"Enter {n} sorted elements separated by space: ")
@@ -307,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="problems-list">
 
             <!-- Problem 1 -->
-            <a href="../problems/m3-p1.html" id="p1" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m3-p1.html" id="p1" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
@@ -321,10 +341,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </a>
             
             <!-- Problem 2 -->
-            <a href="../problems/m3-p2.html" id="p2" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m3-p2.html" id="p2" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
+                    <label class="problem-card__checkbox" onclick="event.stopPropagation(); window.toggleProblemComplete('m3-p2')">
+                      <input type="checkbox" id="check-m3-p2">
+                      <span class="problem-card__checkmark"></span>
+                    </label>
                     <span class="problem-card__number">#2</span>
                     <h3 class="problem-card__title">Search in Rotated Sorted Array</h3>
                     <span class="badge badge--medium">Medium</span>
@@ -335,10 +359,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </a>
             
             <!-- Problem 3 -->
-            <a href="../problems/m3-p3.html" id="p3" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m3-p3.html" id="p3" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
+                    <label class="problem-card__checkbox" onclick="event.stopPropagation(); window.toggleProblemComplete('m3-p3')">
+                      <input type="checkbox" id="check-m3-p3">
+                      <span class="problem-card__checkmark"></span>
+                    </label>
                     <span class="problem-card__number">#3</span>
                     <h3 class="problem-card__title">Find Peak Element</h3>
                     <span class="badge badge--medium">Medium</span>
@@ -349,10 +377,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </a>
             
             <!-- Problem 4 -->
-            <a href="../problems/m3-p4.html" id="p4" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m3-p4.html" id="p4" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
+                    <label class="problem-card__checkbox" onclick="event.stopPropagation(); window.toggleProblemComplete('m3-p4')">
+                      <input type="checkbox" id="check-m3-p4">
+                      <span class="problem-card__checkmark"></span>
+                    </label>
                     <span class="problem-card__number">#4</span>
                     <h3 class="problem-card__title">Single Element in a Sorted Array</h3>
                     <span class="badge badge--medium">Medium</span>
@@ -363,10 +395,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </a>
             
             <!-- Problem 5 -->
-            <a href="../problems/m3-p5.html" id="p5" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m3-p5.html" id="p5" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
+                    <label class="problem-card__checkbox" onclick="event.stopPropagation(); window.toggleProblemComplete('m3-p5')">
+                      <input type="checkbox" id="check-m3-p5">
+                      <span class="problem-card__checkmark"></span>
+                    </label>
                     <span class="problem-card__number">#5</span>
                     <h3 class="problem-card__title">Search a 2D Matrix</h3>
                     <span class="badge badge--medium">Medium</span>
@@ -377,10 +413,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </a>
             
             <!-- Problem 6 -->
-            <a href="../problems/m3-p6.html" id="p6" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m3-p6.html" id="p6" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
+                    <label class="problem-card__checkbox" onclick="event.stopPropagation(); window.toggleProblemComplete('m3-p6')">
+                      <input type="checkbox" id="check-m3-p6">
+                      <span class="problem-card__checkmark"></span>
+                    </label>
                     <span class="problem-card__number">#6</span>
                     <h3 class="problem-card__title">Capacity to Ship Packages Within D Days</h3>
                     <span class="badge badge--hard">Hard</span>
@@ -390,6 +430,43 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             </a>
             </div>
+        </section>
+
+        
+        <!-- Teaching Notes -->
+        <section class="module-section" id="teaching-notes">
+          <h2 class="module-section__title"><span class="icon">📝</span> Teaching Notes</h2>
+          <details class="teaching-notes">
+            <summary class="teaching-notes__summary">Suggested Teaching Sequence</summary>
+            <div class="teaching-notes__content">
+              <ol>
+            <li>Begin with the theory section — walk through key concepts (~20 min)</li>
+            <li>Use the interactive visualization to demonstrate the algorithm (~15 min)</li>
+            <li>Solve the first problem together as a class (~20 min)</li>
+            <li>Assign remaining Easy problems as lab work, Medium/Hard as homework</li>
+              </ol>
+            </div>
+          </details>
+          <details class="teaching-notes">
+            <summary class="teaching-notes__summary">Common Student Mistakes</summary>
+            <div class="teaching-notes__content">
+              <ul>
+            <li>Not handling edge cases (empty input, single element, duplicates)</li>
+            <li>Confusing time and space complexity of different approaches</li>
+            <li>Jumping to code before understanding the algorithm logic</li>
+              </ul>
+            </div>
+          </details>
+          <details class="teaching-notes">
+            <summary class="teaching-notes__summary">Discussion Questions</summary>
+            <div class="teaching-notes__content">
+              <ul>
+            <li>What is the brute force approach and why is it insufficient?</li>
+            <li>How does the optimal approach improve on the brute force?</li>
+            <li>Can you identify the pattern that connects this module's problems?</li>
+              </ul>
+            </div>
+          </details>
         </section>
 
         <div class="module-nav">
@@ -405,6 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/code-runner.js"></script>
 </body>

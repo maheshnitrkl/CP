@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../css/components.css">
   <link rel="stylesheet" href="../css/module.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 </head>
 <body class="bg-dots">
@@ -26,8 +27,27 @@
           <span class="module-hero__meta-item"><span class="icon">📝</span> 6 Problems</span>
           <span class="module-hero__meta-item"><span class="icon">⏱️</span> ~4 hours</span>
           <span class="module-hero__meta-item"><span class="icon">📊</span> Medium to Hard</span>
+            <span class="module-hero__meta-item"><span class="icon">📈</span> <span class="difficulty-dist"><span class="difficulty-dist__badge difficulty-dist__badge--medium">5 Medium</span> · <span class="difficulty-dist__badge difficulty-dist__badge--hard">1 Hard</span></span></span>
         </div>
       </div></div>
+    </section>
+
+    
+    <!-- Learning Objectives -->
+    <section class="module-objectives">
+      <div class="container">
+        <div class="objectives-card">
+          <h2 class="objectives-card__title">🎯 Learning Objectives</h2>
+          <p class="objectives-card__subtitle">After completing this module, you should be able to:</p>
+          <ul class="objectives-card__list">
+          <li>Trace recursive function calls and identify base cases</li>
+          <li>Generate all subsets and permutations using backtracking</li>
+          <li>Apply the CHOOSE → EXPLORE → UN-CHOOSE pattern</li>
+          <li>Solve N-Queens and Palindrome Partitioning problems</li>
+          <li>Analyze time complexity of recursive algorithms using recursion trees</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
     <div class="module-layout">
@@ -167,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="problems-list">
 
             <!-- Problem 1 -->
-            <a href="../problems/m5-p1.html" id="p1" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m5-p1.html" id="p1" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
@@ -181,10 +201,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </a>
             
             <!-- Problem 2 -->
-            <a href="../problems/m5-p2.html" id="p2" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m5-p2.html" id="p2" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
+                    <label class="problem-card__checkbox" onclick="event.stopPropagation(); window.toggleProblemComplete('m5-p2')">
+                      <input type="checkbox" id="check-m5-p2">
+                      <span class="problem-card__checkmark"></span>
+                    </label>
                     <span class="problem-card__number">#2</span>
                     <h3 class="problem-card__title">Permutations</h3>
                     <span class="badge badge--medium">Medium</span>
@@ -195,10 +219,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </a>
             
             <!-- Problem 3 -->
-            <a href="../problems/m5-p3.html" id="p3" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m5-p3.html" id="p3" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
+                    <label class="problem-card__checkbox" onclick="event.stopPropagation(); window.toggleProblemComplete('m5-p3')">
+                      <input type="checkbox" id="check-m5-p3">
+                      <span class="problem-card__checkmark"></span>
+                    </label>
                     <span class="problem-card__number">#3</span>
                     <h3 class="problem-card__title">Permutations II</h3>
                     <span class="badge badge--medium">Medium</span>
@@ -209,10 +237,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </a>
             
             <!-- Problem 4 -->
-            <a href="../problems/m5-p4.html" id="p4" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m5-p4.html" id="p4" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
+                    <label class="problem-card__checkbox" onclick="event.stopPropagation(); window.toggleProblemComplete('m5-p4')">
+                      <input type="checkbox" id="check-m5-p4">
+                      <span class="problem-card__checkmark"></span>
+                    </label>
                     <span class="problem-card__number">#4</span>
                     <h3 class="problem-card__title">Subsets II</h3>
                     <span class="badge badge--medium">Medium</span>
@@ -223,10 +255,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </a>
             
             <!-- Problem 5 -->
-            <a href="../problems/m5-p5.html" id="p5" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m5-p5.html" id="p5" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
+                    <label class="problem-card__checkbox" onclick="event.stopPropagation(); window.toggleProblemComplete('m5-p5')">
+                      <input type="checkbox" id="check-m5-p5">
+                      <span class="problem-card__checkmark"></span>
+                    </label>
                     <span class="problem-card__number">#5</span>
                     <h3 class="problem-card__title">Palindrome Partitioning</h3>
                     <span class="badge badge--medium">Medium</span>
@@ -237,10 +273,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </a>
             
             <!-- Problem 6 -->
-            <a href="../problems/m5-p6.html" id="p6" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m5-p6.html" id="p6" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
+                    <label class="problem-card__checkbox" onclick="event.stopPropagation(); window.toggleProblemComplete('m5-p6')">
+                      <input type="checkbox" id="check-m5-p6">
+                      <span class="problem-card__checkmark"></span>
+                    </label>
                     <span class="problem-card__number">#6</span>
                     <h3 class="problem-card__title">N-Queens</h3>
                     <span class="badge badge--hard">Hard</span>
@@ -250,6 +290,43 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             </a>
             </div>
+        </section>
+
+        
+        <!-- Teaching Notes -->
+        <section class="module-section" id="teaching-notes">
+          <h2 class="module-section__title"><span class="icon">📝</span> Teaching Notes</h2>
+          <details class="teaching-notes">
+            <summary class="teaching-notes__summary">Suggested Teaching Sequence</summary>
+            <div class="teaching-notes__content">
+              <ol>
+            <li>Begin with the theory section — walk through key concepts (~20 min)</li>
+            <li>Use the interactive visualization to demonstrate the algorithm (~15 min)</li>
+            <li>Solve the first problem together as a class (~20 min)</li>
+            <li>Assign remaining Easy problems as lab work, Medium/Hard as homework</li>
+              </ol>
+            </div>
+          </details>
+          <details class="teaching-notes">
+            <summary class="teaching-notes__summary">Common Student Mistakes</summary>
+            <div class="teaching-notes__content">
+              <ul>
+            <li>Not handling edge cases (empty input, single element, duplicates)</li>
+            <li>Confusing time and space complexity of different approaches</li>
+            <li>Jumping to code before understanding the algorithm logic</li>
+              </ul>
+            </div>
+          </details>
+          <details class="teaching-notes">
+            <summary class="teaching-notes__summary">Discussion Questions</summary>
+            <div class="teaching-notes__content">
+              <ul>
+            <li>What is the brute force approach and why is it insufficient?</li>
+            <li>How does the optimal approach improve on the brute force?</li>
+            <li>Can you identify the pattern that connects this module's problems?</li>
+              </ul>
+            </div>
+          </details>
         </section>
 
         <div class="module-nav">
@@ -265,6 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/code-runner.js"></script>
 </body>

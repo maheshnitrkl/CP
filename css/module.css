@@ -615,6 +615,212 @@
 }
 
 /* ============================================================
+   Learning Objectives Section
+   ============================================================ */
+.module-objectives {
+  padding: var(--space-8) 0 0;
+}
+
+.objectives-card {
+  padding: var(--space-6) var(--space-8);
+  background: var(--gradient-card);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  border-left: 4px solid var(--accent-green);
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+
+.objectives-card__title {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.objectives-card__subtitle {
+  font-size: var(--fs-sm);
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-4);
+}
+
+.objectives-card__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.objectives-card__list li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.objectives-card__list li::before {
+  content: '✓';
+  color: var(--accent-green);
+  font-weight: 700;
+  font-size: var(--fs-base);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ============================================================
+   Prerequisite Badge in Module Hero
+   ============================================================ */
+.module-hero__meta-item a {
+  color: var(--accent-cyan);
+  text-decoration: none;
+  font-weight: var(--fw-semibold);
+}
+.module-hero__meta-item a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================
+   Difficulty Distribution Badge
+   ============================================================ */
+.difficulty-dist {
+  display: inline-flex;
+  gap: var(--space-2);
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+}
+.difficulty-dist__badge {
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  font-weight: var(--fw-semibold);
+}
+.difficulty-dist__badge--easy {
+  color: var(--accent-green);
+  background: var(--accent-green-dim);
+}
+.difficulty-dist__badge--medium {
+  color: var(--accent-yellow);
+  background: var(--accent-yellow-dim);
+}
+.difficulty-dist__badge--hard {
+  color: var(--accent-red);
+  background: var(--accent-red-dim);
+}
+
+/* ============================================================
+   Problem Card Link Hover (replaces inline JS)
+   ============================================================ */
+.problem-card--link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.2s var(--ease-default);
+  cursor: pointer;
+}
+.problem-card--link:hover {
+  transform: translateY(-4px);
+}
+
+/* ============================================================
+   Problem Card Checkbox (for progress tracking)
+   ============================================================ */
+.problem-card__checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  position: relative;
+}
+.problem-card__checkbox input[type="checkbox"] {
+  display: none;
+}
+.problem-card__checkmark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  font-size: 12px;
+}
+.problem-card__checkbox input:checked + .problem-card__checkmark {
+  background: var(--accent-green);
+  border-color: var(--accent-green);
+  color: white;
+}
+.problem-card__checkbox input:checked + .problem-card__checkmark::after {
+  content: '✓';
+}
+.problem-card__checkmark:hover {
+  border-color: var(--accent-green);
+}
+
+/* ============================================================
+   Teaching Notes (collapsible sections)
+   ============================================================ */
+.teaching-notes {
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.teaching-notes__summary {
+  padding: var(--space-4) var(--space-5);
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: background var(--transition-fast);
+  list-style: none;
+}
+.teaching-notes__summary::-webkit-details-marker {
+  display: none;
+}
+.teaching-notes__summary::before {
+  content: '▸';
+  font-size: var(--fs-sm);
+  color: var(--text-tertiary);
+  transition: transform var(--transition-fast);
+}
+.teaching-notes[open] .teaching-notes__summary::before {
+  transform: rotate(90deg);
+}
+.teaching-notes__summary:hover {
+  background: var(--bg-card-hover);
+}
+
+.teaching-notes__content {
+  padding: var(--space-4) var(--space-5);
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  line-height: 1.7;
+}
+.teaching-notes__content ul,
+.teaching-notes__content ol {
+  padding-left: var(--space-6);
+  list-style: disc;
+}
+.teaching-notes__content ol {
+  list-style: decimal;
+}
+.teaching-notes__content li {
+  margin-bottom: var(--space-2);
+}
+
+/* ============================================================
    Print styles
    ============================================================ */
 @media print {
@@ -623,7 +829,10 @@
   .viz-container__controls,
   .scroll-top,
   .theme-toggle,
-  .module-nav {
+  .module-nav,
+  .module-hero__bg,
+  .problem-card__checkbox,
+  .teaching-notes {
     display: none !important;
   }
 
@@ -633,5 +842,46 @@
 
   .module-layout {
     grid-template-columns: 1fr;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 11pt;
+  }
+
+  .module-hero {
+    background: none !important;
+    border-bottom: 2px solid #333;
+  }
+
+  .module-hero__orb {
+    display: none !important;
+  }
+
+  .text-gradient {
+    -webkit-text-fill-color: #333;
+    background: none;
+  }
+
+  .theory-block {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border: 1px solid #ccc;
+  }
+
+  .code-block {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  code {
+    background: #f0f0f0 !important;
+    color: #333 !important;
+  }
+
+  .objectives-card {
+    border: 1px solid #ccc;
+    border-left: 4px solid #333;
   }
 }

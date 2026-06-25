@@ -6,6 +6,7 @@
   <title>Module 07: Linked List — Part 2 — CP-II Lab</title>
   <link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/components.css"><link rel="stylesheet" href="../css/module.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 </head>
 <body class="bg-dots">
@@ -17,8 +18,28 @@
         <span class="module-hero__number">⛓️ Module 07</span>
         <h1 class="module-hero__title">Linked <span class="text-gradient">List — Part 2</span></h1>
         <p class="module-hero__desc">Advanced linked list operations: sorting, merging, cycle detection, and finding intersections.</p>
-        <div class="module-hero__meta"><span class="module-hero__meta-item"><span class="icon">📝</span> 6 Problems</span><span class="module-hero__meta-item"><span class="icon">⏱️</span> ~3 hours</span><span class="module-hero__meta-item"><span class="icon">📊</span> Easy to Medium</span></div>
+        <div class="module-hero__meta"><span class="module-hero__meta-item"><span class="icon">📝</span> 6 Problems</span><span class="module-hero__meta-item"><span class="icon">⏱️</span> ~3 hours</span><span class="module-hero__meta-item"><span class="icon">📊</span> Easy to Medium</span>
+            <span class="module-hero__meta-item"><span class="icon">📈</span> <span class="difficulty-dist"><span class="difficulty-dist__badge difficulty-dist__badge--easy">4 Easy</span> · <span class="difficulty-dist__badge difficulty-dist__badge--medium">2 Medium</span></span></span>
+            <span class="module-hero__meta-item"><span class="icon">📋</span> Prereq: <a href="module-06-linked-list-1.html">Linked List — Part 1</a></span></div>
       </div></div></section>
+    
+    <!-- Learning Objectives -->
+    <section class="module-objectives">
+      <div class="container">
+        <div class="objectives-card">
+          <h2 class="objectives-card__title">🎯 Learning Objectives</h2>
+          <p class="objectives-card__subtitle">After completing this module, you should be able to:</p>
+          <ul class="objectives-card__list">
+          <li>Sort a linked list using Merge Sort in O(n log n)</li>
+          <li>Remove duplicates from sorted and unsorted lists</li>
+          <li>Merge two sorted linked lists into one</li>
+          <li>Find the intersection point of two linked lists</li>
+          <li>Detect and locate cycles using Floyd's algorithm</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
     <div class="module-layout">
       <aside class="module-sidebar"><nav class="toc"><div class="toc__title">Contents</div><div class="toc__list"><a href="#theory" class="toc__link active">📖 Theory</a><a href="#problems" class="toc__link">💡 Problems</a><a href="#p1" class="toc__link toc__link--sub">Sort List</a><a href="#p2" class="toc__link toc__link--sub">Remove Duplicates from Sorted Li</a><a href="#p3" class="toc__link toc__link--sub">Merge Two Sorted Lists</a><a href="#p4" class="toc__link toc__link--sub">Intersection of Two Linked Lists</a><a href="#p5" class="toc__link toc__link--sub">Linked List Cycle</a><a href="#p6" class="toc__link toc__link--sub">Linked List Cycle II</a></div></nav></aside>
       <main class="module-main">
@@ -129,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <section class="module-section" id="problems"><h2 class="module-section__title"><span class="icon">💡</span> Practice Problems</h2><div class="problems-list">
 
             <!-- Problem 1 -->
-            <a href="../problems/m7-p1.html" id="p1" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m7-p1.html" id="p1" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
@@ -143,10 +164,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </a>
             
             <!-- Problem 2 -->
-            <a href="../problems/m7-p2.html" id="p2" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m7-p2.html" id="p2" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
+                    <label class="problem-card__checkbox" onclick="event.stopPropagation(); window.toggleProblemComplete('m7-p2')">
+                      <input type="checkbox" id="check-m7-p2">
+                      <span class="problem-card__checkmark"></span>
+                    </label>
                     <span class="problem-card__number">#2</span>
                     <h3 class="problem-card__title">Remove Duplicates from Sorted List</h3>
                     <span class="badge badge--easy">Easy</span>
@@ -157,10 +182,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </a>
             
             <!-- Problem 3 -->
-            <a href="../problems/m7-p3.html" id="p3" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m7-p3.html" id="p3" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
+                    <label class="problem-card__checkbox" onclick="event.stopPropagation(); window.toggleProblemComplete('m7-p3')">
+                      <input type="checkbox" id="check-m7-p3">
+                      <span class="problem-card__checkmark"></span>
+                    </label>
                     <span class="problem-card__number">#3</span>
                     <h3 class="problem-card__title">Merge Two Sorted Lists</h3>
                     <span class="badge badge--easy">Easy</span>
@@ -171,10 +200,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </a>
             
             <!-- Problem 4 -->
-            <a href="../problems/m7-p4.html" id="p4" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m7-p4.html" id="p4" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
+                    <label class="problem-card__checkbox" onclick="event.stopPropagation(); window.toggleProblemComplete('m7-p4')">
+                      <input type="checkbox" id="check-m7-p4">
+                      <span class="problem-card__checkmark"></span>
+                    </label>
                     <span class="problem-card__number">#4</span>
                     <h3 class="problem-card__title">Intersection of Two Linked Lists</h3>
                     <span class="badge badge--easy">Easy</span>
@@ -185,10 +218,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </a>
             
             <!-- Problem 5 -->
-            <a href="../problems/m7-p5.html" id="p5" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m7-p5.html" id="p5" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
+                    <label class="problem-card__checkbox" onclick="event.stopPropagation(); window.toggleProblemComplete('m7-p5')">
+                      <input type="checkbox" id="check-m7-p5">
+                      <span class="problem-card__checkmark"></span>
+                    </label>
                     <span class="problem-card__number">#5</span>
                     <h3 class="problem-card__title">Linked List Cycle</h3>
                     <span class="badge badge--easy">Easy</span>
@@ -199,10 +236,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </a>
             
             <!-- Problem 6 -->
-            <a href="../problems/m7-p6.html" id="p6" class="problem-card problem-card--link" style="text-decoration: none; color: inherit; display: block; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+            <a href="../problems/m7-p6.html" id="p6" class="problem-card problem-card--link" >
               <div class="problem-card__header" style="border-bottom: none; ">
                 <div>
                   <div class="problem-card__title-row">
+                    <label class="problem-card__checkbox" onclick="event.stopPropagation(); window.toggleProblemComplete('m7-p6')">
+                      <input type="checkbox" id="check-m7-p6">
+                      <span class="problem-card__checkmark"></span>
+                    </label>
                     <span class="problem-card__number">#6</span>
                     <h3 class="problem-card__title">Linked List Cycle II</h3>
                     <span class="badge badge--medium">Medium</span>
@@ -213,6 +254,43 @@ document.addEventListener('DOMContentLoaded', () => {
             </a>
             </div>
         </section>
+        
+        <!-- Teaching Notes -->
+        <section class="module-section" id="teaching-notes">
+          <h2 class="module-section__title"><span class="icon">📝</span> Teaching Notes</h2>
+          <details class="teaching-notes">
+            <summary class="teaching-notes__summary">Suggested Teaching Sequence</summary>
+            <div class="teaching-notes__content">
+              <ol>
+            <li>Begin with the theory section — walk through key concepts (~20 min)</li>
+            <li>Use the interactive visualization to demonstrate the algorithm (~15 min)</li>
+            <li>Solve the first problem together as a class (~20 min)</li>
+            <li>Assign remaining Easy problems as lab work, Medium/Hard as homework</li>
+              </ol>
+            </div>
+          </details>
+          <details class="teaching-notes">
+            <summary class="teaching-notes__summary">Common Student Mistakes</summary>
+            <div class="teaching-notes__content">
+              <ul>
+            <li>Not handling edge cases (empty input, single element, duplicates)</li>
+            <li>Confusing time and space complexity of different approaches</li>
+            <li>Jumping to code before understanding the algorithm logic</li>
+              </ul>
+            </div>
+          </details>
+          <details class="teaching-notes">
+            <summary class="teaching-notes__summary">Discussion Questions</summary>
+            <div class="teaching-notes__content">
+              <ul>
+            <li>What is the brute force approach and why is it insufficient?</li>
+            <li>How does the optimal approach improve on the brute force?</li>
+            <li>Can you identify the pattern that connects this module's problems?</li>
+              </ul>
+            </div>
+          </details>
+        </section>
+
         <div class="module-nav"><a href="module-06-linked-list-1.html" class="module-nav__btn"><div><span class="module-nav__label">← Previous</span><span class="module-nav__title">Linked List Part 1</span></div></a><a href="module-08-stack-queue.html" class="module-nav__btn module-nav__btn--next"><div><span class="module-nav__label">Next →</span><span class="module-nav__title">Stack & Queue</span></div></a></div>
       </main>
     </div>
@@ -222,5 +300,6 @@ document.addEventListener('DOMContentLoaded', () => {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
   <script src="../js/main.js"></script><script src="../js/code-runner.js"></script>
 </body></html>

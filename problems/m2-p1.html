@@ -2,12 +2,14 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
+  <meta name="description" content="Number of 1 Bits — Bit Manipulation. Step-by-step approach from brute force to optimal with interactive visualization, pseudocode, and C++/Python implementations.">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Number of 1 Bits - CP-II Lab</title>
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/components.css">
   <link rel="stylesheet" href="../css/problem.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x26A1;</text></svg>">
 </head>
 <body class="bg-dots">
@@ -148,7 +150,7 @@
     <!-- 7. Implementation -->
     <section class="problem-section">
       <h2 class="problem-section__title"><span class="icon">&#128187;</span> Optimal Implementation</h2>
-      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre><code class="language-cpp">class Solution {
+      <div class="code-block"><div class="code-block__header"><div class="code-block__tabs"><button class="code-block__tab active" data-lang="cpp">C++</button><button class="code-block__tab" data-lang="python">Python</button></div><button class="code-block__copy">&#128203; Copy</button></div><div class="code-block__body"><div class="code-block__content active" data-lang="cpp"><pre class="line-numbers"><code class="language-cpp">class Solution {
 public:
     int hammingWeight(int n) {
         int count = 0;
@@ -158,7 +160,7 @@ public:
         }
         return count;
     }
-};</code></pre></div><div class="code-block__content" data-lang="python"><pre><code class="language-python">class Solution:
+};</code></pre></div><div class="code-block__content" data-lang="python"><pre class="line-numbers"><code class="language-python">class Solution:
     def hammingWeight(self, n: int) -&gt; int:
         count = 0
         while n:
@@ -166,13 +168,28 @@ public:
             count += 1
         return count</code></pre></div></div></div>
     </section>
+  
+    <!-- Problem Navigation -->
+    <div class="problem-nav">
+    <div></div>
+    <a href="../modules/module-02-bit-manipulation.html" class="problem-nav__btn problem-nav__btn--module">
+      <span class="problem-nav__label">📚 Module</span>
+      <span class="problem-nav__title">Bit Manipulation</span>
+    </a>
+    <a href="m2-p2.html" class="problem-nav__btn problem-nav__btn--next">
+      <span class="problem-nav__label">Next →</span>
+      <span class="problem-nav__title">Bit Difference</span>
+    </a>
+    </div>
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
   <script src="../js/main.js"></script>
   <script src="../js/code-runner.js"></script>
+  <button class="scroll-top" aria-label="Scroll to top">↑</button>
 </body>
 </html>
