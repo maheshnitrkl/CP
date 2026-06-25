@@ -488,11 +488,10 @@ function highlightLine(lineNum) {
 }
 
 langTabs.forEach(tab => {
-    tab.addEventListener('click', (e) => {
-        const clickedTab = e.currentTarget;
+    tab.addEventListener('click', () => {
         langTabs.forEach(t => t.classList.remove('active'));
-        clickedTab.classList.add('active');
-        currentLang = clickedTab.dataset.lang;
+        tab.classList.add('active');
+        currentLang = tab.dataset.lang;
         editor.value = EXAMPLES[currentLang];
         updateLineNumbers();
         stopAnimation();
