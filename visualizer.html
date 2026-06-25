@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Visualizer / Dry Run</title>
+    <style>
+        :root {
+            --bg-base: #0f0f13;
+            --bg-surface: #1a1a24;
+            --bg-elevated: #252533;
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b0;
+            --text-tertiary: #6b6b7b;
+            --accent-cyan: #00e5ff;
+            --accent-green: #00e676;
+            --accent-yellow: #ffea00;
+            --accent-red: #ff1744;
+            --border-primary: rgba(255, 255, 255, 0.1);
+            --border-active: rgba(0, 229, 255, 0.5);
+            --font-mono: 'Consolas', 'Fira Code', 'Monaco', monospace;
+            --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Navbar Integration Placeholder */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: rgba(15, 15, 19, 0.9);
+            border-bottom: 1px solid var(--border-primary);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+        .navbar__brand { color: var(--text-primary); text-decoration: none; font-weight: 700; font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+        .navbar__nav { display: flex; gap: 1.5rem; }
+        .navbar__link { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+        .navbar__link:hover, .navbar__link.active { color: var(--accent-cyan); }
+
+        /* Main Layout */
+        .visualizer-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            gap: 1px;
+            background: var(--border-primary);
+        }
+
+        /* Left Panel - Editor */
+        .editor-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-base);
+            min-width: 300px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .lang-tabs { display: flex; gap: 0.5rem; }
+        .lang-tab {
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--text-tertiary);
+            transition: all 0.2s;
+        }
+        .lang-tab.active { background: var(--bg-elevated); color: var(--accent-cyan); }
+
+        .editor-wrapper {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .line-numbers {
+            padding: 1rem 0.5rem;
+            background: var(--bg-surface);
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.6;
+            text-align: right;
+            user-select: none;
+            border-right: 1px solid var(--border-primary);
+        }
+        .line-number {
+            display: block;
+            height: 1.6em;
+        }
+        .line-number.active {
+            color: var(--accent-cyan);
+            background: rgba(0, 229, 255, 0.1);
+            border-left: 2px solid var(--accent-cyan);
+            margin-left: -0.5rem;
+            padding-left: calc(0.5rem - 2px);
+        }
+
+        #code-input {
+            flex: 1;
+            background: transparent;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 1rem;
+            border: none;
+            resize: none;
+            outline: none;
+            white-space: pre;
+            overflow: auto;
+        }
+
+        /* Code Active Line Highlight (Overlay) */
+        .editor-highlight {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1.6em;
+            background: rgba(0, 229, 255, 0.05);
+            pointer-events: none;
+            display: none;
+            z-index: 1;
+        }
+
+        .controls {
+            padding: 1rem;
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border-primary);
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary { background: var(--accent-cyan); color: #000; }
+        .btn-primary:hover { background: #33eeff; transform: translateY(-1px); }
+        .btn-secondary { background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border-primary); }
+        .btn-secondary:hover { background: #3a3a4d; }
+        .btn-icon { padding: 0.5rem; background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border-primary); border-radius: 6px; cursor: pointer; }
+        .btn-icon:hover { background: #3a3a4d; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        select.btn-secondary { appearance: none; padding-right: 2rem; background: var(--bg-elevated) url('data:image/svg+xml;utf8,<svg fill="%23fff" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 0.5rem center; }
+
+        /* Right Panel - Trace */
+        .trace-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-base);
+            min-width: 300px;
+            position: relative;
+        }
+
+        .trace-content {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .step-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+            transform: translateY(10px);
+        }
+        .step-card.current {
+            opacity: 1;
+            transform: translateY(0);
+            border-color: var(--border-active);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
+        }
+        .step-card.revealed {
+            opacity: 0.7;
+            transform: translateY(0);
+        }
+
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed var(--border-primary);
+        }
+        .step-line { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan); font-weight: 600; }
+        .step-desc { font-size: 0.9rem; color: var(--text-primary); font-weight: 500; }
+        .step-note { font-size: 0.8rem; color: var(--accent-yellow); font-style: italic; margin-top: 0.5rem; }
+
+        .vars-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .var-chip {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-primary);
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .var-chip.changed {
+            border-color: var(--accent-green);
+            background: rgba(0, 230, 118, 0.1);
+        }
+        .var-name { color: var(--text-secondary); }
+        .var-val { color: var(--text-primary); font-weight: 600; }
+
+        .output-box {
+            background: #0a0a0d;
+            border-left: 2px solid var(--accent-cyan);
+            padding: 0.5rem 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: #82aaff;
+            margin-top: 0.75rem;
+            border-radius: 0 4px 4px 0;
+            white-space: pre-wrap;
+        }
+
+        /* Call Stack Bar */
+        .call-stack-bar {
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border-primary);
+            padding: 0.75rem 1rem;
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            align-items: center;
+        }
+        .call-stack-label {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-right: 0.5rem;
+        }
+        .stack-frame {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-primary);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .stack-frame:last-child {
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            background: rgba(0, 229, 255, 0.1);
+        }
+
+        /* Progress & Status */
+        .progress-container {
+            height: 2px;
+            background: var(--border-primary);
+            width: 100%;
+        }
+        .progress-bar {
+            height: 100%;
+            background: var(--accent-cyan);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .status-bar {
+            background: var(--bg-base);
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-top: 1px solid var(--border-primary);
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-tertiary); }
+        .status-dot.running { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+        .status-dot.error { background: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
+
+        @media (max-width: 768px) {
+            .visualizer-container { flex-direction: column; }
+            .editor-panel, .trace-panel { min-height: 50vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="navbar__brand">
+            <span style="color:var(--accent-cyan)">⚡</span> CP-II Lab
+        </a>
+        <div class="navbar__nav">
+            <a href="index.html" class="navbar__link">Home</a>
+            <a href="#" class="navbar__link active">🔍 Visualizer</a>
+        </div>
+    </nav>
+
+    <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+
+    <div class="visualizer-container">
+        <!-- Editor Panel -->
+        <div class="editor-panel">
+            <div class="panel-header">
+                <div class="lang-tabs" id="lang-tabs">
+                    <div class="lang-tab active" data-lang="python">Python</div>
+                    <div class="lang-tab" data-lang="cpp">C++</div>
+                    <div class="lang-tab" data-lang="java">Java</div>
+                </div>
+                <span>SOURCE CODE</span>
+            </div>
+            
+            <div class="editor-wrapper">
+                <div class="line-numbers" id="line-numbers"></div>
+                <div class="editor-highlight" id="editor-highlight"></div>
+                <textarea id="code-input" spellcheck="false"></textarea>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="btn-run">▶ Run Trace</button>
+                <button class="btn btn-secondary" id="btn-example">Example</button>
+                <button class="btn btn-secondary" id="btn-clear">Clear</button>
+                
+                <div style="flex: 1"></div>
+                
+                <select class="btn btn-secondary" id="speed-select">
+                    <option value="900">Slow</option>
+                    <option value="420" selected>Normal</option>
+                    <option value="130">Fast</option>
+                    <option value="0">Instant</option>
+                </select>
+                
+                <button class="btn-icon" id="btn-prev" disabled>‹</button>
+                <button class="btn-icon" id="btn-next" disabled>›</button>
+            </div>
+        </div>
+
+        <!-- Trace Panel -->
+        <div class="trace-panel">
+            <div class="panel-header">
+                <span>EXECUTION TRACE</span>
+            </div>
+            
+            <div class="trace-content" id="trace-content">
+                <div style="color: var(--text-tertiary); text-align: center; margin-top: 2rem;">
+                    Ready — paste code and click Run Trace<br>
+                    <small>or press Ctrl+Enter</small>
+                </div>
+            </div>
+
+            <div class="call-stack-bar" id="call-stack">
+                <span class="call-stack-label">Call Stack</span>
+                <!-- stack frames injected here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <div class="status-dot" id="status-dot"></div>
+        <span id="status-text">Idle</span>
+    </div>
+
+<script>
+/* ============================================================
+   EXAMPLES
+   ============================================================ */
+const EXAMPLES = {
+    python: `def factorial(n):
+    if n <= 1:
+        return 1
+    return n * factorial(n - 1)
+
+print("Starting calculation...")
+result = factorial(4)
+print("Result is:", result)
+`,
+    cpp: `int factorial(int n) {
+    if (n <= 1) {
+        return 1;
+    }
+    return n * factorial(n - 1);
+}
+
+int main() {
+    cout << "Starting calculation..." << endl;
+    int result = factorial(4);
+    cout << "Result is: " << result << endl;
+    return 0;
+}`,
+    java: `public class Main {
+    public static int factorial(int n) {
+        if (n <= 1) {
+            return 1;
+        }
+        return n * factorial(n - 1);
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Starting calculation...");
+        int result = factorial(4);
+        System.out.println("Result is: " + result);
+    }
+}`
+};
+
+/* ============================================================
+   UI & EDITOR LOGIC
+   ============================================================ */
+const editor = document.getElementById('code-input');
+const lineNumbers = document.getElementById('line-numbers');
+const editorHighlight = document.getElementById('editor-highlight');
+const langTabs = document.querySelectorAll('.lang-tab');
+let currentLang = 'python';
+
+function updateLineNumbers() {
+    const lines = editor.value.split('\n').length;
+    lineNumbers.innerHTML = Array.from({length: lines}, (_, i) => `<div class="line-number" id="ln-${i+1}">${i+1}</div>`).join('');
+}
+
+editor.addEventListener('input', updateLineNumbers);
+editor.addEventListener('scroll', () => {
+    lineNumbers.scrollTop = editor.scrollTop;
+    editorHighlight.style.top = `calc(${editorHighlight.dataset.top || 0}px - ${editor.scrollTop}px)`;
+});
+
+function highlightLine(lineNum) {
+    document.querySelectorAll('.line-number').forEach(el => el.classList.remove('active'));
+    if (lineNum > 0) {
+        const el = document.getElementById(`ln-${lineNum}`);
+        if (el) el.classList.add('active');
+        
+        // Calculate offset for highlight overlay (1rem padding top + line height)
+        const lineHeight = 1.6 * 14; // 1.6 line-height * 14px font-size
+        const topPx = 16 + ((lineNum - 1) * lineHeight);
+        editorHighlight.dataset.top = topPx;
+        editorHighlight.style.top = `calc(${topPx}px - ${editor.scrollTop}px)`;
+        editorHighlight.style.display = 'block';
+    } else {
+        editorHighlight.style.display = 'none';
+    }
+}
+
+langTabs.forEach(tab => {
+    tab.addEventListener('click', (e) => {
+        langTabs.forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        currentLang = e.target.dataset.lang;
+        editor.value = EXAMPLES[currentLang];
+        updateLineNumbers();
+    });
+});
+
+document.getElementById('btn-example').addEventListener('click', () => {
+    editor.value = EXAMPLES[currentLang];
+    updateLineNumbers();
+});
+
+document.getElementById('btn-clear').addEventListener('click', () => {
+    editor.value = '';
+    updateLineNumbers();
+    stopAnimation();
+    document.getElementById('trace-content').innerHTML = '<div style="color: var(--text-tertiary); text-align: center; margin-top: 2rem;">Ready — paste code and click Run Trace</div>';
+    document.getElementById('call-stack').innerHTML = '<span class="call-stack-label">Call Stack</span>';
+});
+
+/* ============================================================
+   EVALUATOR UTILITY
+   ============================================================ */
+function evalExpr(expr, scopeVars) {
+    if (!expr) return undefined;
+    let scopeStr = "";
+    for (let k in scopeVars) {
+        scopeStr += \`let \${k} = \${JSON.stringify(scopeVars[k])};\\n\`;
+    }
+    let cleanExpr = expr.replace(/\\band\\b/g, '&&')
+                        .replace(/\\bor\\b/g, '||')
+                        .replace(/\\bnot\\b/g, '!')
+                        .replace(/\\bTrue\\b/g, 'true')
+                        .replace(/\\bFalse\\b/g, 'false')
+                        .replace(/\\bNone\\b/g, 'null');
+    try {
+        let func = new Function(scopeStr + "return (" + cleanExpr + ");");
+        return func();
+    } catch (e) {
+        return expr;
+    }
+}
+
+/* ============================================================
+   INTERPRETER CORE
+   ============================================================ */
+// Returns array of step objects: { line, desc, vars: [{name, value, changed}], output, note, stack }
+
+function tracePython(code) {
+    const lines = code.split('\\n');
+    let steps = [];
+    let funcs = {};
+    let callStack = []; // [{name, locals: {}, line}]
+    let globalScope = {};
+    
+    // 1. First pass: Register functions
+    let i = 0;
+    while (i < lines.length) {
+        let line = lines[i];
+        let m = line.match(/^def\\s+([a-zA-Z_]\\w*)\\s*\\((.*?)\\):/);
+        if (m) {
+            let funcName = m[1];
+            let params = m[2].split(',').map(s=>s.trim()).filter(s=>s);
+            let start = i + 1;
+            let end = start;
+            while (end < lines.length && (lines[end].trim() === '' || lines[end].startsWith(' ') || lines[end].startsWith('\\t'))) {
+                end++;
+            }
+            funcs[funcName] = { params, bodyRange: [start, end-1] };
+            i = end - 1;
+        }
+        i++;
+    }
+
+    // 2. Main execution context setup
+    callStack.push({name: "main()", locals: globalScope, line: 0});
+    let maxSteps = 500;
+    
+    function getScope() { return callStack[callStack.length - 1].locals; }
+    function pushStep(lineNum, desc, output="", note="") {
+        let currentScope = getScope();
+        let varsObj = [];
+        let prevScope = steps.length > 0 ? {} : null;
+        if (steps.length > 0) {
+            steps[steps.length-1].vars.forEach(v => prevScope[v.name] = v.value);
+        }
+        for (let k in currentScope) {
+            let val = String(currentScope[k]);
+            let changed = prevScope ? (prevScope[k] !== val) : true;
+            varsObj.push({name: k, value: val, changed});
+        }
+        steps.push({
+            line: lineNum + 1,
+            desc,
+            vars: varsObj,
+            output,
+            note,
+            stack: callStack.map(f => f.name)
+        });
+    }
+
+    // 3. Execution Engine
+    function executeBlock(startIdx, endIdx, indentationContext) {
+        let idx = startIdx;
+        let blockOutput = "";
+        
+        while (idx <= endIdx && steps.length < maxSteps) {
+            let line = lines[idx];
+            let trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith('#')) { idx++; continue; }
+            
+            // Check indentation strictly to jump out of blocks
+            let indent = line.length - line.trimLeft().length;
+            if (indent < indentationContext) {
+                break; // end of block
+            }
+            
+            let scope = getScope();
+            
+            // Return
+            let mRet = trimmed.match(/^return\\s+(.*)$/);
+            if (mRet) {
+                let val = evalExpr(mRet[1], scope);
+                pushStep(idx, \`Return \${val}\`);
+                return { action: 'return', value: val };
+            }
+            
+            // Print
+            let mPrint = trimmed.match(/^print\\((.*)\\)$/);
+            if (mPrint) {
+                let args = mPrint[1].split(',').map(s=>s.trim());
+                let vals = args.map(a => {
+                    let v = evalExpr(a, scope);
+                    return (typeof v === 'string') ? v.replace(/(^"|"$|^'|'$)/g, '') : v;
+                });
+                let outStr = vals.join(" ");
+                pushStep(idx, \`Print output\`, outStr);
+                idx++; continue;
+            }
+            
+            // Assignment (x = 5)
+            let mAssign = trimmed.match(/^([a-zA-Z_]\\w*)\\s*=\\s*(.*)$/);
+            if (mAssign && !trimmed.includes('==')) {
+                let varName = mAssign[1];
+                let expr = mAssign[2];
+                // Check if it's a function call
+                let mFunc = expr.match(/^([a-zA-Z_]\\w*)\\((.*)\\)$/);
+                if (mFunc && funcs[mFunc[1]]) {
+                    pushStep(idx, \`Call \${mFunc[1]}()\`);
+                    let retVal = callFunction(mFunc[1], mFunc[2], scope, idx);
+                    scope[varName] = retVal;
+                    pushStep(idx, \`Assign result to \${varName}\`);
+                } else {
+                    let val = evalExpr(expr, scope);
+                    scope[varName] = val;
+                    pushStep(idx, \`Assign \${varName} = \${val}\`);
+                }
+                idx++; continue;
+            }
+            
+            // Augmented Assignment
+            let mAug = trimmed.match(/^([a-zA-Z_]\\w*)\\s*(\\+|-|\\*|\\/)=\\s*(.*)$/);
+            if (mAug) {
+                let vName = mAug[1], op = mAug[2], expr = mAug[3];
+                let val = evalExpr(\`\${scope[vName]} \${op} \${expr}\`, scope);
+                scope[vName] = val;
+                pushStep(idx, \`Update \${vName} \${op}= \${expr}\`);
+                idx++; continue;
+            }
+            
+            // If condition
+            let mIf = trimmed.match(/^(?:if|elif)\\s+(.*):$/);
+            if (mIf) {
+                let cond = mIf[1];
+                let condVal = evalExpr(cond, scope);
+                pushStep(idx, \`Evaluate condition: \${condVal}\`);
+                if (condVal) {
+                    let bRes = executeBlock(idx + 1, endIdx, indent + 4);
+                    if (bRes && bRes.action === 'return') return bRes;
+                    // Skip following elif/else
+                    idx++; // move past if
+                    while (idx <= endIdx && (lines[idx].trim().startsWith('elif') || lines[idx].trim().startsWith('else'))) {
+                        let skipEnd = idx + 1;
+                        while(skipEnd <= endIdx && lines[skipEnd].length - lines[skipEnd].trimLeft().length > indent) skipEnd++;
+                        idx = skipEnd;
+                    }
+                    continue;
+                } else {
+                    // Skip block
+                    idx++;
+                    while (idx <= endIdx && lines[idx].length - lines[idx].trimLeft().length > indent) idx++;
+                    continue;
+                }
+            }
+            
+            // Else
+            if (trimmed.startsWith('else:')) {
+                pushStep(idx, \`Enter else branch\`);
+                let bRes = executeBlock(idx + 1, endIdx, indent + 4);
+                if (bRes && bRes.action === 'return') return bRes;
+                idx++;
+                while (idx <= endIdx && lines[idx].length - lines[idx].trimLeft().length > indent) idx++;
+                continue;
+            }
+            
+            // While
+            let mWhile = trimmed.match(/^while\\s+(.*):$/);
+            if (mWhile) {
+                let cond = mWhile[1];
+                let loopCount = 0;
+                while (evalExpr(cond, getScope()) && loopCount < 50) {
+                    pushStep(idx, \`While loop: True\`);
+                    let bRes = executeBlock(idx + 1, endIdx, indent + 4);
+                    if (bRes && bRes.action === 'return') return bRes;
+                    loopCount++;
+                }
+                pushStep(idx, \`While loop end\`);
+                idx++;
+                while (idx <= endIdx && lines[idx].length - lines[idx].trimLeft().length > indent) idx++;
+                continue;
+            }
+            
+            // Standalone function call
+            let mFuncAlone = trimmed.match(/^([a-zA-Z_]\\w*)\\((.*)\\)$/);
+            if (mFuncAlone && funcs[mFuncAlone[1]]) {
+                pushStep(idx, \`Call \${mFuncAlone[1]}()\`);
+                callFunction(mFuncAlone[1], mFuncAlone[2], scope, idx);
+            }
+            
+            idx++;
+        }
+        return { action: 'done' };
+    }
+    
+    function callFunction(funcName, argStr, callerScope, callLineIdx) {
+        let fDef = funcs[funcName];
+        let argVals = argStr.split(',').map(s=>evalExpr(s.trim(), callerScope));
+        let locals = {};
+        fDef.params.forEach((p, i) => { locals[p] = argVals[i]; });
+        
+        callStack.push({name: \`\${funcName}()\`, locals: locals, line: fDef.bodyRange[0]});
+        
+        let res = executeBlock(fDef.bodyRange[0], fDef.bodyRange[1], 4); // assuming 4 spaces intent inside func
+        
+        callStack.pop();
+        return res && res.action === 'return' ? res.value : undefined;
+    }
+
+    // Start execution from global level
+    executeBlock(0, lines.length - 1, 0);
+    return steps;
+}
+
+// C++ Tracer
+function traceCpp(code) {
+    const lines = code.split('\\n');
+    let steps = [];
+    let funcs = {};
+    let callStack = [];
+    
+    // Parse functions
+    let currentFunc = null;
+    let braceCount = 0;
+    
+    for (let i=0; i<lines.length; i++) {
+        let line = lines[i].trim();
+        let mFunc = line.match(/^(?:int|void|double|float|bool|string|auto)\\s+([a-zA-Z_]\\w*)\\s*\\((.*)\\)\\s*\\{?/);
+        if (mFunc && !currentFunc) {
+            let funcName = mFunc[1];
+            let params = mFunc[2].split(',').map(s=>s.trim().split(' ').pop()).filter(s=>s); // extract param names
+            currentFunc = { name: funcName, params: params, start: i + 1 };
+            funcs[funcName] = currentFunc;
+            if (line.includes('{')) braceCount = 1;
+        } else if (currentFunc) {
+            braceCount += (line.match(/\\{/g) || []).length;
+            braceCount -= (line.match(/\\}/g) || []).length;
+            if (braceCount === 0) {
+                currentFunc.end = i - 1;
+                currentFunc = null;
+            }
+        }
+    }
+    
+    function getScope() { return callStack[callStack.length - 1].locals; }
+    function pushStep(lineNum, desc, output="") {
+        let currentScope = getScope();
+        let varsObj = [];
+        let prevScope = steps.length > 0 ? {} : null;
+        if (steps.length > 0) steps[steps.length-1].vars.forEach(v => prevScope[v.name] = v.value);
+        
+        for (let k in currentScope) {
+            let val = String(currentScope[k]);
+            let changed = prevScope ? (prevScope[k] !== val) : true;
+            varsObj.push({name: k, value: val, changed});
+        }
+        steps.push({
+            line: lineNum + 1, desc, vars: varsObj, output, note: "",
+            stack: callStack.map(f => f.name)
+        });
+    }
+
+    function executeBlock(startIdx, endIdx) {
+        let idx = startIdx;
+        while (idx <= endIdx && steps.length < 500) {
+            let line = lines[idx];
+            let trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('using')) { idx++; continue; }
+            if (trimmed === '{' || trimmed === '}') { idx++; continue; }
+            
+            let scope = getScope();
+            
+            // Return
+            let mRet = trimmed.match(/^return\\s+(.*);/);
+            if (mRet) {
+                let val = evalExpr(mRet[1], scope);
+                pushStep(idx, \`Return \${val}\`);
+                return { action: 'return', value: val };
+            }
+            
+            // cout
+            if (trimmed.startsWith('cout')) {
+                let outStr = trimmed.replace('cout', '').replace(/;/g, '').split('<<')
+                    .map(s => s.trim())
+                    .filter(s => s && s !== 'endl')
+                    .map(s => {
+                        if(s.startsWith('"') && s.endsWith('"')) return s.slice(1,-1);
+                        return evalExpr(s, scope);
+                    }).join('');
+                pushStep(idx, \`Output stream\`, outStr);
+                idx++; continue;
+            }
+            
+            // Declaration & Assignment (int x = 5;)
+            let mDecl = trimmed.match(/^(?:int|double|float|bool|string|auto)\\s+([a-zA-Z_]\\w*)\\s*=\\s*(.*);/);
+            if (mDecl) {
+                let varName = mDecl[1], expr = mDecl[2];
+                handleAssign(idx, varName, expr, scope);
+                idx++; continue;
+            }
+            
+            // Assignment (x = 5;)
+            let mAssign = trimmed.match(/^([a-zA-Z_]\\w*)\\s*=\\s*(.*);/);
+            if (mAssign && !trimmed.startsWith('int') && !trimmed.startsWith('if') && !trimmed.startsWith('for') && !trimmed.startsWith('while')) {
+                handleAssign(idx, mAssign[1], mAssign[2], scope);
+                idx++; continue;
+            }
+
+            // If
+            let mIf = trimmed.match(/^if\\s*\\((.*)\\)\\s*\\{?/);
+            if (mIf) {
+                let condVal = evalExpr(mIf[1], scope);
+                pushStep(idx, \`Condition: \${condVal}\`);
+                
+                // Find block bounds
+                let bStart = idx + 1, bEnd = idx;
+                let bc = trimmed.includes('{') ? 1 : 0;
+                if(bc===0 && lines[idx+1].includes('{')) { bStart++; bEnd++; bc=1; }
+                
+                while(bc > 0 && bEnd < endIdx) {
+                    bEnd++;
+                    bc += (lines[bEnd].match(/\\{/g)||[]).length - (lines[bEnd].match(/\\}/g)||[]).length;
+                }
+                
+                if (condVal) {
+                    let r = executeBlock(bStart, bEnd - 1);
+                    if (r && r.action === 'return') return r;
+                }
+                idx = bEnd + 1;
+                continue;
+            }
+            
+            idx++;
+        }
+        return { action: 'done' };
+    }
+    
+    function handleAssign(idx, varName, expr, scope) {
+        let mFunc = expr.match(/^([a-zA-Z_]\\w*)\\((.*)\\)$/);
+        if (mFunc && funcs[mFunc[1]]) {
+            pushStep(idx, \`Call \${mFunc[1]}()\`);
+            let retVal = callFunction(mFunc[1], mFunc[2], scope, idx);
+            scope[varName] = retVal;
+            pushStep(idx, \`Assign \${varName}\`);
+        } else {
+            scope[varName] = evalExpr(expr, scope);
+            pushStep(idx, \`Assign \${varName}\`);
+        }
+    }
+
+    function callFunction(funcName, argStr, callerScope, lineIdx) {
+        let fDef = funcs[funcName];
+        let argVals = argStr ? argStr.split(',').map(s=>evalExpr(s.trim(), callerScope)) : [];
+        let locals = {};
+        fDef.params.forEach((p, i) => { locals[p] = argVals[i]; });
+        
+        callStack.push({name: \`\${funcName}()\`, locals: locals, line: fDef.start});
+        let res = executeBlock(fDef.start, fDef.end);
+        callStack.pop();
+        return res && res.action === 'return' ? res.value : undefined;
+    }
+
+    // Start at main
+    if (funcs['main']) {
+        callStack.push({name: "main()", locals: {}, line: funcs['main'].start});
+        executeBlock(funcs['main'].start, funcs['main'].end);
+    }
+    
+    return steps;
+}
+
+// Java Tracer - Normalizes Java syntax to C++ and uses C++ tracer
+function traceJava(code) {
+    let normalized = code
+        .replace(/public\\s+class\\s+\\w+\\s*\\{/g, '') // remove class wrap
+        .replace(/public\\s+static\\s+void\\s+main\\(String\\[\\]\\s+args\\)/g, 'int main()')
+        .replace(/public\\s+static\\s+/g, '')
+        .replace(/System\\.out\\.println\\((.*)\\)/g, 'cout << $1 << endl')
+        .replace(/System\\.out\\.print\\((.*)\\)/g, 'cout << $1')
+        .replace(/boolean\\b/g, 'bool')
+        .replace(/String\\b/g, 'string');
+    // removing last closing brace of class
+    let lines = normalized.split('\\n');
+    for (let i = lines.length - 1; i >= 0; i--) {
+        if (lines[i].trim() === '}') { lines[i] = ''; break; }
+    }
+    return traceCpp(lines.join('\\n'));
+}
+
+/* ============================================================
+   ANIMATION & STATE LOGIC
+   ============================================================ */
+let currentSteps = [];
+let animTimer = null;
+let currentStepIdx = 0;
+let speed = 420;
+
+const runBtn = document.getElementById('btn-run');
+const speedSelect = document.getElementById('speed-select');
+const traceContent = document.getElementById('trace-content');
+const callStackBar = document.getElementById('call-stack');
+const progressBar = document.getElementById('progress-bar');
+const statusDot = document.getElementById('status-dot');
+const statusText = document.getElementById('status-text');
+const btnPrev = document.getElementById('btn-prev');
+const btnNext = document.getElementById('btn-next');
+
+speedSelect.addEventListener('change', (e) => speed = parseInt(e.target.value));
+
+function setStatus(state, msg) {
+    statusDot.className = 'status-dot ' + state;
+    statusText.textContent = msg;
+}
+
+runBtn.addEventListener('click', startTrace);
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'Enter') startTrace();
+});
+
+function startTrace() {
+    const code = editor.value;
+    if (!code.trim()) return;
+    
+    stopAnimation();
+    traceContent.innerHTML = '';
+    setStatus('running', 'Parsing and analyzing code...');
+    
+    try {
+        if (currentLang === 'python') currentSteps = tracePython(code);
+        else if (currentLang === 'cpp') currentSteps = traceCpp(code);
+        else if (currentLang === 'java') currentSteps = traceJava(code);
+        
+        if (currentSteps.length === 0) {
+            setStatus('error', 'Execution yielded no steps. Check syntax.');
+            return;
+        }
+        
+        currentStepIdx = 0;
+        setStatus('running', 'Executing trace...');
+        
+        if (speed === 0) {
+            // Instant
+            while (currentStepIdx < currentSteps.length) renderStep(currentStepIdx++);
+            finishTrace();
+        } else {
+            animTimer = setInterval(stepForward, speed);
+        }
+    } catch (e) {
+        setStatus('error', 'Error parsing code: ' + e.message);
+        console.error(e);
+    }
+}
+
+function stopAnimation() {
+    if (animTimer) clearInterval(animTimer);
+    animTimer = null;
+    btnPrev.disabled = currentStepIdx === 0;
+    btnNext.disabled = currentStepIdx >= currentSteps.length - 1;
+}
+
+function finishTrace() {
+    stopAnimation();
+    setStatus('', 'Execution completed.');
+    btnPrev.disabled = false;
+    btnNext.disabled = true;
+    highlightLine(0);
+}
+
+function stepForward() {
+    if (currentStepIdx >= currentSteps.length) {
+        finishTrace();
+        return;
+    }
+    renderStep(currentStepIdx);
+    currentStepIdx++;
+    progressBar.style.width = \`\${(currentStepIdx / currentSteps.length) * 100}%\`;
+}
+
+function renderStep(idx) {
+    const step = currentSteps[idx];
+    
+    // Mute previous cards
+    document.querySelectorAll('.step-card').forEach(c => {
+        c.classList.remove('current');
+        c.classList.add('revealed');
+    });
+    
+    // Build new card
+    const card = document.createElement('div');
+    card.className = 'step-card current';
+    card.id = \`step-\${idx}\`;
+    
+    let varsHtml = step.vars.map(v => 
+        \`<div class="var-chip \${v.changed ? 'changed' : ''}">
+            <span class="var-name">\${v.name}:</span>
+            <span class="var-val">\${v.value}</span>
+         </div>\`
+    ).join('');
+    
+    let outputHtml = step.output ? \`<div class="output-box">\${step.output}</div>\` : '';
+    let noteHtml = step.note ? \`<div class="step-note">\${step.note}</div>\` : '';
+    
+    card.innerHTML = \`
+        <div class="step-header">
+            <span class="step-line">Line \${step.line}</span>
+            <span class="step-desc">\${step.desc}</span>
+        </div>
+        <div class="vars-container">\${varsHtml}</div>
+        \${outputHtml}
+        \${noteHtml}
+    \`;
+    
+    traceContent.appendChild(card);
+    card.scrollIntoView({behavior: 'smooth', block: 'end'});
+    
+    highlightLine(step.line);
+    
+    // Update call stack
+    callStackBar.innerHTML = '<span class="call-stack-label">Call Stack</span>' + 
+        step.stack.map(frame => \`<div class="stack-frame">\${frame}</div>\`).join(' → ');
+}
+
+btnPrev.addEventListener('click', () => {
+    if (currentStepIdx > 1) {
+        currentStepIdx--;
+        document.getElementById(\`step-\${currentStepIdx}\`).remove();
+        const prevCard = document.getElementById(\`step-\${currentStepIdx - 1}\`);
+        if (prevCard) {
+            prevCard.classList.add('current');
+            prevCard.scrollIntoView({behavior: 'smooth', block: 'end'});
+            highlightLine(currentSteps[currentStepIdx - 1].line);
+        }
+        progressBar.style.width = \`\${(currentStepIdx / currentSteps.length) * 100}%\`;
+    }
+    btnNext.disabled = false;
+    if (currentStepIdx <= 1) btnPrev.disabled = true;
+});
+
+btnNext.addEventListener('click', () => {
+    if (currentStepIdx < currentSteps.length) {
+        renderStep(currentStepIdx);
+        currentStepIdx++;
+        progressBar.style.width = \`\${(currentStepIdx / currentSteps.length) * 100}%\`;
+    }
+    btnPrev.disabled = false;
+    if (currentStepIdx >= currentSteps.length) btnNext.disabled = true;
+});
+
+// Init
+editor.value = EXAMPLES['python'];
+updateLineNumbers();
+highlightLine(0);
+
+</script>
+</body>
+</html>
