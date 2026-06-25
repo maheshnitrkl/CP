@@ -489,11 +489,16 @@ function highlightLine(lineNum) {
 
 langTabs.forEach(tab => {
     tab.addEventListener('click', (e) => {
+        const clickedTab = e.currentTarget;
         langTabs.forEach(t => t.classList.remove('active'));
-        e.target.classList.add('active');
-        currentLang = e.target.dataset.lang;
+        clickedTab.classList.add('active');
+        currentLang = clickedTab.dataset.lang;
         editor.value = EXAMPLES[currentLang];
         updateLineNumbers();
+        stopAnimation();
+        document.getElementById('trace-content').innerHTML = '<div style="color: var(--text-tertiary); text-align: center; margin-top: 2rem;">Ready — paste code and click Run Trace</div>';
+        document.getElementById('call-stack').innerHTML = '<span class="call-stack-label">Call Stack</span>';
+        setStatus('idle', 'Idle');
     });
 });
 
