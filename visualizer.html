@@ -499,8 +499,7 @@ langTabs.forEach(tab => {
         editor.value = EXAMPLES[currentLang];
         updateLineNumbers();
         stopAnimation();
-        document.getElementById('trace-content').innerHTML = '<div style="color: var(--text-tertiary); text-align: center; margin-top: 2rem;">Ready — paste code and click Run Trace</div>';
-        document.getElementById('call-stack').innerHTML = '<span class="call-stack-label">Call Stack</span>';
+        resetDashboard();
         setStatus('idle', 'Idle');
     });
 });
@@ -514,8 +513,7 @@ document.getElementById('btn-clear').addEventListener('click', () => {
     editor.value = '';
     updateLineNumbers();
     stopAnimation();
-    document.getElementById('trace-content').innerHTML = '<div style="color: var(--text-tertiary); text-align: center; margin-top: 2rem;">Ready — paste code and click Run Trace</div>';
-    document.getElementById('call-stack').innerHTML = '<span class="call-stack-label">Call Stack</span>';
+    resetDashboard();
 });
 
 /* ============================================================
@@ -591,7 +589,7 @@ function tracePython(code) {
         let varsObj = [];
         let prevScope = steps.length > 0 ? {} : null;
         if (steps.length > 0) {
-            steps[steps.length-1].vars.forEach(v => prevScope[v.name] = v.value);
+            steps[steps.length-1].vars.forEach(v => prevScope[v.name] = v.rawValue);
         }
         for (let k in currentScope) {
             let rawVal = deepClone(currentScope[k]);
@@ -628,10 +626,28 @@ function tracePython(code) {
             
             let scope = getScope();
             
+            // Skip function definitions
+            let mDef = trimmed.match(/^def\s+([a-zA-Z_]\w*)\s*\((.*?)\):/);
+            if (mDef) {
+                // Skip past the function body
+                let defIndent = indent;
+                idx++;
+                while (idx <= endIdx) {
+                    let nextLine = lines[idx];
+                    let nextTrimmed = nextLine.trim();
+                    if (nextTrimmed === '') { idx++; continue; }
+                    let nextIndent = nextLine.length - nextLine.trimStart().length;
+                    if (nextIndent <= defIndent) break;
+                    idx++;
+                }
+                continue;
+            }
+            
             // Return
             let mRet = trimmed.match(/^return\s+(.*)$/);
             if (mRet) {
-                let val = evalExpr(mRet[1], scope);
+                let retExpr = mRet[1];
+                let val = resolveExpr(retExpr, scope, idx);
                 pushStep(idx, `Return ${val}`);
                 return { action: 'return', value: val };
             }
@@ -639,9 +655,9 @@ function tracePython(code) {
             // Print
             let mPrint = trimmed.match(/^print\((.*)\)$/);
             if (mPrint) {
-                let args = mPrint[1].split(',').map(s=>s.trim());
+                let args = splitArgs(mPrint[1]);
                 let vals = args.map(a => {
-                    let v = evalExpr(a, scope);
+                    let v = resolveExpr(a.trim(), scope, idx);
                     return (typeof v === 'string') ? v.replace(/(^"|"$|^'|'$)/g, '') : v;
                 });
                 let outStr = vals.join(" ");
@@ -649,21 +665,44 @@ function tracePython(code) {
                 idx++; continue;
             }
             
+            // For loop (for i in range(...))
+            let mFor = trimmed.match(/^for\s+(\w+)\s+in\s+range\((.*)\):$/);
+            if (mFor) {
+                let varName = mFor[1];
+                let rangeArgs = mFor[2].split(',').map(s => resolveExpr(s.trim(), scope, idx));
+                let start_r = 0, end_r = 0, step_r = 1;
+                if (rangeArgs.length === 1) { end_r = rangeArgs[0]; }
+                else if (rangeArgs.length === 2) { start_r = rangeArgs[0]; end_r = rangeArgs[1]; }
+                else if (rangeArgs.length === 3) { start_r = rangeArgs[0]; end_r = rangeArgs[1]; step_r = rangeArgs[2]; }
+                
+                let loopCount = 0;
+                for (let ri = start_r; step_r > 0 ? ri < end_r : ri > end_r; ri += step_r) {
+                    if (loopCount >= 100 || steps.length >= maxSteps) break;
+                    scope[varName] = ri;
+                    pushStep(idx, `For loop: ${varName} = ${ri}`);
+                    let bRes = executeBlock(idx + 1, endIdx, indent + 4);
+                    if (bRes && bRes.action === 'return') return bRes;
+                    if (bRes && bRes.action === 'break') break;
+                    loopCount++;
+                }
+                pushStep(idx, `For loop ended`);
+                idx++;
+                while (idx <= endIdx && lines[idx].length - lines[idx].trimStart().length > indent) idx++;
+                continue;
+            }
+            
             // Assignment (x = 5)
             let mAssign = trimmed.match(/^([a-zA-Z_]\w*)\s*=\s*(.*)$/);
             if (mAssign && !trimmed.includes('==')) {
                 let varName = mAssign[1];
                 let expr = mAssign[2];
-                // Check if it's a function call
-                let mFunc = expr.match(/^([a-zA-Z_]\w*)\((.*)\)$/);
-                if (mFunc && funcs[mFunc[1]]) {
-                    pushStep(idx, `Call ${mFunc[1]}()`);
-                    let retVal = callFunction(mFunc[1], mFunc[2], scope, idx);
-                    scope[varName] = retVal;
-                    pushStep(idx, `Assign result to ${varName}`);
+                let val = resolveExpr(expr, scope, idx);
+                scope[varName] = val;
+                // Check if it was a function call for better description
+                let mFuncInExpr = expr.match(/([a-zA-Z_]\w*)\s*\(/);
+                if (mFuncInExpr && funcs[mFuncInExpr[1]]) {
+                    pushStep(idx, `Assign result to ${varName} = ${val}`);
                 } else {
-                    let val = evalExpr(expr, scope);
-                    scope[varName] = val;
                     pushStep(idx, `Assign ${varName} = ${val}`);
                 }
                 idx++; continue;
@@ -673,7 +712,8 @@ function tracePython(code) {
             let mAug = trimmed.match(/^([a-zA-Z_]\w*)\s*(\+|-|\*|\/)=\s*(.*)$/);
             if (mAug) {
                 let vName = mAug[1], op = mAug[2], expr = mAug[3];
-                let val = evalExpr(`${scope[vName]} ${op} ${expr}`, scope);
+                let exprVal = resolveExpr(expr, scope, idx);
+                let val = evalExpr(`${scope[vName]} ${op} ${exprVal}`, scope);
                 scope[vName] = val;
                 pushStep(idx, `Update ${vName} ${op}= ${expr}`);
                 idx++; continue;
@@ -692,14 +732,14 @@ function tracePython(code) {
                     idx++; // move past if
                     while (idx <= endIdx && (lines[idx].trim().startsWith('elif') || lines[idx].trim().startsWith('else'))) {
                         let skipEnd = idx + 1;
-                        while(skipEnd <= endIdx && lines[skipEnd].length - lines[skipEnd].trimLeft().length > indent) skipEnd++;
+                        while(skipEnd <= endIdx && lines[skipEnd].length - lines[skipEnd].trimStart().length > indent) skipEnd++;
                         idx = skipEnd;
                     }
                     continue;
                 } else {
                     // Skip block
                     idx++;
-                    while (idx <= endIdx && lines[idx].length - lines[idx].trimLeft().length > indent) idx++;
+                    while (idx <= endIdx && lines[idx].length - lines[idx].trimStart().length > indent) idx++;
                     continue;
                 }
             }
@@ -710,7 +750,7 @@ function tracePython(code) {
                 let bRes = executeBlock(idx + 1, endIdx, indent + 4);
                 if (bRes && bRes.action === 'return') return bRes;
                 idx++;
-                while (idx <= endIdx && lines[idx].length - lines[idx].trimLeft().length > indent) idx++;
+                while (idx <= endIdx && lines[idx].length - lines[idx].trimStart().length > indent) idx++;
                 continue;
             }
             
@@ -727,11 +767,11 @@ function tracePython(code) {
                 }
                 pushStep(idx, `While loop end`);
                 idx++;
-                while (idx <= endIdx && lines[idx].length - lines[idx].trimLeft().length > indent) idx++;
+                while (idx <= endIdx && lines[idx].length - lines[idx].trimStart().length > indent) idx++;
                 continue;
             }
             
-            // Standalone function call
+            // Standalone function call (e.g., print or user func)
             let mFuncAlone = trimmed.match(/^([a-zA-Z_]\w*)\((.*)\)$/);
             if (mFuncAlone && funcs[mFuncAlone[1]]) {
                 pushStep(idx, `Call ${mFuncAlone[1]}()`);
@@ -741,6 +781,58 @@ function tracePython(code) {
             idx++;
         }
         return { action: 'done' };
+    }
+    
+    // Resolve expressions that may contain function calls
+    function resolveExpr(expr, scope, lineIdx) {
+        if (!expr) return undefined;
+        
+        // Check if the expression contains a function call to a known function
+        // Pattern: funcName(args) possibly within a larger expression like n * factorial(n - 1)
+        let resolved = expr;
+        let funcCallRegex = /([a-zA-Z_]\w*)\(([^()]*(?:\([^()]*\)[^()]*)*)\)/;
+        let safetyCount = 0;
+        
+        while (safetyCount < 20) {
+            let match = resolved.match(funcCallRegex);
+            if (!match) break;
+            
+            let funcName = match[1];
+            let funcArgs = match[2];
+            let fullMatch = match[0];
+            
+            if (funcs[funcName]) {
+                // It's a known user-defined function — execute it
+                let retVal = callFunction(funcName, funcArgs, scope, lineIdx);
+                // Replace the function call in the expression with the return value
+                resolved = resolved.replace(fullMatch, JSON.stringify(retVal));
+            } else {
+                // Not a known function, break to avoid infinite loop
+                break;
+            }
+            safetyCount++;
+        }
+        
+        return evalExpr(resolved, scope);
+    }
+    
+    // Split arguments respecting parentheses
+    function splitArgs(str) {
+        let args = [];
+        let depth = 0;
+        let current = '';
+        for (let c of str) {
+            if (c === '(') depth++;
+            else if (c === ')') depth--;
+            else if (c === ',' && depth === 0) {
+                args.push(current);
+                current = '';
+                continue;
+            }
+            current += c;
+        }
+        if (current.trim()) args.push(current);
+        return args;
     }
     
     function callFunction(funcName, argStr, callerScope, callLineIdx) {
@@ -797,7 +889,7 @@ function traceCpp(code) {
         let currentScope = getScope();
         let varsObj = [];
         let prevScope = steps.length > 0 ? {} : null;
-        if (steps.length > 0) steps[steps.length-1].vars.forEach(v => prevScope[v.name] = v.value);
+        if (steps.length > 0) steps[steps.length-1].vars.forEach(v => prevScope[v.name] = v.rawValue);
         
         for (let k in currentScope) {
             let rawVal = deepClone(currentScope[k]);
@@ -825,7 +917,7 @@ function traceCpp(code) {
             // Return
             let mRet = trimmed.match(/^return\s+(.*);/);
             if (mRet) {
-                let val = evalExpr(mRet[1], scope);
+                let val = cppResolveExpr(mRet[1], scope);
                 pushStep(idx, `Return ${val}`);
                 return { action: 'return', value: val };
             }
@@ -888,16 +980,36 @@ function traceCpp(code) {
     }
     
     function handleAssign(idx, varName, expr, scope) {
-        let mFunc = expr.match(/^([a-zA-Z_]\w*)\((.*)\)$/);
+        let val = cppResolveExpr(expr, scope);
+        scope[varName] = val;
+        let mFunc = expr.match(/([a-zA-Z_]\w*)\s*\(/);
         if (mFunc && funcs[mFunc[1]]) {
-            pushStep(idx, `Call ${mFunc[1]}()`);
-            let retVal = callFunction(mFunc[1], mFunc[2], scope, idx);
-            scope[varName] = retVal;
-            pushStep(idx, `Assign ${varName}`);
+            pushStep(idx, `Assign ${varName} = ${val}`);
         } else {
-            scope[varName] = evalExpr(expr, scope);
-            pushStep(idx, `Assign ${varName}`);
+            pushStep(idx, `Assign ${varName} = ${val}`);
         }
+    }
+    
+    function cppResolveExpr(expr, scope) {
+        if (!expr) return undefined;
+        let resolved = expr;
+        let funcCallRegex = /([a-zA-Z_]\w*)\(([^()]*(?:\([^()]*\)[^()]*)*)\)/;
+        let safetyCount = 0;
+        while (safetyCount < 20) {
+            let match = resolved.match(funcCallRegex);
+            if (!match) break;
+            let funcName = match[1];
+            let funcArgs = match[2];
+            let fullMatch = match[0];
+            if (funcs[funcName]) {
+                let retVal = callFunction(funcName, funcArgs, scope, 0);
+                resolved = resolved.replace(fullMatch, JSON.stringify(retVal));
+            } else {
+                break;
+            }
+            safetyCount++;
+        }
+        return evalExpr(resolved, scope);
     }
 
     function callFunction(funcName, argStr, callerScope, lineIdx) {
@@ -925,10 +1037,10 @@ function traceCpp(code) {
 function traceJava(code) {
     let normalized = code
         .replace(/public\s+class\s+\w+\s*\{/g, '') // remove class wrap
-        .replace(/public\s+static\s+void\s+main\(String\\[\\]\s+args\)/g, 'int main()')
+        .replace(/public\s+static\s+void\s+main\(String\[\]\s+args\)/g, 'int main()')
         .replace(/public\s+static\s+/g, '')
-        .replace(/System\\.out\\.println\((.*)\)/g, 'cout << $1 << endl')
-        .replace(/System\\.out\\.print\((.*)\)/g, 'cout << $1')
+        .replace(/System\.out\.println\((.*)\)/g, 'cout << $1 << endl')
+        .replace(/System\.out\.print\((.*)\)/g, 'cout << $1')
         .replace(/boolean\b/g, 'bool')
         .replace(/String\b/g, 'string');
     // removing last closing brace of class
@@ -946,16 +1058,17 @@ let currentSteps = [];
 let animTimer = null;
 let currentStepIdx = 0;
 let speed = 420;
+let accumulatedOutput = '';
 
 const runBtn = document.getElementById('btn-run');
 const speedSelect = document.getElementById('speed-select');
-const traceContent = document.getElementById('trace-content');
 const callStackBar = document.getElementById('call-stack');
 const progressBar = document.getElementById('progress-bar');
 const statusDot = document.getElementById('status-dot');
 const statusText = document.getElementById('status-text');
 const btnPrev = document.getElementById('btn-prev');
 const btnNext = document.getElementById('btn-next');
+const btnRunBp = document.getElementById('btn-run-bp');
 
 speedSelect.addEventListener('change', (e) => speed = parseInt(e.target.value));
 
@@ -969,12 +1082,31 @@ document.addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.key === 'Enter') startTrace();
 });
 
+function resetDashboard() {
+    const dashboardLayout = document.getElementById('dashboard-layout');
+    const welcomeMsg = document.getElementById('welcome-message');
+    const memoryContent = document.getElementById('memory-content');
+    const consoleOutput = document.getElementById('console-output');
+    const callStackEl = document.getElementById('call-stack');
+    
+    dashboardLayout.style.display = 'none';
+    welcomeMsg.style.display = 'flex';
+    memoryContent.innerHTML = '';
+    consoleOutput.textContent = '';
+    callStackEl.innerHTML = '<span class="call-stack-label">Call Stack</span>';
+    accumulatedOutput = '';
+    currentSteps = [];
+    currentStepIdx = 0;
+    progressBar.style.width = '0%';
+    highlightLine(0);
+}
+
 function startTrace() {
     const code = editor.value;
     if (!code.trim()) return;
     
     stopAnimation();
-    traceContent.innerHTML = '';
+    accumulatedOutput = '';
     setStatus('running', 'Parsing and analyzing code...');
     
     try {
@@ -988,6 +1120,13 @@ function startTrace() {
         }
         
         currentStepIdx = 0;
+        
+        // Update timeline slider max
+        const timelineSlider = document.getElementById('timeline-slider');
+        timelineSlider.max = currentSteps.length - 1;
+        timelineSlider.value = 0;
+        timelineSlider.disabled = false;
+        
         setStatus('running', 'Executing trace...');
         
         if (speed === 0) {
@@ -1110,7 +1249,14 @@ function renderStep(idx) {
     
     memoryContent.innerHTML = primitivesHtml + (arraysHtml ? '<div style="height:1rem"></div>' + arraysHtml : '');
     
-    consoleOutput.textContent = step.output || ' ';
+    // Accumulate console output from all steps up to current
+    accumulatedOutput = '';
+    for (let si = 0; si <= idx; si++) {
+        if (currentSteps[si].output) {
+            accumulatedOutput += currentSteps[si].output + '\n';
+        }
+    }
+    consoleOutput.textContent = accumulatedOutput || ' ';
     
     highlightLine(step.line);
     
@@ -1118,34 +1264,31 @@ function renderStep(idx) {
         step.stack.map(frame => `<div class="stack-frame">${frame}</div>`).join(' → ');
         
     // Update slider
+    const timelineSlider = document.getElementById('timeline-slider');
     timelineSlider.value = idx;
     progressBar.style.width = `${((idx + 1) / currentSteps.length) * 100}%`;
 }
 
 btnPrev.addEventListener('click', () => {
-    if (currentStepIdx > 1) {
+    stopAnimation();
+    if (currentStepIdx > 0) {
         currentStepIdx--;
-        document.getElementById(`step-${currentStepIdx}`).remove();
-        const prevCard = document.getElementById(`step-${currentStepIdx - 1}`);
-        if (prevCard) {
-            prevCard.classList.add('current');
-            prevCard.scrollIntoView({behavior: 'smooth', block: 'end'});
-            highlightLine(currentSteps[currentStepIdx - 1].line);
-        }
-        progressBar.style.width = `${(currentStepIdx / currentSteps.length) * 100}%`;
+        renderStep(currentStepIdx);
+        progressBar.style.width = `${((currentStepIdx + 1) / currentSteps.length) * 100}%`;
     }
-    btnNext.disabled = false;
-    if (currentStepIdx <= 1) btnPrev.disabled = true;
+    btnNext.disabled = currentStepIdx >= currentSteps.length - 1;
+    btnPrev.disabled = currentStepIdx <= 0;
 });
 
 btnNext.addEventListener('click', () => {
-    if (currentStepIdx < currentSteps.length) {
-        renderStep(currentStepIdx);
+    stopAnimation();
+    if (currentStepIdx < currentSteps.length - 1) {
         currentStepIdx++;
-        progressBar.style.width = `${(currentStepIdx / currentSteps.length) * 100}%`;
+        renderStep(currentStepIdx);
+        progressBar.style.width = `${((currentStepIdx + 1) / currentSteps.length) * 100}%`;
     }
     btnPrev.disabled = false;
-    if (currentStepIdx >= currentSteps.length) btnNext.disabled = true;
+    if (currentStepIdx >= currentSteps.length - 1) btnNext.disabled = true;
 });
 
 
@@ -1207,7 +1350,7 @@ document.getElementById('btn-download').addEventListener('click', () => {
 });
 
 /* Run to Breakpoint Logic */
-const btnRunBp = document.getElementById('btn-run-bp');
+// btnRunBp is declared above with other DOM references
 btnRunBp.addEventListener('click', () => {
     if (currentSteps.length === 0) return;
     let targetIdx = currentStepIdx + 1;
