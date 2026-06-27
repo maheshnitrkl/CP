@@ -585,14 +585,27 @@ function tracePython(code) {
     
     function getScope() { return callStack[callStack.length - 1].locals; }
     function pushStep(lineNum, desc, output="", note="") {
-        let currentScope = getScope();
+        let allVars = {};
+        for (let i = 0; i < callStack.length; i++) {
+            let frame = callStack[i];
+            let prefix = "";
+            if (callStack.length > 1) {
+                let frameName = frame.name.replace('()', '');
+                if (i === 0) frameName = 'global';
+                prefix = frameName + (i > 0 ? `[${i}]` : '') + "::";
+            }
+            for (let k in frame.locals) {
+                allVars[prefix + k] = frame.locals[k];
+            }
+        }
+        
         let varsObj = [];
         let prevScope = steps.length > 0 ? {} : null;
         if (steps.length > 0) {
             steps[steps.length-1].vars.forEach(v => prevScope[v.name] = v.rawValue);
         }
-        for (let k in currentScope) {
-            let rawVal = deepClone(currentScope[k]);
+        for (let k in allVars) {
+            let rawVal = deepClone(allVars[k]);
             let strVal = typeof rawVal === 'object' ? JSON.stringify(rawVal) : String(rawVal);
             let prevStr = prevScope ? (typeof prevScope[k] === 'object' ? JSON.stringify(prevScope[k]) : String(prevScope[k])) : null;
             let changed = prevScope ? (strVal !== prevStr) : true;
@@ -886,13 +899,25 @@ function traceCpp(code) {
     
     function getScope() { return callStack[callStack.length - 1].locals; }
     function pushStep(lineNum, desc, output="") {
-        let currentScope = getScope();
+        let allVars = {};
+        for (let i = 0; i < callStack.length; i++) {
+            let frame = callStack[i];
+            let prefix = "";
+            if (callStack.length > 1) {
+                let frameName = frame.name.replace('()', '');
+                prefix = frameName + (i > 0 ? `[${i}]` : '') + "::";
+            }
+            for (let k in frame.locals) {
+                allVars[prefix + k] = frame.locals[k];
+            }
+        }
+        
         let varsObj = [];
         let prevScope = steps.length > 0 ? {} : null;
         if (steps.length > 0) steps[steps.length-1].vars.forEach(v => prevScope[v.name] = v.rawValue);
         
-        for (let k in currentScope) {
-            let rawVal = deepClone(currentScope[k]);
+        for (let k in allVars) {
+            let rawVal = deepClone(allVars[k]);
             let strVal = typeof rawVal === 'object' ? JSON.stringify(rawVal) : String(rawVal);
             let prevStr = prevScope ? (typeof prevScope[k] === 'object' ? JSON.stringify(prevScope[k]) : String(prevScope[k])) : null;
             let changed = prevScope ? (strVal !== prevStr) : true;
