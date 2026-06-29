@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Code Visualizer / Dry Run</title>
+    <meta name="description" content="Step-by-step code visualizer supporting arrays, linked lists, trees, graphs, dictionaries, stacks, queues and more.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -17,10 +18,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/matchbrackets.min.js"></script>
     
     <style>
+        /* ============================================================
+           CSS DESIGN SYSTEM
+           ============================================================ */
         :root {
             --bg-base: #06090e;
             --bg-surface: rgba(15, 20, 30, 0.75);
             --bg-elevated: rgba(30, 35, 50, 0.85);
+            --bg-card: rgba(12, 16, 26, 0.9);
             --text-primary: #e2e8f0;
             --text-secondary: #94a3b8;
             --text-tertiary: #64748b;
@@ -30,17 +35,27 @@
             --accent-pink: #f72585;
             --accent-yellow: #ffea00;
             --accent-red: #ff1744;
+            --accent-orange: #ff9100;
+            --accent-teal: #00bfa5;
             --border-primary: rgba(255, 255, 255, 0.08);
             --border-active: rgba(0, 240, 255, 0.4);
             --font-mono: 'Fira Code', 'Consolas', 'Monaco', monospace;
             --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
             --glass-blur: blur(12px);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --shadow-card: 0 4px 24px rgba(0,0,0,0.4);
+            --shadow-glow-cyan: 0 0 20px rgba(0,240,255,0.15);
+            --shadow-glow-green: 0 0 20px rgba(57,255,20,0.15);
+            --shadow-glow-purple: 0 0 20px rgba(157,78,221,0.15);
         }
 
         [data-theme="light"] {
             --bg-base: #f1f5f9;
-            --bg-surface: rgba(255, 255, 255, 0.75);
-            --bg-elevated: rgba(255, 255, 255, 0.85);
+            --bg-surface: rgba(255, 255, 255, 0.8);
+            --bg-elevated: rgba(255, 255, 255, 0.9);
+            --bg-card: rgba(255, 255, 255, 0.95);
             --text-primary: #0f172a;
             --text-secondary: #334155;
             --text-tertiary: #64748b;
@@ -50,8 +65,14 @@
             --accent-pink: #be185d;
             --accent-yellow: #ca8a04;
             --accent-red: #dc2626;
-            --border-primary: rgba(0, 0, 0, 0.15);
+            --accent-orange: #ea580c;
+            --accent-teal: #0d9488;
+            --border-primary: rgba(0, 0, 0, 0.1);
             --border-active: rgba(14, 165, 233, 0.4);
+            --shadow-card: 0 4px 24px rgba(0,0,0,0.08);
+            --shadow-glow-cyan: 0 0 20px rgba(14,165,233,0.1);
+            --shadow-glow-green: 0 0 20px rgba(22,163,74,0.1);
+            --shadow-glow-purple: 0 0 20px rgba(126,34,206,0.1);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -66,259 +87,381 @@
             overflow: hidden;
         }
 
-        /* Navbar Integration Placeholder */
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+
+        /* ---- Navbar ---- */
         .navbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem 2rem;
-            background: rgba(15, 15, 19, 0.9);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.75rem 1.5rem;
+            background: rgba(15, 15, 19, 0.92);
             border-bottom: 1px solid var(--border-primary);
             backdrop-filter: blur(10px);
             z-index: 100;
         }
-        .navbar__brand { color: var(--text-primary); text-decoration: none; font-weight: 700; font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
-        .navbar__nav { display: flex; gap: 1.5rem; align-items: center; }
-        .navbar__link { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+        .navbar__brand { color: var(--text-primary); text-decoration: none; font-weight: 700; font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem; }
+        .navbar__nav { display: flex; gap: 1.25rem; align-items: center; }
+        .navbar__link { color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: color 0.2s; }
         .navbar__link:hover, .navbar__link.active { color: var(--accent-cyan); }
         .theme-toggle { background: transparent; border: none; cursor: pointer; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; transition: all 0.2s; }
         .theme-toggle:hover { background: var(--bg-elevated); color: var(--text-primary); }
 
-        /* Main Layout */
+        /* ---- Main Layout ---- */
         .visualizer-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-            gap: 1rem;
-            padding: 1rem;
-            background: radial-gradient(circle at 50% 0%, #0d121c 0%, var(--bg-base) 100%);
+            display: flex; flex: 1; overflow: hidden;
+            gap: 0.25rem; padding: 0.75rem;
+            background: radial-gradient(ellipse at 50% 0%, #0d121c 0%, var(--bg-base) 70%);
         }
 
-        /* Left Panel - Editor */
+        .resizer {
+            width: 8px; cursor: col-resize;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px; transition: background 0.2s;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 10;
+        }
+        .resizer:hover, .resizer:active { background: rgba(0, 240, 255, 0.2); }
+        .resizer::after {
+            content: ''; display: block; width: 2px; height: 30px;
+            background: rgba(255, 255, 255, 0.2); border-radius: 1px;
+        }
+
+        /* ---- Editor Panel ---- */
         .editor-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+            flex: 1 1 55%; min-width: 380px;
+            display: flex; flex-direction: column;
             background: var(--bg-surface);
             backdrop-filter: var(--glass-blur);
-            border-radius: 12px;
+            border-radius: var(--radius-lg);
             border: 1px solid var(--border-primary);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            min-width: 300px;
+            box-shadow: var(--shadow-card);
             overflow: hidden;
         }
 
         .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            background: rgba(0, 0, 0, 0.2);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.4rem 0.8rem;
+            background: rgba(0, 0, 0, 0.25);
             border-bottom: 1px solid var(--border-primary);
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-secondary);
+            font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);
+            gap: 0.5rem; flex-wrap: wrap;
         }
+        .panel-header .header-actions { display: flex; gap: 0.25rem; flex-wrap: wrap; }
 
-        .lang-tabs { display: flex; gap: 0.5rem; }
+        .lang-tabs { display: flex; gap: 0.25rem; }
         .lang-tab {
-            padding: 0.25rem 0.75rem;
-            border-radius: 4px;
-            cursor: pointer;
-            color: var(--text-tertiary);
-            transition: all 0.2s;
+            padding: 0.2rem 0.65rem; border-radius: 4px; cursor: pointer;
+            color: var(--text-tertiary); transition: all 0.2s; font-size: 0.8rem; font-weight: 600;
         }
         .lang-tab.active { background: var(--bg-elevated); color: var(--accent-cyan); }
+        .lang-tab:hover:not(.active) { color: var(--text-secondary); }
 
-        .editor-wrapper {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-            position: relative;
+        .btn-mini {
+            padding: 0.15rem 0.5rem; border-radius: 4px; cursor: pointer;
+            background: transparent; border: 1px solid var(--border-primary);
+            color: var(--text-tertiary); font-size: 0.7rem; font-weight: 600;
+            font-family: var(--font-sans); transition: all 0.2s;
         }
+        .btn-mini:hover { background: var(--bg-elevated); color: var(--text-primary); border-color: var(--border-active); }
+
+        .editor-wrapper { flex: 1; display: flex; overflow: hidden; position: relative; min-height: 0; }
 
         /* CodeMirror Overrides */
-        .CodeMirror { height: 100%; font-family: var(--font-mono); font-size: 14px; background: transparent !important; color: var(--text-primary) !important; }
+        .CodeMirror { height: 100%; width: 100%; flex: 1; font-family: var(--font-mono); font-size: 13px; background: transparent !important; color: var(--text-primary) !important; }
         .CodeMirror-gutters { background: transparent !important; border-right: 1px solid var(--border-primary) !important; }
         .CodeMirror-linenumber { color: var(--text-tertiary) !important; }
-        .CodeMirror-activeline-background { background: rgba(0, 240, 255, 0.1) !important; }
-        .CodeMirror-activeline-gutter { background: rgba(0, 240, 255, 0.1) !important; color: var(--accent-cyan) !important; font-weight: bold; }
+        .CodeMirror-activeline-background { background: rgba(0, 240, 255, 0.08) !important; }
+        .CodeMirror-activeline-gutter { background: rgba(0, 240, 255, 0.08) !important; color: var(--accent-cyan) !important; font-weight: bold; }
         .cm-s-dracula .CodeMirror-cursor { border-left: 2px solid var(--text-primary) !important; }
-        .CodeMirror-selected { background: rgba(255, 255, 255, 0.15) !important; }
-        .CodeMirror-focused .CodeMirror-selected { background: rgba(255, 255, 255, 0.2) !important; }
+        .CodeMirror-selected { background: rgba(255, 255, 255, 0.12) !important; }
 
         .controls {
-            padding: 1rem;
-            background: var(--bg-surface);
+            padding: 0.4rem 0.6rem;
+            background: rgba(0,0,0,0.2);
             border-top: 1px solid var(--border-primary);
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-            flex-wrap: wrap;
+            display: flex; gap: 0.3rem; align-items: center; flex-wrap: wrap;
         }
-
         .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 6px;
-            font-family: var(--font-sans);
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            padding: 0.3rem 0.6rem; border: none; border-radius: var(--radius-sm);
+            font-family: var(--font-sans); font-size: 0.75rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.3rem;
         }
         .btn-primary { background: var(--accent-cyan); color: #000; }
-        .btn-primary:hover { background: #33eeff; transform: translateY(-1px); }
+        .btn-primary:hover { filter: brightness(1.15); transform: translateY(-1px); }
         .btn-secondary { background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border-primary); }
-        .btn-secondary:hover { background: #3a3a4d; }
-        .btn-icon { padding: 0.5rem; background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border-primary); border-radius: 6px; cursor: pointer; }
-        .btn-icon:hover { background: #3a3a4d; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-secondary:hover { border-color: var(--border-active); }
+        .btn-icon { padding: 0.25rem 0.4rem; background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border-primary); border-radius: var(--radius-sm); cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; }
+        .btn-icon:hover { border-color: var(--border-active); }
+        .btn:disabled, .btn-icon:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        select.btn-secondary { appearance: none; padding-right: 1.8rem; background-image: url('data:image/svg+xml;utf8,<svg fill="%23fff" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position: right 0.4rem center; background-size: 16px; }
 
-        select.btn-secondary { appearance: none; padding-right: 2rem; background: var(--bg-elevated) url('data:image/svg+xml;utf8,<svg fill="%23fff" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 0.5rem center; }
-
-        /* Right Panel - Dashboard */
+        /* ---- Trace Panel ---- */
         .trace-panel {
-            flex: 1; display: flex; flex-direction: column;
+            flex: 1 1 45%; display: flex; flex-direction: column;
             background: var(--bg-surface);
             backdrop-filter: var(--glass-blur);
-            border-radius: 12px;
+            border-radius: var(--radius-lg);
             border: 1px solid var(--border-primary);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            min-width: 300px; position: relative; overflow: hidden;
+            box-shadow: var(--shadow-card);
+            min-width: 320px; overflow: hidden;
         }
-        .dashboard-layout { display: grid; grid-template-rows: auto 1fr auto; height: 100%; overflow: hidden; }
-        .dashboard-header { padding: 1rem; background: rgba(0, 0, 0, 0.2); border-bottom: 1px solid var(--border-primary); display: flex; justify-content: space-between; align-items: center; }
-        .step-counter { font-size: 0.85rem; color: var(--text-tertiary); font-weight: 600; font-family: var(--font-mono); }
-        .step-action { font-size: 1rem; color: var(--accent-cyan); font-weight: 600; text-shadow: 0 0 10px rgba(0, 240, 255, 0.3); }
-        .step-note { font-size: 0.85rem; color: var(--accent-yellow); font-style: italic; margin-top: 0.25rem; }
-        
-        .dashboard-body { display: grid; grid-template-columns: 1fr 1fr; overflow-y: auto; gap: 1px; background: var(--border-primary); }
-        @media (max-width: 1024px) { .dashboard-body { grid-template-columns: 1fr; grid-template-rows: auto auto; } }
-        
-        .dashboard-section { background: transparent; display: flex; flex-direction: column; }
-        .section-title { padding: 0.5rem 1rem; font-size: 0.75rem; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; background: rgba(0, 0, 0, 0.2); border-bottom: 1px solid var(--border-primary); }
-        .section-content { padding: 1rem; flex: 1; overflow-y: auto; }
-        
-        /* Node Cards (Variables) */
-        .node-container { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; }
+        .dashboard-layout { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+        .dashboard-header {
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.25);
+            border-bottom: 1px solid var(--border-primary);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .step-counter { font-size: 0.8rem; color: var(--text-tertiary); font-weight: 600; font-family: var(--font-mono); }
+        .step-action { font-size: 0.95rem; color: var(--accent-cyan); font-weight: 600; text-shadow: 0 0 10px rgba(0, 240, 255, 0.2); }
+        .step-note { font-size: 0.8rem; color: var(--accent-yellow); font-style: italic; margin-top: 0.15rem; }
+
+        /* Dashboard Body — vertical scroll with sections */
+        .dashboard-body {
+            flex: 1; overflow-y: auto; overflow-x: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        /* ---- Visualization Sections ---- */
+        .viz-section {
+            border-bottom: 1px solid var(--border-primary);
+        }
+        .viz-section:last-child { border-bottom: none; }
+        .viz-section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.45rem 1rem; cursor: pointer; user-select: none;
+            background: rgba(0, 0, 0, 0.15);
+            font-size: 0.7rem; font-weight: 700; color: var(--text-tertiary);
+            text-transform: uppercase; letter-spacing: 0.06em;
+            transition: background 0.2s;
+        }
+        .viz-section-header:hover { background: rgba(0, 0, 0, 0.25); }
+        .viz-section-header .chevron { transition: transform 0.2s; font-size: 0.85rem; }
+        .viz-section.collapsed .viz-section-content { display: none; }
+        .viz-section.collapsed .chevron { transform: rotate(-90deg); }
+        .viz-section-content { padding: 0.75rem 1rem; }
+        .viz-section-badge {
+            font-size: 0.6rem; padding: 0.1rem 0.4rem; border-radius: 8px;
+            background: var(--accent-cyan); color: #000; font-weight: 700; margin-left: 0.5rem;
+        }
+
+        /* ---- Variable Node Cards ---- */
+        .node-container { display: flex; flex-wrap: wrap; gap: 0.5rem; }
         .node-card {
-            background: rgba(0, 0, 0, 0.3);
+            background: var(--bg-card);
             border: 1px solid var(--border-primary);
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             padding: 0.5rem 0.75rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-            min-width: 80px;
-            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            display: flex; flex-direction: column; gap: 0.2rem;
+            min-width: 85px; max-width: 160px;
+            transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative; overflow: hidden;
         }
-        @keyframes yellowFlash {
-            0% { background-color: rgba(202, 138, 4, 0.4); border-color: var(--accent-yellow); box-shadow: 0 0 20px var(--accent-yellow); transform: scale(1.08); }
-            100% { background-color: rgba(0, 240, 255, 0.1); border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); transform: scale(1.05); }
+        .node-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: var(--border-primary); transition: background 0.3s;
+        }
+        @keyframes cardFlash {
+            0% { border-color: var(--accent-yellow); box-shadow: 0 0 16px rgba(255,234,0,0.3); }
+            100% { border-color: var(--accent-cyan); box-shadow: var(--shadow-glow-cyan); }
         }
         .node-card.changed {
-            animation: yellowFlash 0.8s ease forwards;
+            animation: cardFlash 0.6s ease forwards;
         }
-        .node-name { font-size: 0.7rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; display: flex; justify-content: space-between; }
-        .node-type { font-size: 0.6rem; opacity: 0.8; text-transform: lowercase; }
-        .node-val { font-family: var(--font-mono); font-size: 1rem; color: var(--text-primary); }
-        .node-card.changed .node-val { color: var(--accent-cyan); text-shadow: 0 0 8px rgba(0, 240, 255, 0.5); }
-        
-        /* Arrays Visualizer */
-        .array-container { margin-bottom: 1.5rem; }
-        .array-title { font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
-        .array-blocks { display: flex; flex-wrap: wrap; gap: 4px; }
-        .array-block { background: var(--bg-elevated); border: 1px solid var(--border-primary); min-width: 2.5rem; height: 2.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; border-radius: 4px; }
-        .array-block.changed { border-color: var(--accent-green); background: rgba(0, 230, 118, 0.1); color: var(--accent-green); box-shadow: 0 0 10px rgba(0,230,118,0.2); }
-        .array-val { font-family: var(--font-mono); font-size: 0.9rem; font-weight: 600; }
-        .array-idx { position: absolute; bottom: -1.2rem; font-size: 0.65rem; color: var(--text-tertiary); font-family: var(--font-mono); }
-        
-        .array-2d-row { display: flex; gap: 4px; margin-bottom: 4px; }
-        .array-2d-row-label { font-size: 0.65rem; color: var(--text-tertiary); font-family: var(--font-mono); display: flex; align-items: center; justify-content: center; width: 1rem; margin-right: 0.25rem; }
-        
-        /* Console Output */
-        .console-output { background: rgba(0, 0, 0, 0.3); font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent-cyan); padding: 1rem; height: 100%; white-space: pre-wrap; overflow-y: auto; }
-        
-        /* Call Stack Bar */
+        .node-card.changed::before { background: var(--accent-cyan); }
+        .node-name {
+            font-size: 0.65rem; color: var(--text-tertiary); text-transform: uppercase;
+            letter-spacing: 0.04em; font-weight: 700;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .node-type-badge {
+            font-size: 0.55rem; padding: 0.05rem 0.35rem; border-radius: 4px;
+            font-weight: 700; text-transform: lowercase; letter-spacing: 0;
+        }
+        .node-val { font-family: var(--font-mono); font-size: 1rem; color: var(--text-primary); font-weight: 500; word-break: break-all; }
+        .node-card.changed .node-val { color: var(--accent-cyan); text-shadow: 0 0 8px rgba(0,240,255,0.3); }
+
+        /* ---- Array Visualization ---- */
+        .array-container { margin-bottom: 1rem; }
+        .array-title {
+            font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary);
+            margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;
+        }
+        .array-title .arr-len { font-size: 0.65rem; color: var(--text-tertiary); }
+        .array-blocks { display: flex; flex-wrap: wrap; gap: 3px; position: relative; padding-bottom: 1.4rem; }
+        .array-block {
+            background: var(--bg-card); border: 1px solid var(--border-primary);
+            min-width: 2.8rem; height: 2.8rem;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative; border-radius: var(--radius-sm);
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .array-block.changed {
+            border-color: var(--accent-green); background: rgba(57,255,20,0.08);
+            box-shadow: var(--shadow-glow-green);
+        }
+        .array-block.changed .array-val { color: var(--accent-green); }
+        .array-val { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
+        .array-idx { position: absolute; bottom: -1.3rem; font-size: 0.6rem; color: var(--text-tertiary); font-family: var(--font-mono); }
+        .array-pointer {
+            position: absolute; bottom: -1.3rem; font-size: 0.6rem; font-weight: 700;
+            font-family: var(--font-mono); text-align: center;
+        }
+        .array-2d-row { display: flex; gap: 3px; margin-bottom: 3px; align-items: center; }
+        .array-2d-row-label { font-size: 0.6rem; color: var(--text-tertiary); font-family: var(--font-mono); width: 1.2rem; text-align: right; margin-right: 0.3rem; flex-shrink: 0; }
+
+        /* ---- String Character Blocks ---- */
+        .string-blocks { display: flex; flex-wrap: wrap; gap: 2px; padding-bottom: 1.3rem; }
+        .string-block {
+            background: var(--bg-card); border: 1px solid rgba(157,78,221,0.25);
+            min-width: 2rem; height: 2.2rem;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; border-radius: 4px;
+            font-family: var(--font-mono); font-size: 0.9rem; font-weight: 600;
+            color: var(--accent-purple);
+        }
+        .string-block .char-idx { position: absolute; bottom: -1.2rem; font-size: 0.55rem; color: var(--text-tertiary); }
+
+        /* ---- Dictionary / HashMap Visualization ---- */
+        .dict-container { margin-bottom: 1rem; }
+        .dict-table {
+            width: 100%; border-collapse: separate; border-spacing: 0;
+            border-radius: var(--radius-md); overflow: hidden;
+            border: 1px solid var(--border-primary);
+        }
+        .dict-table th {
+            background: rgba(0,0,0,0.3); padding: 0.3rem 0.6rem;
+            font-size: 0.65rem; text-transform: uppercase; color: var(--text-tertiary);
+            letter-spacing: 0.04em; font-weight: 700; text-align: left;
+        }
+        .dict-table td {
+            padding: 0.35rem 0.6rem; font-family: var(--font-mono); font-size: 0.8rem;
+            border-top: 1px solid var(--border-primary); color: var(--text-primary);
+        }
+        .dict-table tr.changed td { background: rgba(0,240,255,0.06); }
+        .dict-key { color: var(--accent-orange); font-weight: 600; }
+        .dict-val { color: var(--text-primary); }
+
+        /* ---- Set Visualization ---- */
+        .set-container { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+        .set-tag {
+            background: rgba(157,78,221,0.1); border: 1px solid rgba(157,78,221,0.3);
+            padding: 0.25rem 0.6rem; border-radius: 20px;
+            font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-purple); font-weight: 600;
+        }
+        .set-tag.new-item { border-color: var(--accent-green); color: var(--accent-green); background: rgba(57,255,20,0.08); box-shadow: var(--shadow-glow-green); }
+
+        /* ---- Stack / Queue Visualization ---- */
+        .stack-viz { display: flex; flex-direction: column-reverse; gap: 2px; max-height: 200px; overflow-y: auto; }
+        .stack-item {
+            background: var(--bg-card); border: 1px solid var(--border-primary);
+            padding: 0.3rem 0.75rem; border-radius: 4px;
+            font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-primary);
+            text-align: center; transition: all 0.3s;
+        }
+        .stack-item:last-child { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0,240,255,0.06); }
+        .stack-label { font-size: 0.6rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.04em; margin-left: 0.3rem; }
+
+        .queue-viz { display: flex; gap: 2px; overflow-x: auto; padding-bottom: 0.3rem; }
+        .queue-item {
+            background: var(--bg-card); border: 1px solid var(--border-primary);
+            padding: 0.3rem 0.75rem; border-radius: 4px;
+            font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-primary);
+            text-align: center; white-space: nowrap; flex-shrink: 0;
+        }
+        .queue-item:first-child { border-color: var(--accent-green); color: var(--accent-green); }
+        .queue-item:last-child { border-color: var(--accent-orange); color: var(--accent-orange); }
+
+        /* ---- SVG Data Structure Canvas ---- */
+        .ds-canvas-container {
+            background: rgba(0,0,0,0.15); border-radius: var(--radius-md);
+            overflow: auto; min-height: 80px; max-height: 320px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0.5rem; margin-bottom: 0.5rem;
+        }
+        .ds-canvas-container svg { display: block; }
+        .ds-canvas-container svg text { font-family: var(--font-mono); }
+        .ds-canvas-container svg .node-circle { transition: all 0.3s; }
+        .ds-canvas-container svg .edge-line { stroke: var(--text-tertiary); stroke-width: 1.5; }
+        .ds-canvas-container svg .node-label { fill: var(--text-primary); font-size: 13px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+        .ds-canvas-container svg .edge-label { fill: var(--text-tertiary); font-size: 10px; text-anchor: middle; }
+
+        /* ---- Console Output ---- */
+        .console-output {
+            background: rgba(0, 0, 0, 0.2); border-radius: var(--radius-sm);
+            font-family: var(--font-mono); font-size: 0.82rem; color: var(--accent-cyan);
+            padding: 0.75rem; min-height: 3rem; white-space: pre-wrap; overflow-y: auto;
+            border: 1px solid var(--border-primary);
+        }
+
+        /* ---- Call Stack ---- */
         .call-stack-bar {
             background: rgba(0, 0, 0, 0.2);
             border-top: 1px solid var(--border-primary);
-            padding: 0.75rem 1rem;
-            display: flex;
-            gap: 0.5rem;
-            overflow-x: auto;
-            align-items: center;
+            padding: 0.5rem 1rem;
+            display: flex; gap: 0.4rem; overflow-x: auto; align-items: center;
         }
-        .call-stack-label {
-            font-size: 0.75rem;
-            color: var(--text-tertiary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-right: 0.5rem;
-        }
+        .call-stack-label { font-size: 0.65rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-right: 0.4rem; white-space: nowrap; }
         .stack-frame {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--border-primary);
-            padding: 0.25rem 0.75rem;
-            border-radius: 6px;
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-primary);
+            padding: 0.2rem 0.6rem; border-radius: var(--radius-sm);
+            font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary);
+            white-space: nowrap; transition: all 0.3s;
         }
         .stack-frame:last-child {
-            border-color: var(--accent-purple);
-            color: var(--accent-purple);
-            background: rgba(157, 78, 221, 0.1);
-            box-shadow: 0 0 10px rgba(157, 78, 221, 0.3);
-            transform: scale(1.05);
+            border-color: var(--accent-purple); color: var(--accent-purple);
+            background: rgba(157,78,221,0.08); box-shadow: var(--shadow-glow-purple);
         }
 
-        /* Progress & Status */
-        .progress-container {
-            height: 2px;
-            background: var(--border-primary);
-            width: 100%;
-        }
-        .progress-bar {
-            height: 100%;
-            background: var(--accent-cyan);
-            width: 0%;
-            transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            box-shadow: 0 0 15px var(--accent-cyan);
-        }
+        /* ---- Timeline ---- */
+        .timeline-container { padding: 0.5rem 1rem; background: rgba(0,0,0,0.15); border-top: 1px solid var(--border-primary); display: flex; align-items: center; gap: 0.75rem; }
+        .timeline-slider { flex: 1; -webkit-appearance: none; background: transparent; }
+        .timeline-slider::-webkit-slider-runnable-track { width: 100%; height: 5px; background: rgba(255,255,255,0.08); border-radius: 3px; }
+        .timeline-slider::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: var(--accent-cyan); cursor: pointer; margin-top: -5.5px; box-shadow: 0 0 12px var(--accent-cyan); transition: transform 0.1s; }
+        .timeline-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        .timeline-slider:disabled { opacity: 0.25; cursor: not-allowed; }
+
+        /* ---- Progress & Status ---- */
+        .progress-container { height: 2px; background: var(--border-primary); width: 100%; }
+        .progress-bar { height: 100%; background: var(--accent-cyan); width: 0%; transition: width 0.3s; box-shadow: 0 0 12px var(--accent-cyan); }
         .status-bar {
-            background: var(--bg-base);
-            padding: 0.5rem 1rem;
-            font-size: 0.75rem;
-            color: var(--text-tertiary);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            background: var(--bg-base); padding: 0.35rem 1rem;
+            font-size: 0.7rem; color: var(--text-tertiary);
+            display: flex; align-items: center; gap: 0.5rem;
             border-top: 1px solid var(--border-primary);
         }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-tertiary); }
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-tertiary); flex-shrink: 0; }
         .status-dot.running { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
         .status-dot.error { background: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
 
-        @media (max-width: 768px) {
-            .visualizer-container { flex-direction: column; }
-            .editor-panel, .trace-panel { min-height: 50vh; }
+        /* ---- Stdin ---- */
+        .input-wrapper {
+            height: 90px; border-top: 1px solid var(--border-primary);
+            display: flex; flex-direction: column; background: rgba(0, 0, 0, 0.15);
         }
-    
-        /* Timeline Scrubber */
-        .timeline-container { padding: 0.75rem 1rem; background: rgba(0, 0, 0, 0.2); border-top: 1px solid var(--border-primary); display: flex; align-items: center; gap: 1rem; }
-        .timeline-slider { flex: 1; -webkit-appearance: none; background: transparent; }
-        .timeline-slider::-webkit-slider-runnable-track { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5); }
-        .timeline-slider::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: var(--accent-cyan); cursor: pointer; margin-top: -6px; box-shadow: 0 0 15px var(--accent-cyan), inset 0 0 5px rgba(255,255,255,0.8); transition: transform 0.1s; }
-        .timeline-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
-        .timeline-slider:disabled { opacity: 0.3; cursor: not-allowed; }
-    
+        .input-wrapper textarea {
+            flex: 1; background: transparent; color: var(--text-primary); border: none;
+            padding: 0.4rem 0.75rem; font-family: var(--font-mono); font-size: 13px;
+            outline: none; resize: none;
+        }
+
+        /* ---- Welcome ---- */
+        #welcome-message {
+            display: flex; flex: 1; align-items: center; justify-content: center;
+            color: var(--text-tertiary); text-align: center; padding: 2rem;
+        }
+        #welcome-message .welcome-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+        #welcome-message small { opacity: 0.7; }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 900px) {
+            .visualizer-container { flex-direction: column; }
+            .editor-panel { flex: none; max-width: 100%; min-height: 45vh; }
+            .trace-panel { min-height: 45vh; }
+        }
     </style>
 </head>
 <body>
@@ -331,7 +474,7 @@
             <a href="index.html" class="navbar__link">Home</a>
             <a href="#" class="navbar__link active">🔍 Visualizer</a>
             <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
-                <svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
             </button>
@@ -342,7 +485,7 @@
 
     <div class="visualizer-container">
         <!-- Editor Panel -->
-        <div class="editor-panel">
+        <div class="editor-panel" id="editor-panel">
             <div class="panel-header">
                 <div class="lang-tabs" id="lang-tabs">
                     <div class="lang-tab active" data-lang="python">Python</div>
@@ -352,10 +495,9 @@
                 <div class="header-actions">
                     <button class="btn-mini" id="btn-font-dec" aria-label="Decrease Font Size">A-</button>
                     <button class="btn-mini" id="btn-font-inc" aria-label="Increase Font Size">A+</button>
-                    <button class="btn-mini" id="btn-share" title="Copy Shareable Link" aria-label="Share Code">Share</button>
+                    <button class="btn-mini" id="btn-share" title="Copy Shareable Link">Share</button>
                     <button class="btn-mini" id="btn-copy" aria-label="Copy Code">Copy</button>
                     <button class="btn-mini" id="btn-download" aria-label="Download Code">Download</button>
-                    <button class="btn-mini" id="btn-tour" aria-label="Take UI Tour">Tour</button>
                 </div>
             </div>
             
@@ -363,37 +505,42 @@
                 <textarea id="code-input"></textarea>
             </div>
             
-            <div class="input-wrapper" style="height: 120px; border-top: 1px solid var(--border-primary); display: flex; flex-direction: column; background: rgba(0, 0, 0, 0.2);">
-                <div class="section-title" style="border-bottom: 1px solid var(--border-primary); background: transparent;">Standard Input</div>
-                <textarea id="stdin-input" placeholder="Provide input for your program here..." spellcheck="false" style="flex: 1; background: transparent; color: var(--text-primary); border: none; padding: 0.5rem 1rem; font-family: var(--font-mono); font-size: 14px; outline: none; resize: none;"></textarea>
+            <div class="input-wrapper" style="display: flex; flex-direction: column;">
+                <div style="padding: 0.2rem 0.75rem; font-size: 0.6rem; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.04em;">Standard Input</div>
+                <textarea id="stdin-input" placeholder="Provide input for your program here..." spellcheck="false" style="width: 100%; height: 35px; resize: vertical; max-height: 80px; background: rgba(0,0,0,0.2); border: none; border-top: 1px solid var(--border-primary); color: var(--text-primary); padding: 0.3rem 0.6rem; font-family: var(--font-mono); font-size: 0.75rem;"></textarea>
             </div>
 
             <div class="controls">
-                <button class="btn btn-primary" id="btn-run" style="line-height: 1.2; padding: 0.4rem 1rem;">
-                    <div>▶ Run Trace</div>
-                    <kbd style="font-size: 0.6rem; opacity: 0.8; font-family: var(--font-mono); font-weight: normal;">Ctrl+Enter</kbd>
+                <button class="btn btn-primary" id="btn-run" style="line-height: 1.2; padding: 0.3rem 0.6rem; display: flex; align-items: center; gap: 0.3rem;">
+                    <span>▶ Run Trace</span>
+                    <kbd style="font-size: 0.55rem; opacity: 0.7; font-family: var(--font-mono); font-weight: normal; background: rgba(0,0,0,0.2); padding: 0.1rem 0.2rem; border-radius: 3px;">Ctrl+Enter</kbd>
                 </button>
-                <button class="btn btn-secondary" id="btn-run-bp" title="Run to next breakpoint" disabled>⏭ Breakpoint</button>
-                <select class="btn btn-secondary" id="example-select">
-                    <!-- Populated by JS -->
-                </select>
+                <button class="btn btn-secondary" id="btn-run-bp" title="Run to next breakpoint" disabled>⏭ BP</button>
+                <select class="btn btn-secondary" id="example-select" style="max-width: 140px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; padding-right: 1.5rem;"></select>
                 <button class="btn btn-secondary" id="btn-clear">Clear</button>
                 
-                <div class="speed-slider-container" style="display: flex; flex-direction: column; align-items: center; gap: 4px; width: 120px;">
-                    <div style="font-size: 0.65rem; color: var(--text-tertiary); text-transform: uppercase;">Speed: <span id="speed-label" style="color: var(--text-primary); font-weight: bold;">Normal</span></div>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 2px; width: 100px; margin-left: auto;">
+                    <div style="font-size: 0.6rem; color: var(--text-tertiary); text-transform: uppercase;">Speed: <span id="speed-label" style="color: var(--text-primary); font-weight: bold;">Normal</span></div>
                     <input type="range" id="speed-slider" class="timeline-slider" min="0" max="3" step="1" value="1" style="width: 100%;">
                 </div>
                 
-                <button class="btn-icon" id="btn-reset" title="Reset Trace" disabled>⏮</button>
-                <button class="btn-icon" id="btn-prev" title="Previous Step" disabled>‹</button>
-                <button class="btn-icon" id="btn-next" title="Next Step" disabled>›</button>
+                <div style="display: flex; gap: 0.2rem; margin-left: 0.5rem;">
+                    <button class="btn-icon" id="btn-reset" title="Reset" disabled>⏮</button>
+                    <button class="btn-icon" id="btn-prev" title="Previous Step" disabled>‹</button>
+                    <button class="btn-icon" id="btn-next" title="Next Step" disabled>›</button>
+                </div>
             </div>
         </div>
 
+        <div class="resizer" id="layout-resizer"></div>
+
         <!-- Trace Panel -->
-        <div class="trace-panel">
+        <div class="trace-panel" id="trace-panel">
             <div class="panel-header">
                 <span>EXECUTION DASHBOARD</span>
+                <label style="display: flex; align-items: center; gap: 4px; font-size: 0.7rem; cursor: pointer; color: var(--text-tertiary);">
+                    <input type="checkbox" id="delta-changes-toggle"> Δ Only
+                </label>
             </div>
             
             <div class="dashboard-layout" id="dashboard-layout" style="display: none;">
@@ -405,22 +552,8 @@
                     </div>
                 </div>
                 
-                <div class="dashboard-body">
-                    <div class="dashboard-section">
-                        <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
-                            <span>Memory & Variables</span>
-                            <label style="display: flex; align-items: center; gap: 4px; text-transform: none; cursor: pointer;">
-                                <input type="checkbox" id="delta-changes-toggle"> Δ Changes Only
-                            </label>
-                        </div>
-                        <div class="section-content" id="memory-content">
-                            <!-- Memory Table & Arrays -->
-                        </div>
-                    </div>
-                    <div class="dashboard-section">
-                        <div class="section-title">Console Output</div>
-                        <div class="console-output" id="console-output"></div>
-                    </div>
+                <div class="dashboard-body" id="dashboard-body">
+                    <!-- Dynamically populated by renderStep -->
                 </div>
                 
                 <div class="call-stack-bar" id="call-stack">
@@ -432,8 +565,12 @@
                 </div>
             </div>
             
-            <div id="welcome-message" style="display: flex; flex: 1; align-items: center; justify-content: center; color: var(--text-tertiary); text-align: center;">
-                <div>Ready — paste code and click Run Trace<br><small>or press Ctrl+Enter</small></div>
+            <div id="welcome-message">
+                <div>
+                    <div class="welcome-icon">🔬</div>
+                    <div>Paste code and click <strong>Run Trace</strong></div>
+                    <small>or press Ctrl+Enter</small>
+                </div>
             </div>
         </div>
     </div>
@@ -451,11 +588,9 @@ const themeToggleBtn = document.getElementById('theme-toggle');
 const themeIcon = document.getElementById('theme-icon');
 
 function updateThemeIcon(theme) {
-    if (theme === 'light') {
-        themeIcon.innerHTML = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
-    } else {
-        themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
-    }
+    themeIcon.innerHTML = theme === 'light'
+        ? `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`
+        : `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
 }
 
 const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -464,12 +599,10 @@ updateThemeIcon(savedTheme);
 
 themeToggleBtn.addEventListener('click', () => {
     let current = document.documentElement.getAttribute('data-theme');
-    let nextTheme = current === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', nextTheme);
-    localStorage.setItem('theme', nextTheme);
-    updateThemeIcon(nextTheme);
-    
-    // Dispatch custom event if CodeMirror needs to update its theme later
+    let next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateThemeIcon(next);
     window.dispatchEvent(new Event('themeChanged'));
 });
 
@@ -478,25 +611,105 @@ themeToggleBtn.addEventListener('click', () => {
    ============================================================ */
 const EXAMPLES = {
     python: {
-        "Factorial (Recursion)": {
-            code: `def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint("Starting calculation...")\nx = int(input())\nresult = factorial(x)\nprint("Result is:", result)\n`,
-            input: `4`
+        "Bubble Sort (Array)": {
+            code: `arr = [64, 34, 25, 12, 22, 11, 90]\nn = len(arr)\nfor i in range(n):\n    for j in range(0, n - i - 1):\n        if arr[j] > arr[j + 1]:\n            arr[j], arr[j + 1] = arr[j + 1], arr[j]\nprint("Sorted:", arr)`,
+            input: ``
         },
-        "Two Sum (Dictionary)": {
-            code: `def two_sum(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        diff = target - num\n        if diff in seen:\n            return [seen[diff], i]\n        seen[num] = i\n    return []\n\nprint(two_sum([2, 7, 11, 15], 9))`,
+        "Two Sum (Dict)": {
+            code: `nums = [2, 7, 11, 15]\ntarget = 9\nseen = {}\nresult = []\nfor i in range(len(nums)):\n    diff = target - nums[i]\n    if diff in seen:\n        result = [seen[diff], i]\n    seen[nums[i]] = i\nprint("Indices:", result)`,
+            input: ``
+        },
+        "Linked List": {
+            code: `class Node:\n    def __init__(self, val):\n        self.val = val\n        self.next = None\n\nhead = Node(1)\nhead.next = Node(2)\nhead.next.next = Node(3)\nhead.next.next.next = Node(4)\n\ncurrent = head\nwhile current:\n    print(current.val)\n    current = current.next`,
+            input: ``
+        },
+        "Binary Search Tree": {
+            code: `class TreeNode:\n    def __init__(self, val):\n        self.val = val\n        self.left = None\n        self.right = None\n\ndef insert(root, val):\n    if root is None:\n        return TreeNode(val)\n    if val < root.val:\n        root.left = insert(root.left, val)\n    else:\n        root.right = insert(root.right, val)\n    return root\n\nroot = None\nfor v in [5, 3, 7, 1, 4, 9]:\n    root = insert(root, v)\nprint("BST built!")`,
+            input: ``
+        },
+        "BFS Graph": {
+            code: `graph = {}\ngraph[0] = [1, 2]\ngraph[1] = [0, 3]\ngraph[2] = [0, 3]\ngraph[3] = [1, 2]\n\nvisited = []\nqueue = [0]\nwhile len(queue) > 0:\n    node = queue.pop(0)\n    if node not in visited:\n        visited.append(node)\n        print("Visit:", node)\n        for neighbor in graph[node]:\n            if neighbor not in visited:\n                queue.append(neighbor)`,
+            input: ``
+        },
+        "Stack Operations": {
+            code: `stack = []\nstack.append(10)\nstack.append(20)\nstack.append(30)\nprint("Stack:", stack)\ntop = stack.pop()\nprint("Popped:", top)\nstack.append(40)\nprint("Final:", stack)`,
+            input: ``
+        },
+        "Factorial (Recursion)": {
+            code: `def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint("Starting calculation...")\nx = int(input())\nresult = factorial(x)\nprint("Result is:", result)`,
+            input: `5`
+        },
+        "Binary Search": {
+            code: `arr = [1, 3, 5, 7, 9, 11, 13, 15]\ntarget = 7\nlow = 0\nhigh = len(arr) - 1\nfound = -1\nwhile low <= high:\n    mid = (low + high) // 2\n    if arr[mid] == target:\n        found = mid\n        break\n    elif arr[mid] < target:\n        low = mid + 1\n    else:\n        high = mid - 1\nprint("Found at index:", found)`,
             input: ``
         }
     },
     cpp: {
+        "Bubble Sort": {
+            code: `int main() {\n    int arr[] = {64, 34, 25, 12, 22, 11, 90};\n    int n = 7;\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < n - i - 1; j++) {\n            if (arr[j] > arr[j+1]) {\n                int temp = arr[j];\n                arr[j] = arr[j+1];\n                arr[j+1] = temp;\n            }\n        }\n    }\n    return 0;\n}`,
+            input: ``
+        },
         "Factorial (Recursion)": {
             code: `int factorial(int n) {\n    if (n <= 1) {\n        return 1;\n    }\n    return n * factorial(n - 1);\n}\n\nint main() {\n    cout << "Starting calculation..." << endl;\n    int x;\n    cin >> x;\n    int result = factorial(x);\n    cout << "Result is: " << result << endl;\n    return 0;\n}`,
-            input: `4`
+            input: `5`
+        },
+        "Binary Search": {
+            code: `int main() {\n    int arr[] = {1, 3, 5, 7, 9, 11, 13, 15};\n    int target = 7;\n    int low = 0;\n    int high = 7;\n    int found = -1;\n    while (low <= high) {\n        int mid = (low + high) / 2;\n        if (arr[mid] == target) {\n            found = mid;\n            break;\n        } else if (arr[mid] < target) {\n            low = mid + 1;\n        } else {\n            high = mid - 1;\n        }\n    }\n    cout << "Found: " << found << endl;\n    return 0;\n}`,
+            input: ``
+        },
+        "Two Sum (Array)": {
+            code: `#include <iostream>\n#include <vector>\nusing namespace std;\nint main() {\n    int nums[] = {2, 7, 11, 15};\n    int target = 9;\n    int n = 4;\n    vector<int> result;\n    for(int i=0; i<n; i++) {\n        for(int j=i+1; j<n; j++) {\n            if(nums[i] + nums[j] == target) {\n                result.push_back(i);\n                result.push_back(j);\n            }\n        }\n    }\n    cout << "Indices: " << result[0] << ", " << result[1] << endl;\n    return 0;\n}`,
+            input: ``
+        },
+        "Linked List": {
+            code: `#include <iostream>\nusing namespace std;\nstruct Node {\n    int val;\n    Node* next;\n};\nint main() {\n    Node* head = new Node();\n    head->val = 1;\n    head->next = new Node();\n    head->next->val = 2;\n    head->next->next = new Node();\n    head->next->next->val = 3;\n    \n    Node* current = head;\n    while (current != nullptr) {\n        cout << current->val << endl;\n        current = current->next;\n    }\n    return 0;\n}`,
+            input: ``
+        },
+        "Binary Search Tree": {
+            code: `#include <iostream>\nusing namespace std;\nstruct TreeNode {\n    int val;\n    TreeNode* left;\n    TreeNode* right;\n};\nTreeNode* insert(TreeNode* root, int val) {\n    if (root == nullptr) {\n        TreeNode* newNode = new TreeNode();\n        newNode->val = val;\n        return newNode;\n    }\n    if (val < root->val) {\n        root->left = insert(root->left, val);\n    } else {\n        root->right = insert(root->right, val);\n    }\n    return root;\n}\nint main() {\n    TreeNode* root = nullptr;\n    int vals[] = {5, 3, 7, 1, 4, 9};\n    for(int i=0; i<6; i++) {\n        root = insert(root, vals[i]);\n    }\n    cout << "BST built!" << endl;\n    return 0;\n}`,
+            input: ``
+        },
+        "BFS Graph": {
+            code: `#include <iostream>\n#include <vector>\nusing namespace std;\nint main() {\n    vector<vector<int>> graph = {{1, 2}, {0, 3}, {0, 3}, {1, 2}};\n    vector<int> visited;\n    vector<int> q;\n    q.push_back(0);\n    while (q.size() > 0) {\n        int node = q[0];\n        q.erase(q.begin());\n        \n        bool is_visited = false;\n        for(int i=0; i<visited.size(); i++) {\n            if(visited[i] == node) is_visited = true;\n        }\n        \n        if (!is_visited) {\n            visited.push_back(node);\n            cout << "Visit: " << node << endl;\n            for (int i=0; i<graph[node].size(); i++) {\n                int neighbor = graph[node][i];\n                bool n_visited = false;\n                for(int j=0; j<visited.size(); j++) {\n                    if(visited[j] == neighbor) n_visited = true;\n                }\n                if(!n_visited) q.push_back(neighbor);\n            }\n        }\n    }\n    return 0;\n}`,
+            input: ``
+        },
+        "Stack Operations": {
+            code: `#include <iostream>\n#include <vector>\nusing namespace std;\nint main() {\n    vector<int> stack;\n    stack.push_back(10);\n    stack.push_back(20);\n    stack.push_back(30);\n    \n    int top = stack.back();\n    stack.pop_back();\n    cout << "Popped: " << top << endl;\n    \n    stack.push_back(40);\n    return 0;\n}`,
+            input: ``
         }
     },
     java: {
+        "Bubble Sort": {
+            code: `public class Main {\n    public static void main(String[] args) {\n        int[] arr = {64, 34, 25, 12, 22, 11, 90};\n        int n = 7;\n        for (int i = 0; i < n; i++) {\n            for (int j = 0; j < n - i - 1; j++) {\n                if (arr[j] > arr[j+1]) {\n                    int temp = arr[j];\n                    arr[j] = arr[j+1];\n                    arr[j+1] = temp;\n                }\n            }\n        }\n    }\n}`,
+            input: ``
+        },
         "Factorial (Recursion)": {
-            code: `public class Main {\n    public static int factorial(int n) {\n        if (n <= 1) {\n            return 1;\n        }\n        return n * factorial(n - 1);\n    }\n\n    public static void main(String[] args) {\n        System.out.println("Starting calculation...");\n        Scanner scanner = new Scanner(System.in);\n        int x = scanner.nextInt();\n        int result = factorial(x);\n        System.out.println("Result is: " + result);\n    }\n}`,
-            input: `4`
+            code: `import java.util.*;\npublic class Main {\n    public static int factorial(int n) {\n        if (n <= 1) {\n            return 1;\n        }\n        return n * factorial(n - 1);\n    }\n\n    public static void main(String[] args) {\n        System.out.println("Starting calculation...");\n        Scanner scanner = new Scanner(System.in);\n        int x = scanner.nextInt();\n        int result = factorial(x);\n        System.out.println("Result is: " + result);\n    }\n}`,
+            input: `5`
+        },
+        "Binary Search": {
+            code: `public class Main {\n    public static void main(String[] args) {\n        int[] arr = {1, 3, 5, 7, 9, 11, 13, 15};\n        int target = 7;\n        int low = 0;\n        int high = 7;\n        int found = -1;\n        while (low <= high) {\n            int mid = (low + high) / 2;\n            if (arr[mid] == target) {\n                found = mid;\n                break;\n            } else if (arr[mid] < target) {\n                low = mid + 1;\n            } else {\n                high = mid - 1;\n            }\n        }\n        System.out.println("Found: " + found);\n    }\n}`,
+            input: ``
+        },
+        "Two Sum (Array)": {
+            code: `public class Main {\n    public static void main(String[] args) {\n        int[] nums = {2, 7, 11, 15};\n        int target = 9;\n        int[] result = new int[2];\n        for(int i=0; i<nums.length; i++) {\n            for(int j=i+1; j<nums.length; j++) {\n                if(nums[i] + nums[j] == target) {\n                    result[0] = i;\n                    result[1] = j;\n                }\n            }\n        }\n        System.out.println("Indices: " + result[0] + ", " + result[1]);\n    }\n}`,
+            input: ``
+        },
+        "Linked List": {
+            code: `class Node {\n    int val;\n    Node next;\n    Node(int v) { val = v; }\n}\npublic class Main {\n    public static void main(String[] args) {\n        Node head = new Node(1);\n        head.next = new Node(2);\n        head.next.next = new Node(3);\n        \n        Node current = head;\n        while (current != null) {\n            System.out.println(current.val);\n            current = current.next;\n        }\n    }\n}`,
+            input: ``
+        },
+        "Binary Search Tree": {
+            code: `class TreeNode {\n    int val;\n    TreeNode left;\n    TreeNode right;\n    TreeNode(int v) { val = v; }\n}\npublic class Main {\n    public static TreeNode insert(TreeNode root, int val) {\n        if (root == null) return new TreeNode(val);\n        if (val < root.val) {\n            root.left = insert(root.left, val);\n        } else {\n            root.right = insert(root.right, val);\n        }\n        return root;\n    }\n    public static void main(String[] args) {\n        TreeNode root = null;\n        int[] vals = {5, 3, 7, 1, 4, 9};\n        for(int i=0; i<vals.length; i++) {\n            root = insert(root, vals[i]);\n        }\n        System.out.println("BST built!");\n    }\n}`,
+            input: ``
+        },
+        "BFS Graph": {
+            code: `import java.util.*;\npublic class Main {\n    public static void main(String[] args) {\n        int[][] graph = {{1, 2}, {0, 3}, {0, 3}, {1, 2}};\n        ArrayList<Integer> visited = new ArrayList<>();\n        ArrayList<Integer> queue = new ArrayList<>();\n        queue.add(0);\n        \n        while (queue.size() > 0) {\n            int node = queue.remove(0);\n            if (!visited.contains(node)) {\n                visited.add(node);\n                System.out.println("Visit: " + node);\n                for (int neighbor : graph[node]) {\n                    if (!visited.contains(neighbor)) {\n                        queue.add(neighbor);\n                    }\n                }\n            }\n        }\n    }\n}`,
+            input: ``
+        },
+        "Stack Operations": {
+            code: `import java.util.*;\npublic class Main {\n    public static void main(String[] args) {\n        ArrayList<Integer> stack = new ArrayList<>();\n        stack.add(10);\n        stack.add(20);\n        stack.add(30);\n        \n        int top = stack.remove(stack.size() - 1);\n        System.out.println("Popped: " + top);\n        \n        stack.add(40);\n    }\n}`,
+            input: ``
         }
     }
 };
@@ -504,25 +717,47 @@ const EXAMPLES = {
 /* ============================================================
    UI & EDITOR LOGIC
    ============================================================ */
+let isResizing = false;
+const layoutResizer = document.getElementById('layout-resizer');
+const editorPanel = document.getElementById('editor-panel');
+const tracePanel = document.getElementById('trace-panel');
+
+layoutResizer.addEventListener('mousedown', (e) => {
+    isResizing = true;
+    document.body.style.cursor = 'col-resize';
+});
+
+document.addEventListener('mousemove', (e) => {
+    if (!isResizing) return;
+    const container = document.querySelector('.visualizer-container');
+    const containerRect = container.getBoundingClientRect();
+    let newEditorWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+    if (newEditorWidth > 20 && newEditorWidth < 80) {
+        editorPanel.style.flex = `0 0 calc(${newEditorWidth}% - 4px)`;
+        tracePanel.style.flex = `1 1 0`;
+    }
+});
+
+document.addEventListener('mouseup', () => {
+    if (isResizing) {
+        isResizing = false;
+        document.body.style.cursor = 'default';
+        cmEditor.refresh();
+    }
+});
 let currentLang = 'python';
 let cmTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dracula';
 const cmEditor = CodeMirror.fromTextArea(document.getElementById('code-input'), {
-    mode: 'python',
-    theme: cmTheme,
-    lineNumbers: true,
-    styleActiveLine: false, // We handle active line manually for the trace
-    matchBrackets: true,
+    mode: 'python', theme: cmTheme, lineNumbers: true,
+    styleActiveLine: false, matchBrackets: true,
     gutters: ["CodeMirror-linenumbers", "breakpoints"],
-    indentUnit: 4,
-    viewportMargin: Infinity
+    indentUnit: 4, viewportMargin: Infinity
 });
 
 window.addEventListener('themeChanged', () => {
-    let t = document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dracula';
-    cmEditor.setOption("theme", t);
+    cmEditor.setOption("theme", document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dracula');
 });
 
-// Proxy to keep compatibility with existing `editor.value` usage
 const editor = {
     get value() { return cmEditor.getValue(); },
     set value(v) { cmEditor.setValue(v); }
@@ -535,35 +770,25 @@ function populateExamples() {
     exampleSelect.innerHTML = '';
     const examples = EXAMPLES[currentLang];
     for (let title in examples) {
-        const option = document.createElement('option');
-        option.value = title;
-        option.textContent = title;
-        exampleSelect.appendChild(option);
+        const opt = document.createElement('option');
+        opt.value = title; opt.textContent = title;
+        exampleSelect.appendChild(opt);
     }
 }
 
 exampleSelect.addEventListener('change', (e) => {
-    const title = e.target.value;
-    const example = EXAMPLES[currentLang][title];
-    if (example) {
-        editor.value = example.code;
-        document.getElementById('stdin-input').value = example.input;
-    }
+    const ex = EXAMPLES[currentLang][e.target.value];
+    if (ex) { editor.value = ex.code; document.getElementById('stdin-input').value = ex.input; }
 });
 
 function highlightLine(lineNum) {
-    // Clear previous active lines
     cmEditor.eachLine(line => {
         cmEditor.removeLineClass(line, "background", "CodeMirror-activeline-background");
         cmEditor.removeLineClass(line, "gutter", "CodeMirror-activeline-gutter");
     });
-    
     if (lineNum > 0) {
-        // CodeMirror lines are 0-indexed
         cmEditor.addLineClass(lineNum - 1, "background", "CodeMirror-activeline-background");
         cmEditor.addLineClass(lineNum - 1, "gutter", "CodeMirror-activeline-gutter");
-        
-        // Scroll into view (center)
         const top = cmEditor.charCoords({line: lineNum - 1, ch: 0}, "local").top;
         cmEditor.scrollTo(null, top - 60);
     }
@@ -573,32 +798,23 @@ langTabs.forEach(tab => {
     tab.addEventListener('click', () => {
         langTabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
-        if (currentLang === 'python') cmEditor.setOption("mode", "python");
-        else if (currentLang === 'cpp') cmEditor.setOption("mode", "text/x-c++src");
-        else if (currentLang === 'java') cmEditor.setOption("mode", "text/x-java");
-        
+        currentLang = tab.getAttribute('data-lang');
+        cmEditor.setOption("mode", currentLang === 'python' ? 'python' : 'clike');
         populateExamples();
-        const firstExample = Object.keys(EXAMPLES[currentLang])[0];
-        editor.value = EXAMPLES[currentLang][firstExample].code;
-        document.getElementById('stdin-input').value = EXAMPLES[currentLang][firstExample].input;
-        stopAnimation();
-        resetDashboard();
-        setStatus('idle', 'Idle');
+        if (exampleSelect.options.length > 0) {
+            exampleSelect.selectedIndex = 0;
+            exampleSelect.dispatchEvent(new Event('change'));
+        }
+        stopAnimation(); resetDashboard(); setStatus('idle', 'Idle');
     });
 });
 
-document.getElementById('btn-clear').addEventListener('click', () => {
-    editor.value = '';
-    stopAnimation();
-    resetDashboard();
-});
+document.getElementById('btn-clear').addEventListener('click', () => { editor.value = ''; stopAnimation(); resetDashboard(); });
 
 /* ============================================================
-   EVALUATOR UTILITY & STDIN
+   EVALUATOR UTILITIES
    ============================================================ */
-
-let stdinLines = [];
-let stdinTokens = [];
+let stdinLines = [], stdinTokens = [];
 
 function prepareStdin() {
     const raw = document.getElementById('stdin-input').value;
@@ -608,1038 +824,1651 @@ function prepareStdin() {
 
 function consumeInputLine() {
     if (stdinLines.length > 0) return stdinLines.shift();
-    throw new Error("Program expected input, but Standard Input is empty. Please provide input before running.");
+    throw new Error("Program expected input but Standard Input is empty.");
 }
-
 function consumeInputToken() {
     if (stdinTokens.length > 0) return stdinTokens.shift();
-    throw new Error("Program expected input, but Standard Input is empty. Please provide input before running.");
+    throw new Error("Program expected input but Standard Input is empty.");
 }
 
-function deepClone(obj) {
+function deepClone(obj, seen) {
     if (obj === null || typeof obj !== 'object') return obj;
-    if (Array.isArray(obj)) return obj.map(deepClone);
-    const cloned = {};
-    for (let key in obj) cloned[key] = deepClone(obj[key]);
-    return cloned;
+    if (!seen) seen = new Map();
+    if (seen.has(obj)) return seen.get(obj);
+    if (Array.isArray(obj)) {
+        let c = []; seen.set(obj, c);
+        for (let item of obj) c.push(deepClone(item, seen));
+        return c;
+    }
+    const c = {}; seen.set(obj, c);
+    for (let key in obj) c[key] = deepClone(obj[key], seen);
+    return c;
 }
 
 function evalExpr(expr, scopeVars) {
-    if (!expr) return undefined;
+    if (!expr && expr !== 0 && expr !== false) return undefined;
+    expr = String(expr).trim();
     
-    // Handle inline inputs for Python/Java
+    // Handle inline inputs
     if (expr.includes('input(')) {
         expr = expr.replace(/input\([^)]*\)/g, () => JSON.stringify(consumeInputLine()));
     }
     if (expr.includes('.nextInt()') || expr.includes('.nextDouble()') || expr.includes('.nextFloat()')) {
         expr = expr.replace(/[a-zA-Z_]\w*\.next(?:Int|Double|Float)\(\)/g, () => {
-            let val = consumeInputToken();
-            return (!val || isNaN(val)) ? 0 : Number(val);
+            let v = consumeInputToken(); return (!v || isNaN(v)) ? 0 : Number(v);
         });
     }
-    if (expr.includes('.nextLine()')) {
-        expr = expr.replace(/[a-zA-Z_]\w*\.nextLine\(\)/g, () => JSON.stringify(consumeInputLine()));
-    }
-    if (expr.includes('.next()')) {
-        expr = expr.replace(/[a-zA-Z_]\w*\.next\(\)/g, () => JSON.stringify(consumeInputToken()));
-    }
+    if (expr.includes('.nextLine()')) { expr = expr.replace(/[a-zA-Z_]\w*\.nextLine\(\)/g, () => JSON.stringify(consumeInputLine())); }
+    if (expr.includes('.next()')) { expr = expr.replace(/[a-zA-Z_]\w*\.next\(\)/g, () => JSON.stringify(consumeInputToken())); }
+    
     let scopeStr = "";
     for (let k in scopeVars) {
-        scopeStr += `let ${k} = ${JSON.stringify(scopeVars[k])};\n`;
+        try { scopeStr += `let ${k} = ${JSON.stringify(scopeVars[k])};\n`; } catch(e) { /* skip circular */ }
     }
-    let cleanExpr = expr.replace(/\band\b/g, '&&')
-                        .replace(/\bor\b/g, '||')
-                        .replace(/\bnot\b/g, '!')
-                        .replace(/\bTrue\b/g, 'true')
-                        .replace(/\bFalse\b/g, 'false')
-                        .replace(/\bNone\b/g, 'null')
-                        .replace(/\bint\(/g, 'Number(')
-                        .replace(/\bfloat\(/g, 'Number(');
+    let clean = expr
+        .replace(/\band\b/g, '&&').replace(/\bor\b/g, '||').replace(/\bnot\b/g, '!')
+        .replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null')
+        .replace(/\bint\(/g, 'Math.trunc(Number(').replace(/\bfloat\(/g, 'Number(')
+        .replace(/\bis\s+not\b/g, '!==').replace(/\bis\b/g, '===')
+        .replace(/\/\//g, '/__INTDIV__');
+    // Fix int( double-paren
+    let intCount = (clean.match(/Math\.trunc\(Number\(/g) || []).length;
+    for (let ic = 0; ic < intCount; ic++) {
+        let idx = clean.indexOf('Math.trunc(Number(');
+        if (idx >= 0) {
+            let depth = 0, start = idx + 18, end = start;
+            for (; end < clean.length; end++) {
+                if (clean[end] === '(') depth++;
+                else if (clean[end] === ')') { depth--; if (depth < 0) break; }
+            }
+            clean = clean.slice(0, end) + ')' + clean.slice(end);
+        }
+    }
+    clean = clean.replace(/\/__INTDIV__/g, '/');
+    // Handle Python floor division
+    clean = clean.replace(/(\w+)\s*\/\s*(\w+)/g, (m, a, b) => {
+        if (expr.includes('//')) return `Math.floor(${a}/${b})`;
+        return m;
+    });
+    
     try {
-        let func = new Function(scopeStr + "return (" + cleanExpr + ");");
-        return func();
+        return new Function(scopeStr + "return (" + clean + ");")();
     } catch (e) {
         return expr;
     }
 }
 
 /* ============================================================
-   INTERPRETER CORE
+   PYTHON INTERPRETER — EXPANDED
    ============================================================ */
-// Returns array of step objects: { line, desc, vars: [{name, value, changed}], output, note, stack }
-
 function tracePython(code) {
     const lines = code.split('\n');
     let steps = [];
     let funcs = {};
-    let callStack = []; // [{name, locals: {}, line}]
+    let classes = {};
+    let callStack = [];
     let globalScope = {};
-    
-    // 1. First pass: Register functions
+    let nextObjId = 1;
+    const maxSteps = 800;
+
+    // === First pass: register functions and classes ===
     let i = 0;
     while (i < lines.length) {
         let line = lines[i];
-        let m = line.match(/^def\s+([a-zA-Z_]\w*)\s*\((.*?)\):/);
-        if (m) {
-            let funcName = m[1];
-            let params = m[2].split(',').map(s=>s.trim()).filter(s=>s);
-            let start = i + 1;
-            let end = start;
-            while (end < lines.length && (lines[end].trim() === '' || lines[end].startsWith(' ') || lines[end].startsWith('\t'))) {
-                end++;
+        let trimmed = line.trim();
+        
+        // Class definition
+        let mClass = trimmed.match(/^class\s+(\w+)(?:\s*\(.*\))?\s*:/);
+        if (mClass) {
+            let className = mClass[1];
+            let classIndent = line.length - line.trimStart().length;
+            let classStart = i + 1;
+            let classEnd = classStart;
+            while (classEnd < lines.length) {
+                let nl = lines[classEnd];
+                if (nl.trim() === '') { classEnd++; continue; }
+                let ni = nl.length - nl.trimStart().length;
+                if (ni <= classIndent) break;
+                classEnd++;
             }
-            funcs[funcName] = { params, bodyRange: [start, end-1] };
-            i = end - 1;
+            // Find __init__ method
+            let initParams = [];
+            let initStart = -1, initEnd = -1, initIndent = 0;
+            for (let ci = classStart; ci < classEnd; ci++) {
+                let cl = lines[ci].trim();
+                let mInit = cl.match(/^def\s+__init__\s*\(\s*self\s*(?:,\s*(.*))?\)\s*:/);
+                if (mInit) {
+                    initParams = mInit[1] ? mInit[1].split(',').map(p => {
+                        let pp = p.trim().split('=');
+                        return { name: pp[0].trim(), default: pp.length > 1 ? pp[1].trim() : undefined };
+                    }) : [];
+                    initStart = ci + 1;
+                    initIndent = lines[ci].length - lines[ci].trimStart().length;
+                    initEnd = ci + 1;
+                    while (initEnd < classEnd) {
+                        let nl = lines[initEnd];
+                        if (nl.trim() === '') { initEnd++; continue; }
+                        let ni = nl.length - nl.trimStart().length;
+                        if (ni <= initIndent) break;
+                        initEnd++;
+                    }
+                    initEnd--;
+                    break;
+                }
+            }
+            // Find other methods
+            let methods = {};
+            for (let ci = classStart; ci < classEnd; ci++) {
+                let cl = lines[ci].trim();
+                let mMethod = cl.match(/^def\s+(\w+)\s*\(\s*self\s*(?:,\s*(.*))?\)\s*:/);
+                if (mMethod && mMethod[1] !== '__init__') {
+                    let methodName = mMethod[1];
+                    let mParams = mMethod[2] ? mMethod[2].split(',').map(s => s.trim()).filter(s => s) : [];
+                    let mIndent = lines[ci].length - lines[ci].trimStart().length;
+                    let mStart = ci + 1;
+                    let mEnd = ci + 1;
+                    while (mEnd < classEnd) {
+                        let nl = lines[mEnd];
+                        if (nl.trim() === '') { mEnd++; continue; }
+                        let ni = nl.length - nl.trimStart().length;
+                        if (ni <= mIndent) break;
+                        mEnd++;
+                    }
+                    methods[methodName] = { params: mParams, bodyRange: [mStart, mEnd - 1], indent: mIndent };
+                }
+            }
+            classes[className] = { params: initParams, initBody: [initStart, initEnd], initIndent, methods, classEnd: classEnd - 1 };
+            i = classEnd;
+            continue;
+        }
+        
+        // Function definition
+        let mFunc = trimmed.match(/^def\s+([a-zA-Z_]\w*)\s*\((.*?)\):/);
+        if (mFunc) {
+            let funcName = mFunc[1];
+            let params = mFunc[2].split(',').map(s => s.trim()).filter(s => s);
+            let start = i + 1, end = start;
+            while (end < lines.length && (lines[end].trim() === '' || /^\s/.test(lines[end]))) end++;
+            funcs[funcName] = { params, bodyRange: [start, end - 1] };
+            i = end;
+            continue;
         }
         i++;
     }
 
-    // 2. Main execution context setup
+    // === Execution engine ===
     callStack.push({name: "main()", locals: globalScope, line: 0});
-    let maxSteps = 500;
-    
+
     function getScope() { return callStack[callStack.length - 1].locals; }
-    function pushStep(lineNum, desc, output="", note="") {
+
+    function pushStep(lineNum, desc, output = "", note = "") {
         let allVars = {};
-        for (let i = 0; i < callStack.length; i++) {
-            let frame = callStack[i];
+        for (let fi = 0; fi < callStack.length; fi++) {
+            let frame = callStack[fi];
             let prefix = "";
             if (callStack.length > 1) {
-                let frameName = frame.name.replace('()', '');
-                if (i === 0) frameName = 'global';
-                prefix = frameName + (i > 0 ? `[${i}]` : '') + "::";
+                let fn = frame.name.replace('()', '');
+                if (fi === 0) fn = 'global';
+                prefix = fn + (fi > 0 ? `[${fi}]` : '') + "::";
             }
             for (let k in frame.locals) {
                 allVars[prefix + k] = frame.locals[k];
             }
         }
-        
         let varsObj = [];
         let prevScope = steps.length > 0 ? {} : null;
-        if (steps.length > 0) {
-            steps[steps.length-1].vars.forEach(v => prevScope[v.name] = v.rawValue);
-        }
+        if (steps.length > 0) steps[steps.length - 1].vars.forEach(v => { prevScope[v.name] = v.rawValue; });
         for (let k in allVars) {
             let rawVal = deepClone(allVars[k]);
-            let strVal = typeof rawVal === 'object' ? JSON.stringify(rawVal) : String(rawVal);
-            let prevStr = prevScope ? (typeof prevScope[k] === 'object' ? JSON.stringify(prevScope[k]) : String(prevScope[k])) : null;
-            let changed = prevScope ? (strVal !== prevStr) : true;
+            let strVal;
+            try { strVal = typeof rawVal === 'object' && rawVal !== null ? JSON.stringify(rawVal) : String(rawVal); }
+            catch(e) { strVal = String(rawVal); }
+            let prevStr = null;
+            if (prevScope && prevScope[k] !== undefined) {
+                try { prevStr = typeof prevScope[k] === 'object' && prevScope[k] !== null ? JSON.stringify(prevScope[k]) : String(prevScope[k]); }
+                catch(e) { prevStr = String(prevScope[k]); }
+            }
+            let changed = prevScope ? (prevStr === null || strVal !== prevStr) : true;
             varsObj.push({name: k, rawValue: rawVal, stringValue: strVal, changed});
         }
-        steps.push({
-            line: lineNum + 1,
-            desc,
-            vars: varsObj,
-            output,
-            note,
-            stack: callStack.map(f => f.name)
-        });
+        steps.push({ line: lineNum + 1, desc, vars: varsObj, output, note, stack: callStack.map(f => f.name) });
     }
 
-    // 3. Execution Engine
-    function executeBlock(startIdx, endIdx, indentationContext) {
-        let idx = startIdx;
-        let blockOutput = "";
-        
-        while (idx <= endIdx && steps.length < maxSteps) {
-            let line = lines[idx];
-            let trimmed = line.trim();
-            if (!trimmed || trimmed.startsWith('#')) { idx++; continue; }
-            
-            // Check indentation strictly to jump out of blocks
-            let indent = line.length - line.trimLeft().length;
-            if (indent < indentationContext) {
-                break; // end of block
-            }
-            
-            let scope = getScope();
-            
-            // Skip function definitions
-            let mDef = trimmed.match(/^def\s+([a-zA-Z_]\w*)\s*\((.*?)\):/);
-            if (mDef) {
-                // Skip past the function body
-                let defIndent = indent;
-                idx++;
-                while (idx <= endIdx) {
-                    let nextLine = lines[idx];
-                    let nextTrimmed = nextLine.trim();
-                    if (nextTrimmed === '') { idx++; continue; }
-                    let nextIndent = nextLine.length - nextLine.trimStart().length;
-                    if (nextIndent <= defIndent) break;
-                    idx++;
-                }
-                continue;
-            }
-            
-            // Return
-            let mRet = trimmed.match(/^return\s+(.*)$/);
-            if (mRet) {
-                let retExpr = mRet[1];
-                let val = resolveExpr(retExpr, scope, idx);
-                pushStep(idx, `Return ${val}`);
-                return { action: 'return', value: val };
-            }
-            
-            // Print
-            let mPrint = trimmed.match(/^print\((.*)\)$/);
-            if (mPrint) {
-                let args = splitArgs(mPrint[1]);
-                let vals = args.map(a => {
-                    let v = resolveExpr(a.trim(), scope, idx);
-                    return (typeof v === 'string') ? v.replace(/(^"|"$|^'|'$)/g, '') : v;
-                });
-                let outStr = vals.join(" ");
-                pushStep(idx, `Print output`, outStr);
-                idx++; continue;
-            }
-            
-            // For loop (for i in range(...))
-            let mFor = trimmed.match(/^for\s+(\w+)\s+in\s+range\((.*)\):$/);
-            if (mFor) {
-                let varName = mFor[1];
-                let rangeArgs = mFor[2].split(',').map(s => resolveExpr(s.trim(), scope, idx));
-                let start_r = 0, end_r = 0, step_r = 1;
-                if (rangeArgs.length === 1) { end_r = rangeArgs[0]; }
-                else if (rangeArgs.length === 2) { start_r = rangeArgs[0]; end_r = rangeArgs[1]; }
-                else if (rangeArgs.length === 3) { start_r = rangeArgs[0]; end_r = rangeArgs[1]; step_r = rangeArgs[2]; }
-                
-                let loopCount = 0;
-                for (let ri = start_r; step_r > 0 ? ri < end_r : ri > end_r; ri += step_r) {
-                    if (loopCount >= 100 || steps.length >= maxSteps) break;
-                    scope[varName] = ri;
-                    pushStep(idx, `For loop: ${varName} = ${ri}`);
-                    let bRes = executeBlock(idx + 1, endIdx, indent + 4);
-                    if (bRes && bRes.action === 'return') return bRes;
-                    if (bRes && bRes.action === 'break') break;
-                    loopCount++;
-                }
-                pushStep(idx, `For loop ended`);
-                idx++;
-                while (idx <= endIdx && lines[idx].length - lines[idx].trimStart().length > indent) idx++;
-                continue;
-            }
-            
-            // Assignment (x = 5)
-            let mAssign = trimmed.match(/^([a-zA-Z_]\w*)\s*=\s*(.*)$/);
-            if (mAssign && !trimmed.includes('==')) {
-                let varName = mAssign[1];
-                let expr = mAssign[2];
-                let val = resolveExpr(expr, scope, idx);
-                scope[varName] = val;
-                // Check if it was a function call for better description
-                let mFuncInExpr = expr.match(/([a-zA-Z_]\w*)\s*\(/);
-                if (mFuncInExpr && funcs[mFuncInExpr[1]]) {
-                    pushStep(idx, `Assign result to ${varName} = ${val}`);
-                } else {
-                    pushStep(idx, `Assign ${varName} = ${val}`);
-                }
-                idx++; continue;
-            }
-            
-            // Augmented Assignment
-            let mAug = trimmed.match(/^([a-zA-Z_]\w*)\s*(\+|-|\*|\/)=\s*(.*)$/);
-            if (mAug) {
-                let vName = mAug[1], op = mAug[2], expr = mAug[3];
-                let exprVal = resolveExpr(expr, scope, idx);
-                let val = evalExpr(`${scope[vName]} ${op} ${exprVal}`, scope);
-                scope[vName] = val;
-                pushStep(idx, `Update ${vName} ${op}= ${expr}`);
-                idx++; continue;
-            }
-            
-            // If condition
-            let mIf = trimmed.match(/^(?:if|elif)\s+(.*):$/);
-            if (mIf) {
-                let cond = mIf[1];
-                let condVal = evalExpr(cond, scope);
-                pushStep(idx, `Evaluate condition: ${condVal}`);
-                if (condVal) {
-                    let bRes = executeBlock(idx + 1, endIdx, indent + 4);
-                    if (bRes && bRes.action === 'return') return bRes;
-                    // Skip following elif/else
-                    idx++; // move past if
-                    while (idx <= endIdx && (lines[idx].trim().startsWith('elif') || lines[idx].trim().startsWith('else'))) {
-                        let skipEnd = idx + 1;
-                        while(skipEnd <= endIdx && lines[skipEnd].length - lines[skipEnd].trimStart().length > indent) skipEnd++;
-                        idx = skipEnd;
-                    }
-                    continue;
-                } else {
-                    // Skip block
-                    idx++;
-                    while (idx <= endIdx && lines[idx].length - lines[idx].trimStart().length > indent) idx++;
-                    continue;
-                }
-            }
-            
-            // Else
-            if (trimmed.startsWith('else:')) {
-                pushStep(idx, `Enter else branch`);
-                let bRes = executeBlock(idx + 1, endIdx, indent + 4);
-                if (bRes && bRes.action === 'return') return bRes;
-                idx++;
-                while (idx <= endIdx && lines[idx].length - lines[idx].trimStart().length > indent) idx++;
-                continue;
-            }
-            
-            // While
-            let mWhile = trimmed.match(/^while\s+(.*):$/);
-            if (mWhile) {
-                let cond = mWhile[1];
-                let loopCount = 0;
-                while (evalExpr(cond, getScope()) && loopCount < 50) {
-                    pushStep(idx, `While loop: True`);
-                    let bRes = executeBlock(idx + 1, endIdx, indent + 4);
-                    if (bRes && bRes.action === 'return') return bRes;
-                    loopCount++;
-                }
-                pushStep(idx, `While loop end`);
-                idx++;
-                while (idx <= endIdx && lines[idx].length - lines[idx].trimStart().length > indent) idx++;
-                continue;
-            }
-            
-            // Standalone function call (e.g., print or user func)
-            let mFuncAlone = trimmed.match(/^([a-zA-Z_]\w*)\((.*)\)$/);
-            if (mFuncAlone && funcs[mFuncAlone[1]]) {
-                pushStep(idx, `Call ${mFuncAlone[1]}()`);
-                callFunction(mFuncAlone[1], mFuncAlone[2], scope, idx);
-            }
-            
-            idx++;
+    // Resolve a dotted path like head.next.val on the scope
+    function resolveObjPath(path, scope) {
+        let parts = path.split('.');
+        let obj = scope[parts[0]];
+        for (let pi = 1; pi < parts.length; pi++) {
+            if (obj === null || obj === undefined) return undefined;
+            obj = obj[parts[pi]];
         }
-        return { action: 'done' };
+        return obj;
     }
-    
-    // Resolve expressions that may contain function calls
+
+    // Set a value on a dotted path
+    function setObjPath(path, scope, value) {
+        let parts = path.split('.');
+        if (parts.length === 1) { scope[parts[0]] = value; return; }
+        let obj = scope[parts[0]];
+        for (let pi = 1; pi < parts.length - 1; pi++) {
+            if (obj === null || obj === undefined) return;
+            obj = obj[parts[pi]];
+        }
+        if (obj !== null && obj !== undefined) obj[parts[parts.length - 1]] = value;
+    }
+
+    // Resolve an expression — handles variable refs, dotted access, constructors, function calls, then falls back to evalExpr
     function resolveExpr(expr, scope, lineIdx) {
-        if (!expr) return undefined;
+        if (expr === undefined || expr === null) return undefined;
+        expr = String(expr).trim();
+        if (expr === '') return undefined;
         
-        // Check if the expression contains a function call to a known function
-        // Pattern: funcName(args) possibly within a larger expression like n * factorial(n - 1)
-        let resolved = expr;
-        let funcCallRegex = /([a-zA-Z_]\w*)\(([^()]*(?:\([^()]*\)[^()]*)*)\)/;
-        let safetyCount = 0;
+        // Handle "not in" and "in" operators
+        let mNotIn = expr.match(/^(.+?)\s+not\s+in\s+(.+)$/);
+        if (mNotIn && !expr.includes(' and ') && !expr.includes(' or ')) {
+            let left = resolveExpr(mNotIn[1], scope, lineIdx);
+            let right = resolveExpr(mNotIn[2], scope, lineIdx);
+            if (Array.isArray(right)) return !right.includes(left);
+            if (right && right.__isDict) return !(left in right);
+            if (right && right.__isSet) return !(right.__values && right.__values.includes(left));
+            if (typeof right === 'string') return !right.includes(left);
+            return true;
+        }
+        let mIn = expr.match(/^(.+?)\s+in\s+(.+)$/);
+        if (mIn && !expr.includes(' and ') && !expr.includes(' or ') && !expr.startsWith('for ')) {
+            let left = resolveExpr(mIn[1], scope, lineIdx);
+            let right = resolveExpr(mIn[2], scope, lineIdx);
+            if (Array.isArray(right)) return right.includes(left);
+            if (right && right.__isDict) return left in right;
+            if (right && right.__isSet) return right.__values && right.__values.includes(left);
+            if (typeof right === 'string') return right.includes(left);
+            return false;
+        }
+
+        if (expr === 'None') return null;
+        if (expr === 'True') return true;
+        if (expr === 'False') return false;
+
+        // Numeric literal
+        if (/^-?\d+(\.\d+)?$/.test(expr)) return Number(expr);
+        // String literal
+        if (/^(["']).*\1$/.test(expr)) return expr.slice(1, -1);
+        // List literal
+        if (expr.startsWith('[') && expr.endsWith(']')) {
+            let inner = expr.slice(1, -1).trim();
+            if (inner === '') return [];
+            let items = splitArgs(inner);
+            return items.map(it => resolveExpr(it.trim(), scope, lineIdx));
+        }
+        // Dict literal
+        if (expr === '{}') return { __isDict: true };
+        if (expr.startsWith('{') && expr.endsWith('}') && expr.includes(':')) {
+            let inner = expr.slice(1, -1).trim();
+            let entries = splitArgs(inner);
+            let d = { __isDict: true };
+            entries.forEach(e => {
+                let [k, v] = e.split(':').map(s => s.trim());
+                let key = resolveExpr(k, scope, lineIdx);
+                d[key] = resolveExpr(v, scope, lineIdx);
+            });
+            return d;
+        }
+        // set()
+        if (expr === 'set()') return { __isSet: true, __values: [] };
         
-        while (safetyCount < 20) {
-            let match = resolved.match(funcCallRegex);
-            if (!match) break;
-            
-            let funcName = match[1];
-            let funcArgs = match[2];
-            let fullMatch = match[0];
-            
-            if (funcs[funcName]) {
-                // It's a known user-defined function — execute it
-                let retVal = callFunction(funcName, funcArgs, scope, lineIdx);
-                // Replace the function call in the expression with the return value
-                resolved = resolved.replace(fullMatch, JSON.stringify(retVal));
-            } else {
-                // Not a known function, break to avoid infinite loop
-                break;
-            }
-            safetyCount++;
+        // len()
+        let mLen = expr.match(/^len\((.+)\)$/);
+        if (mLen) {
+            let inner = resolveExpr(mLen[1], scope, lineIdx);
+            if (Array.isArray(inner)) return inner.length;
+            if (inner && typeof inner === 'object' && inner.__isDict) return Object.keys(inner).filter(k => !k.startsWith('__')).length;
+            if (inner && typeof inner === 'object' && inner.__isSet) return inner.__values.length;
+            if (typeof inner === 'string') return inner.length;
+            return 0;
+        }
+        // abs(), min(), max()
+        let mAbs = expr.match(/^abs\((.+)\)$/);
+        if (mAbs) return Math.abs(resolveExpr(mAbs[1], scope, lineIdx));
+        let mMin = expr.match(/^min\((.+)\)$/);
+        if (mMin) { let args = splitArgs(mMin[1]).map(a => resolveExpr(a.trim(), scope, lineIdx)); if (args.length === 1 && Array.isArray(args[0])) return Math.min(...args[0]); return Math.min(...args); }
+        let mMax = expr.match(/^max\((.+)\)$/);
+        if (mMax) { let args = splitArgs(mMax[1]).map(a => resolveExpr(a.trim(), scope, lineIdx)); if (args.length === 1 && Array.isArray(args[0])) return Math.max(...args[0]); return Math.max(...args); }
+        // sorted()
+        let mSorted = expr.match(/^sorted\((.+)\)$/);
+        if (mSorted) { let arr = resolveExpr(mSorted[1], scope, lineIdx); if (Array.isArray(arr)) return [...arr].sort((a,b) => a - b); return arr; }
+        // str()
+        let mStr = expr.match(/^str\((.+)\)$/);
+        if (mStr) return String(resolveExpr(mStr[1], scope, lineIdx));
+
+        // Exact constructor call ClassName(args)
+        for (let cn in classes) {
+            let cRe = new RegExp(`^${cn}\\((.*)\\)$`);
+            let mC = expr.match(cRe);
+            if (mC) return constructObject(cn, mC[1], scope, lineIdx);
         }
         
-        return evalExpr(resolved, scope);
-    }
-    
-    // Split arguments respecting parentheses
-    function splitArgs(str) {
-        let args = [];
-        let depth = 0;
-        let current = '';
-        for (let c of str) {
-            if (c === '(') depth++;
-            else if (c === ')') depth--;
-            else if (c === ',' && depth === 0) {
-                args.push(current);
-                current = '';
-                continue;
+        // Exact function call funcName(args)
+        let mExactFunc = expr.match(/^([a-zA-Z_]\w*)\((.*)\)$/);
+        if (mExactFunc && funcs[mExactFunc[1]]) {
+            return callFunction(mExactFunc[1], mExactFunc[2], scope, lineIdx);
+        }
+
+        // Direct variable reference
+        if (/^[a-zA-Z_]\w*$/.test(expr) && expr in scope) return scope[expr];
+        
+        // Dotted access (head.next.val)
+        if (/^[a-zA-Z_]\w*(\.\w+)+$/.test(expr)) {
+            let val = resolveObjPath(expr, scope);
+            if (val !== undefined) return val;
+        }
+
+        // Indexed access: arr[i] or dict[key]
+        let mIdx = expr.match(/^([a-zA-Z_]\w*(?:\.\w+)*)\[(.+)\]$/);
+        if (mIdx) {
+            let obj = mIdx[1].includes('.') ? resolveObjPath(mIdx[1], scope) : scope[mIdx[1]];
+            let idx = resolveExpr(mIdx[2], scope, lineIdx);
+            if (obj !== undefined && obj !== null) return obj[idx];
+        }
+
+        // Function calls within expressions
+        let resolved = expr;
+        let funcCallRe = /([a-zA-Z_]\w*)\(([^()]*(?:\([^()]*\)[^()]*)*)\)/;
+        let safety = 0;
+        while (safety < 20) {
+            let match = resolved.match(funcCallRe);
+            if (!match) break;
+            let funcName = match[1], funcArgs = match[2], full = match[0];
+            if (funcs[funcName]) {
+                let retVal = callFunction(funcName, funcArgs, scope, lineIdx);
+                resolved = resolved.replace(full, JSON.stringify(retVal));
+            } else if (classes[funcName]) {
+                let obj = constructObject(funcName, funcArgs, scope, lineIdx);
+                resolved = resolved.replace(full, JSON.stringify(obj));
+            } else { break; }
+            safety++;
+        }
+        
+        // Replace dotted accesses in expressions before evalExpr
+        resolved = resolved.replace(/\b([a-zA-Z_]\w*(?:\.\w+)+)\b/g, (match) => {
+            let val = resolveObjPath(match, scope);
+            if (val !== undefined) return JSON.stringify(val);
+            return match;
+        });
+        
+        // Replace simple variable references
+        resolved = resolved.replace(/\b([a-zA-Z_]\w*)\b/g, (match) => {
+            if (['and','or','not','True','False','None','in','is','len','abs','min','max','sorted','int','float','str','print','range','enumerate'].includes(match)) return match;
+            if (match in scope) {
+                let v = scope[match];
+                try { return JSON.stringify(v); } catch(e) { return match; }
             }
+            return match;
+        });
+        
+        return evalExpr(resolved, {});
+    }
+
+    function constructObject(className, argStr, callerScope, lineIdx) {
+        let classDef = classes[className];
+        let argVals = argStr.trim() ? splitArgs(argStr).map(a => resolveExpr(a.trim(), callerScope, lineIdx)) : [];
+        let obj = { __type: className, __id: nextObjId++ };
+        
+        // Execute __init__ body
+        if (classDef.initBody[0] >= 0) {
+            let initLocals = { self: obj };
+            classDef.params.forEach((p, pi) => {
+                if (pi < argVals.length) initLocals[p.name] = argVals[pi];
+                else if (p.default !== undefined) initLocals[p.name] = resolveExpr(p.default, callerScope, lineIdx);
+                else initLocals[p.name] = null;
+            });
+            callStack.push({name: `${className}()`, locals: initLocals, line: classDef.initBody[0]});
+            executeBlock(classDef.initBody[0], classDef.initBody[1], classDef.initIndent + 4);
+            callStack.pop();
+        }
+        return obj;
+    }
+
+    function splitArgs(str) {
+        let args = [], depth = 0, brack = 0, current = '';
+        for (let c of str) {
+            if (c === '(' || c === '[' || c === '{') depth++;
+            else if (c === ')' || c === ']' || c === '}') depth--;
+            else if (c === ',' && depth === 0) { args.push(current); current = ''; continue; }
             current += c;
         }
         if (current.trim()) args.push(current);
         return args;
     }
-    
+
     function callFunction(funcName, argStr, callerScope, callLineIdx) {
         let fDef = funcs[funcName];
-        let argVals = argStr.split(',').map(s=>evalExpr(s.trim(), callerScope));
+        let argVals = argStr.trim() ? splitArgs(argStr).map(s => resolveExpr(s.trim(), callerScope, callLineIdx)) : [];
         let locals = {};
         fDef.params.forEach((p, i) => { locals[p] = argVals[i]; });
-        
         callStack.push({name: `${funcName}()`, locals: locals, line: fDef.bodyRange[0]});
-        
-        let res = executeBlock(fDef.bodyRange[0], fDef.bodyRange[1], 4); // assuming 4 spaces intent inside func
-        
+        let res = executeBlock(fDef.bodyRange[0], fDef.bodyRange[1], 4);
         callStack.pop();
         return res && res.action === 'return' ? res.value : undefined;
     }
 
-    // Start execution from global level
-    executeBlock(0, lines.length - 1, 0);
-    return steps;
-}
-
-// C++ Tracer
-function traceCpp(code) {
-    const lines = code.split('\n');
-    let steps = [];
-    let funcs = {};
-    let callStack = [];
-    
-    // Parse functions
-    let currentFunc = null;
-    let braceCount = 0;
-    
-    for (let i=0; i<lines.length; i++) {
-        let line = lines[i].trim();
-        let mFunc = line.match(/^(?:int|void|double|float|bool|string|auto)\s+([a-zA-Z_]\w*)\s*\((.*)\)\s*\{?/);
-        if (mFunc && !currentFunc) {
-            let funcName = mFunc[1];
-            let params = mFunc[2].split(',').map(s=>s.trim().split(' ').pop()).filter(s=>s); // extract param names
-            currentFunc = { name: funcName, params: params, start: i + 1 };
-            funcs[funcName] = currentFunc;
-            if (line.includes('{')) braceCount = 1;
-        } else if (currentFunc) {
-            braceCount += (line.match(/\{/g) || []).length;
-            braceCount -= (line.match(/\}/g) || []).length;
-            if (braceCount === 0) {
-                currentFunc.end = i - 1;
-                currentFunc = null;
-            }
-        }
-    }
-    
-    function getScope() { return callStack[callStack.length - 1].locals; }
-    function pushStep(lineNum, desc, output="") {
-        let allVars = {};
-        for (let i = 0; i < callStack.length; i++) {
-            let frame = callStack[i];
-            let prefix = "";
-            if (callStack.length > 1) {
-                let frameName = frame.name.replace('()', '');
-                prefix = frameName + (i > 0 ? `[${i}]` : '') + "::";
-            }
-            for (let k in frame.locals) {
-                allVars[prefix + k] = frame.locals[k];
-            }
-        }
-        
-        let varsObj = [];
-        let prevScope = steps.length > 0 ? {} : null;
-        if (steps.length > 0) steps[steps.length-1].vars.forEach(v => prevScope[v.name] = v.rawValue);
-        
-        for (let k in allVars) {
-            let rawVal = deepClone(allVars[k]);
-            let strVal = typeof rawVal === 'object' ? JSON.stringify(rawVal) : String(rawVal);
-            let prevStr = prevScope ? (typeof prevScope[k] === 'object' ? JSON.stringify(prevScope[k]) : String(prevScope[k])) : null;
-            let changed = prevScope ? (strVal !== prevStr) : true;
-            varsObj.push({name: k, rawValue: rawVal, stringValue: strVal, changed});
-        }
-        steps.push({
-            line: lineNum + 1, desc, vars: varsObj, output, note: "",
-            stack: callStack.map(f => f.name)
-        });
-    }
-
-    function executeBlock(startIdx, endIdx) {
+    function executeBlock(startIdx, endIdx, indentCtx) {
         let idx = startIdx;
-        while (idx <= endIdx && steps.length < 500) {
+        while (idx <= endIdx && steps.length < maxSteps) {
             let line = lines[idx];
+            if (line === undefined) break;
             let trimmed = line.trim();
-            if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('using')) { idx++; continue; }
-            if (trimmed === '{' || trimmed === '}') { idx++; continue; }
-            
+            if (!trimmed || trimmed.startsWith('#')) { idx++; continue; }
+            let indent = line.length - line.trimStart().length;
+            if (indent < indentCtx) break;
             let scope = getScope();
-            
-            // Return
-            let mRet = trimmed.match(/^return\s+(.*);/);
-            if (mRet) {
-                let val = cppResolveExpr(mRet[1], scope);
-                pushStep(idx, `Return ${val}`);
-                return { action: 'return', value: val };
-            }
-            
-            // cout
-            if (trimmed.startsWith('cout')) {
-                let outStr = trimmed.replace('cout', '').replace(/;/g, '').split('<<')
-                    .map(s => s.trim())
-                    .filter(s => s && s !== 'endl')
-                    .map(s => {
-                        if(s.startsWith('"') && s.endsWith('"')) return s.slice(1,-1);
-                        return evalExpr(s, scope);
-                    }).join('');
-                pushStep(idx, `Output stream`, outStr);
-                idx++; continue;
-            }
-            
-            // cin
-            if (trimmed.startsWith('cin')) {
-                let vars = trimmed.replace('cin', '').replace(/;/g, '').split('>>')
-                    .map(s => s.trim())
-                    .filter(s => s);
-                let outStr = "Read: ";
-                for (let v of vars) {
-                    let val = consumeInputToken();
-                    if (!isNaN(val) && val !== "") val = Number(val);
-                    scope[v] = val;
-                    outStr += `${v}=${val} `;
-                }
-                pushStep(idx, `Input stream`, outStr);
-                idx++; continue;
-            }
-            
-            // Uninitialized Declaration (int x;)
-            let mDeclNoInit = trimmed.match(/^(?:int|double|float|bool|string|auto)\s+([a-zA-Z_]\w*)\s*;/);
-            if (mDeclNoInit) {
-                let varName = mDeclNoInit[1];
-                scope[varName] = undefined;
-                pushStep(idx, `Declare ${varName}`);
-                idx++; continue;
-            }
-            
-            // Declaration & Assignment (int x = 5;)
-            let mDecl = trimmed.match(/^(?:int|double|float|bool|string|auto)\s+([a-zA-Z_]\w*)\s*=\s*(.*);/);
-            if (mDecl) {
-                let varName = mDecl[1], expr = mDecl[2];
-                handleAssign(idx, varName, expr, scope);
-                idx++; continue;
-            }
-            
-            // Assignment (x = 5;)
-            let mAssign = trimmed.match(/^([a-zA-Z_]\w*)\s*=\s*(.*);/);
-            if (mAssign && !trimmed.startsWith('int') && !trimmed.startsWith('if') && !trimmed.startsWith('for') && !trimmed.startsWith('while')) {
-                handleAssign(idx, mAssign[1], mAssign[2], scope);
+
+            // Skip class definitions
+            let mClassDef = trimmed.match(/^class\s+(\w+)/);
+            if (mClassDef) {
+                let cd = classes[mClassDef[1]];
+                if (cd) { idx = cd.classEnd + 1; continue; }
                 idx++; continue;
             }
 
-            // If
-            let mIf = trimmed.match(/^if\s*\((.*)\)\s*\{?/);
-            if (mIf) {
-                let condVal = evalExpr(mIf[1], scope);
-                pushStep(idx, `Condition: ${condVal}`);
-                
-                // Find block bounds
-                let bStart = idx + 1, bEnd = idx;
-                let bc = trimmed.includes('{') ? 1 : 0;
-                if(bc===0 && lines[idx+1].includes('{')) { bStart++; bEnd++; bc=1; }
-                
-                while(bc > 0 && bEnd < endIdx) {
-                    bEnd++;
-                    bc += (lines[bEnd].match(/\{/g)||[]).length - (lines[bEnd].match(/\}/g)||[]).length;
+            // Skip function definitions
+            let mDef = trimmed.match(/^def\s+([a-zA-Z_]\w*)\s*\((.*?)\):/);
+            if (mDef) {
+                let defI = indent; idx++;
+                while (idx <= endIdx) {
+                    let nl = lines[idx]; if (!nl) break;
+                    let nt = nl.trim();
+                    if (nt === '') { idx++; continue; }
+                    if (nl.length - nl.trimStart().length <= defI) break;
+                    idx++;
                 }
-                
-                if (condVal) {
-                    let r = executeBlock(bStart, bEnd - 1);
-                    if (r && r.action === 'return') return r;
-                }
-                idx = bEnd + 1;
                 continue;
             }
-            
+
+            // Return
+            let mRet = trimmed.match(/^return\s+(.*)$/);
+            if (mRet) {
+                let val = resolveExpr(mRet[1], scope, idx);
+                pushStep(idx, `Return ${formatVal(val)}`);
+                return { action: 'return', value: val };
+            }
+            if (trimmed === 'return') {
+                pushStep(idx, `Return`);
+                return { action: 'return', value: undefined };
+            }
+            // Break / Continue
+            if (trimmed === 'break') { pushStep(idx, 'Break'); return { action: 'break' }; }
+            if (trimmed === 'continue') { pushStep(idx, 'Continue'); return { action: 'continue' }; }
+
+            // Print
+            let mPrint = trimmed.match(/^print\((.*)?\)$/);
+            if (mPrint) {
+                let content = mPrint[1] || '';
+                if (content.trim() === '') { pushStep(idx, `Print`, ''); idx++; continue; }
+                let args = splitArgs(content);
+                let vals = args.map(a => {
+                    let v = resolveExpr(a.trim(), scope, idx);
+                    if (typeof v === 'string') return v;
+                    if (v === null) return 'None';
+                    if (typeof v === 'object') { try { return JSON.stringify(v); } catch(e) { return String(v); } }
+                    return String(v);
+                });
+                pushStep(idx, `Print`, vals.join(' '));
+                idx++; continue;
+            }
+
+            // Swap: a, b = b, a  OR  arr[i], arr[j] = arr[j], arr[i]
+            let mSwap = trimmed.match(/^(.+?)\s*,\s*(.+?)\s*=\s*(.+?)\s*,\s*(.+)$/);
+            if (mSwap) {
+                let lhs1 = mSwap[1].trim(), lhs2 = mSwap[2].trim();
+                let rhs1 = mSwap[3].trim(), rhs2 = mSwap[4].trim();
+                let v1 = resolveExpr(rhs1, scope, idx);
+                let v2 = resolveExpr(rhs2, scope, idx);
+                // Handle indexed targets: arr[i]
+                let setTarget = (target, value) => {
+                    let idxM = target.match(/^([a-zA-Z_]\w*(?:\.\w+)*)\[(.+)\]$/);
+                    if (idxM) {
+                        let obj = idxM[1].includes('.') ? resolveObjPath(idxM[1], scope) : scope[idxM[1]];
+                        let ki = resolveExpr(idxM[2], scope, idx);
+                        if (obj) obj[ki] = value;
+                    } else if (target.includes('.')) {
+                        setObjPath(target, scope, value);
+                    } else {
+                        scope[target] = value;
+                    }
+                };
+                setTarget(lhs1, v1);
+                setTarget(lhs2, v2);
+                pushStep(idx, `Swap: ${lhs1}↔${lhs2}`);
+                idx++; continue;
+            }
+
+            // For loop: for i in range(...)
+            let mForRange = trimmed.match(/^for\s+(\w+)\s+in\s+range\((.*)\):$/);
+            if (mForRange) {
+                let vn = mForRange[1];
+                let ra = splitArgs(mForRange[2]).map(s => resolveExpr(s.trim(), scope, idx));
+                let s_r = 0, e_r = 0, st_r = 1;
+                if (ra.length === 1) e_r = ra[0];
+                else if (ra.length === 2) { s_r = ra[0]; e_r = ra[1]; }
+                else if (ra.length === 3) { s_r = ra[0]; e_r = ra[1]; st_r = ra[2]; }
+                let lc = 0;
+                for (let ri = s_r; st_r > 0 ? ri < e_r : ri > e_r; ri += st_r) {
+                    if (lc >= 150 || steps.length >= maxSteps) break;
+                    scope[vn] = ri;
+                    pushStep(idx, `For: ${vn} = ${ri}`);
+                    let br = executeBlock(idx + 1, endIdx, indent + 4);
+                    if (br && br.action === 'return') return br;
+                    if (br && br.action === 'break') break;
+                    lc++;
+                }
+                pushStep(idx, `For loop ended`);
+                idx++; while (idx <= endIdx && lines[idx] && lines[idx].length - lines[idx].trimStart().length > indent) idx++;
+                continue;
+            }
+
+            // For loop: for x in iterable
+            let mForIn = trimmed.match(/^for\s+(\w+)\s+in\s+(.+):$/);
+            if (mForIn && !trimmed.includes('range(') && !trimmed.includes('enumerate(')) {
+                let vn = mForIn[1];
+                let iterExpr = mForIn[2].trim();
+                let iterable = resolveExpr(iterExpr, scope, idx);
+                let items = [];
+                if (Array.isArray(iterable)) items = iterable;
+                else if (iterable && typeof iterable === 'object' && iterable.__isDict) items = Object.keys(iterable).filter(k => !k.startsWith('__'));
+                else if (iterable && typeof iterable === 'object' && iterable.__isSet) items = iterable.__values;
+                let lc = 0;
+                for (let item of items) {
+                    if (lc >= 150 || steps.length >= maxSteps) break;
+                    scope[vn] = item;
+                    pushStep(idx, `For: ${vn} = ${formatVal(item)}`);
+                    let br = executeBlock(idx + 1, endIdx, indent + 4);
+                    if (br && br.action === 'return') return br;
+                    if (br && br.action === 'break') break;
+                    lc++;
+                }
+                pushStep(idx, `For loop ended`);
+                idx++; while (idx <= endIdx && lines[idx] && lines[idx].length - lines[idx].trimStart().length > indent) idx++;
+                continue;
+            }
+
+            // For loop: for i, x in enumerate(iterable)
+            let mForEnum = trimmed.match(/^for\s+(\w+)\s*,\s*(\w+)\s+in\s+enumerate\((.+)\):$/);
+            if (mForEnum) {
+                let iv = mForEnum[1], vv = mForEnum[2];
+                let iterable = resolveExpr(mForEnum[3].trim(), scope, idx);
+                if (Array.isArray(iterable)) {
+                    let lc = 0;
+                    for (let ei = 0; ei < iterable.length && lc < 150 && steps.length < maxSteps; ei++) {
+                        scope[iv] = ei; scope[vv] = iterable[ei];
+                        pushStep(idx, `For: ${iv}=${ei}, ${vv}=${formatVal(iterable[ei])}`);
+                        let br = executeBlock(idx + 1, endIdx, indent + 4);
+                        if (br && br.action === 'return') return br;
+                        if (br && br.action === 'break') break;
+                        lc++;
+                    }
+                }
+                pushStep(idx, `For loop ended`);
+                idx++; while (idx <= endIdx && lines[idx] && lines[idx].length - lines[idx].trimStart().length > indent) idx++;
+                continue;
+            }
+
+            // While
+            let mWhile = trimmed.match(/^while\s+(.*):$/);
+            if (mWhile) {
+                let cond = mWhile[1];
+                let lc = 0;
+                while (lc < 150 && steps.length < maxSteps) {
+                    let condVal = resolveExpr(cond, scope, idx);
+                    if (!condVal) { pushStep(idx, `While: False`); break; }
+                    pushStep(idx, `While: True`);
+                    let br = executeBlock(idx + 1, endIdx, indent + 4);
+                    if (br && br.action === 'return') return br;
+                    if (br && br.action === 'break') break;
+                    lc++;
+                }
+                idx++; while (idx <= endIdx && lines[idx] && lines[idx].length - lines[idx].trimStart().length > indent) idx++;
+                continue;
+            }
+
+            // If / elif
+            let mIf = trimmed.match(/^(?:if|elif)\s+(.*):$/);
+            if (mIf) {
+                let condVal = resolveExpr(mIf[1], scope, idx);
+                pushStep(idx, `Condition: ${!!condVal}`);
+                if (condVal) {
+                    let br = executeBlock(idx + 1, endIdx, indent + 4);
+                    if (br && br.action === 'return') return br;
+                    if (br && br.action === 'break') return br;
+                    idx++;
+                    while (idx <= endIdx && lines[idx]) {
+                        let nt = lines[idx].trim();
+                        if (nt.startsWith('elif') || nt.startsWith('else')) {
+                            let sk = idx + 1;
+                            while (sk <= endIdx && lines[sk] && lines[sk].length - lines[sk].trimStart().length > indent) sk++;
+                            idx = sk;
+                        } else break;
+                    }
+                    continue;
+                } else {
+                    idx++;
+                    while (idx <= endIdx && lines[idx] && lines[idx].length - lines[idx].trimStart().length > indent) idx++;
+                    continue;
+                }
+            }
+
+            // Else
+            if (trimmed === 'else:' || trimmed.startsWith('else:')) {
+                pushStep(idx, `Else branch`);
+                let br = executeBlock(idx + 1, endIdx, indent + 4);
+                if (br && br.action === 'return') return br;
+                if (br && br.action === 'break') return br;
+                idx++;
+                while (idx <= endIdx && lines[idx] && lines[idx].length - lines[idx].trimStart().length > indent) idx++;
+                continue;
+            }
+
+            // .append()
+            let mAppend = trimmed.match(/^([a-zA-Z_]\w*(?:\.\w+)*)\.append\((.+)\)$/);
+            if (mAppend) {
+                let listRef = mAppend[1].includes('.') ? resolveObjPath(mAppend[1], scope) : scope[mAppend[1]];
+                let val = resolveExpr(mAppend[2], scope, idx);
+                if (Array.isArray(listRef)) listRef.push(val);
+                else if (listRef && listRef.__isSet) { if (!listRef.__values.includes(val)) listRef.__values.push(val); }
+                pushStep(idx, `${mAppend[1]}.append(${formatVal(val)})`);
+                idx++; continue;
+            }
+
+            // .pop() / .pop(0)
+            let mPop = trimmed.match(/^(?:(\w+)\s*=\s*)?([a-zA-Z_]\w*(?:\.\w+)*)\.pop\((\d*)\)$/);
+            if (mPop) {
+                let assignVar = mPop[1], listName = mPop[2], popIdx = mPop[3];
+                let listRef = listName.includes('.') ? resolveObjPath(listName, scope) : scope[listName];
+                let val;
+                if (Array.isArray(listRef)) {
+                    if (popIdx !== '' && popIdx !== undefined) val = listRef.splice(Number(popIdx), 1)[0];
+                    else val = listRef.pop();
+                }
+                if (assignVar) scope[assignVar] = val;
+                pushStep(idx, `${listName}.pop(${popIdx}) → ${formatVal(val)}`);
+                idx++; continue;
+            }
+
+            // .add() for sets
+            let mAdd = trimmed.match(/^([a-zA-Z_]\w*)\.add\((.+)\)$/);
+            if (mAdd) {
+                let setRef = scope[mAdd[1]];
+                let val = resolveExpr(mAdd[2], scope, idx);
+                if (setRef && setRef.__isSet) { if (!setRef.__values.includes(val)) setRef.__values.push(val); }
+                pushStep(idx, `${mAdd[1]}.add(${formatVal(val)})`);
+                idx++; continue;
+            }
+
+            // .remove() for sets/lists
+            let mRemove = trimmed.match(/^([a-zA-Z_]\w*)\.remove\((.+)\)$/);
+            if (mRemove) {
+                let ref = scope[mRemove[1]];
+                let val = resolveExpr(mRemove[2], scope, idx);
+                if (Array.isArray(ref)) { let ri = ref.indexOf(val); if (ri >= 0) ref.splice(ri, 1); }
+                else if (ref && ref.__isSet) { ref.__values = ref.__values.filter(v => v !== val); }
+                pushStep(idx, `${mRemove[1]}.remove(${formatVal(val)})`);
+                idx++; continue;
+            }
+
+            // Indexed assignment: arr[i] = val  OR  dict[key] = val  OR  obj.arr[i] = val
+            let mIdxAssign = trimmed.match(/^([a-zA-Z_]\w*(?:\.\w+)*)\[(.+)\]\s*=\s*(.+)$/);
+            if (mIdxAssign && !trimmed.includes('==')) {
+                let objName = mIdxAssign[1], keyExpr = mIdxAssign[2], valExpr = mIdxAssign[3];
+                let obj = objName.includes('.') ? resolveObjPath(objName, scope) : scope[objName];
+                let key = resolveExpr(keyExpr, scope, idx);
+                let val = resolveExpr(valExpr, scope, idx);
+                if (obj !== undefined && obj !== null) obj[key] = val;
+                pushStep(idx, `${objName}[${formatVal(key)}] = ${formatVal(val)}`);
+                idx++; continue;
+            }
+
+            // Dotted assignment: head.next = Node(2)  OR  self.val = val
+            let mDotAssign = trimmed.match(/^([a-zA-Z_]\w*(?:\.\w+)*)\.(\w+)\s*=\s*(.+)$/);
+            if (mDotAssign && !trimmed.includes('==')) {
+                let objPath = mDotAssign[1], attr = mDotAssign[2], expr = mDotAssign[3];
+                let obj = objPath.includes('.') ? resolveObjPath(objPath, scope) : scope[objPath];
+                let val = resolveExpr(expr, scope, idx);
+                if (obj !== null && obj !== undefined && typeof obj === 'object') {
+                    obj[attr] = val;
+                }
+                pushStep(idx, `${objPath}.${attr} = ${formatVal(val)}`);
+                idx++; continue;
+            }
+
+            // Augmented assignment: x += 1, x -= 1, etc.
+            let mAug = trimmed.match(/^([a-zA-Z_]\w*)\s*(\+|-|\*|\/)=\s*(.*)$/);
+            if (mAug) {
+                let vn = mAug[1], op = mAug[2], expr = mAug[3];
+                let ev = resolveExpr(expr, scope, idx);
+                let cur = scope[vn];
+                if (op === '+') scope[vn] = (typeof cur === 'string' || typeof ev === 'string') ? cur + ev : cur + ev;
+                else if (op === '-') scope[vn] = cur - ev;
+                else if (op === '*') scope[vn] = cur * ev;
+                else if (op === '/') scope[vn] = cur / ev;
+                pushStep(idx, `${vn} ${op}= ${formatVal(ev)}`);
+                idx++; continue;
+            }
+
+            // Simple assignment: x = expr
+            let mAssign = trimmed.match(/^([a-zA-Z_]\w*)\s*=\s*(.+)$/);
+            if (mAssign && !trimmed.includes('==') && !/^(if|elif|while|for|def|class|return|print)/.test(trimmed)) {
+                let vn = mAssign[1], expr = mAssign[2].trim();
+                let val = resolveExpr(expr, scope, idx);
+                scope[vn] = val;
+                pushStep(idx, `${vn} = ${formatVal(val)}`);
+                idx++; continue;
+            }
+
+            // Standalone function call
+            let mFuncCall = trimmed.match(/^([a-zA-Z_]\w*)\((.*)?\)$/);
+            if (mFuncCall && funcs[mFuncCall[1]]) {
+                pushStep(idx, `Call ${mFuncCall[1]}()`);
+                callFunction(mFuncCall[1], mFuncCall[2] || '', scope, idx);
+                idx++; continue;
+            }
+
+            // Standalone method call (obj.method(args))
+            let mMethodCall = trimmed.match(/^([a-zA-Z_]\w*(?:\.\w+)*)\.(\w+)\((.*)?\)$/);
+            if (mMethodCall) {
+                // Could be list.sort(), etc. — skip gracefully
+                pushStep(idx, `${mMethodCall[1]}.${mMethodCall[2]}()`);
+                idx++; continue;
+            }
+
             idx++;
         }
         return { action: 'done' };
     }
+
+    executeBlock(0, lines.length - 1, 0);
+    return steps;
+}
+
+function formatVal(v) {
+    if (v === null || v === undefined) return 'None';
+    if (typeof v === 'object') {
+        if (v.__type) return `${v.__type}(${v.val !== undefined ? v.val : '...'})`;
+        if (v.__isDict) { let keys = Object.keys(v).filter(k => !k.startsWith('__')); return `{${keys.map(k => k + ':' + formatVal(v[k])).join(', ')}}`; }
+        if (v.__isSet) return `{${v.__values.join(', ')}}`;
+        try { return JSON.stringify(v); } catch(e) { return String(v); }
+    }
+    if (typeof v === 'string') return `"${v}"`;
+    return String(v);
+}
+
+/* ============================================================
+   C++ TRACER
+   ============================================================ */
+function traceCpp(code) {
+    const lines = code.split('\n');
+    let steps = [], funcs = {}, callStack = [];
+    let currentFunc = null, braceCount = 0;
     
-    function handleAssign(idx, varName, expr, scope) {
-        let val = cppResolveExpr(expr, scope);
-        scope[varName] = val;
-        let mFunc = expr.match(/([a-zA-Z_]\w*)\s*\(/);
-        if (mFunc && funcs[mFunc[1]]) {
-            pushStep(idx, `Assign ${varName} = ${val}`);
-        } else {
-            pushStep(idx, `Assign ${varName} = ${val}`);
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
+        let mFunc = line.match(/^(?:int|void|double|float|bool|string|auto|long|long\s+long)\s+([a-zA-Z_]\w*)\s*\((.*)?\)\s*\{?/);
+        if (mFunc && !currentFunc) {
+            let params = mFunc[2] ? mFunc[2].split(',').map(s => s.trim().split(/\s+/).pop()).filter(s => s) : [];
+            currentFunc = { name: mFunc[1], params, start: i + 1 };
+            funcs[mFunc[1]] = currentFunc;
+            if (line.includes('{')) braceCount = 1;
+        } else if (currentFunc) {
+            braceCount += (line.match(/\{/g) || []).length;
+            braceCount -= (line.match(/\}/g) || []).length;
+            if (braceCount === 0) { currentFunc.end = i - 1; currentFunc = null; }
         }
     }
     
-    function cppResolveExpr(expr, scope) {
-        if (!expr) return undefined;
-        let resolved = expr;
-        let funcCallRegex = /([a-zA-Z_]\w*)\(([^()]*(?:\([^()]*\)[^()]*)*)\)/;
-        let safetyCount = 0;
-        while (safetyCount < 20) {
-            let match = resolved.match(funcCallRegex);
-            if (!match) break;
-            let funcName = match[1];
-            let funcArgs = match[2];
-            let fullMatch = match[0];
-            if (funcs[funcName]) {
-                let retVal = callFunction(funcName, funcArgs, scope, 0);
-                resolved = resolved.replace(fullMatch, JSON.stringify(retVal));
-            } else {
-                break;
+    function getScope() { return callStack[callStack.length - 1].locals; }
+    function pushStep(lineNum, desc, output = "") {
+        let allVars = {};
+        for (let i = 0; i < callStack.length; i++) {
+            let frame = callStack[i], prefix = "";
+            if (callStack.length > 1) { prefix = frame.name.replace('()', '') + (i > 0 ? `[${i}]` : '') + "::"; }
+            for (let k in frame.locals) allVars[prefix + k] = frame.locals[k];
+        }
+        let varsObj = [], prevScope = steps.length > 0 ? {} : null;
+        if (steps.length > 0) steps[steps.length - 1].vars.forEach(v => { prevScope[v.name] = v.rawValue; });
+        for (let k in allVars) {
+            let raw = deepClone(allVars[k]);
+            let str = typeof raw === 'object' && raw !== null ? JSON.stringify(raw) : String(raw);
+            let prev = prevScope ? (typeof prevScope[k] === 'object' && prevScope[k] !== null ? JSON.stringify(prevScope[k]) : String(prevScope[k])) : null;
+            let changed = prevScope ? (prev === null || str !== prev) : true;
+            varsObj.push({name: k, rawValue: raw, stringValue: str, changed});
+        }
+        steps.push({ line: lineNum + 1, desc, vars: varsObj, output, note: "", stack: callStack.map(f => f.name) });
+    }
+
+    function executeBlock(startIdx, endIdx) {
+        let idx = startIdx;
+        while (idx <= endIdx && steps.length < 800) {
+            let line = lines[idx], trimmed = line ? line.trim() : '';
+            if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('using') || trimmed.startsWith('#')) { idx++; continue; }
+            if (trimmed === '{' || trimmed === '}') { idx++; continue; }
+            let scope = getScope();
+
+            let mRet = trimmed.match(/^return\s+(.*);/);
+            if (mRet) { let val = cppResolve(mRet[1], scope); pushStep(idx, `Return ${val}`); return { action: 'return', value: val }; }
+            if (trimmed === 'return 0;' || trimmed === 'return;') { pushStep(idx, `Return`); return { action: 'return', value: 0 }; }
+
+            if (trimmed.startsWith('cout')) {
+                let out = trimmed.replace('cout', '').replace(/;/g, '').split('<<').map(s => s.trim()).filter(s => s && s !== 'endl')
+                    .map(s => { if (s.startsWith('"') && s.endsWith('"')) return s.slice(1, -1); return evalExpr(s, scope); }).join('');
+                pushStep(idx, `Output`, out); idx++; continue;
             }
-            safetyCount++;
+            if (trimmed.startsWith('cin')) {
+                let vars = trimmed.replace('cin', '').replace(/;/g, '').split('>>').map(s => s.trim()).filter(s => s);
+                for (let v of vars) { let val = consumeInputToken(); scope[v] = !isNaN(val) && val !== "" ? Number(val) : val; }
+                pushStep(idx, `Input`); idx++; continue;
+            }
+
+            // Array declaration: int arr[] = {1,2,3};
+            let mArrDecl = trimmed.match(/^(?:int|double|float)\s+(\w+)\[\]\s*=\s*\{(.*)\};/);
+            if (mArrDecl) { scope[mArrDecl[1]] = mArrDecl[2].split(',').map(s => Number(s.trim())); pushStep(idx, `Declare ${mArrDecl[1]}[]`); idx++; continue; }
+
+            let mDeclNoInit = trimmed.match(/^(?:int|double|float|bool|string|auto|long)\s+(\w+)\s*;/);
+            if (mDeclNoInit) { scope[mDeclNoInit[1]] = undefined; pushStep(idx, `Declare ${mDeclNoInit[1]}`); idx++; continue; }
+            let mDecl = trimmed.match(/^(?:int|double|float|bool|string|auto|long)\s+(\w+)\s*=\s*(.*);/);
+            if (mDecl) { let val = cppResolve(mDecl[2], scope); scope[mDecl[1]] = val; pushStep(idx, `${mDecl[1]} = ${val}`); idx++; continue; }
+
+            // arr[i] = val
+            let mIdxA = trimmed.match(/^(\w+)\[(.+)\]\s*=\s*(.*);/);
+            if (mIdxA) { let arr = scope[mIdxA[1]], ki = cppResolve(mIdxA[2], scope), val = cppResolve(mIdxA[3], scope); if (arr) arr[ki] = val; pushStep(idx, `${mIdxA[1]}[${ki}] = ${val}`); idx++; continue; }
+
+            let mAssign = trimmed.match(/^(\w+)\s*=\s*(.*);/);
+            if (mAssign && !trimmed.startsWith('if') && !trimmed.startsWith('for') && !trimmed.startsWith('while')) {
+                let val = cppResolve(mAssign[2], scope); scope[mAssign[1]] = val; pushStep(idx, `${mAssign[1]} = ${val}`); idx++; continue;
+            }
+            // Augmented
+            let mAugCpp = trimmed.match(/^(\w+)\s*(\+|-|\*|\/)=\s*(.*);/);
+            if (mAugCpp) { let v = cppResolve(mAugCpp[3], scope); let op = mAugCpp[2]; let cur = scope[mAugCpp[1]]; if (op==='+') scope[mAugCpp[1]]=cur+v; else if(op==='-') scope[mAugCpp[1]]=cur-v; else if(op==='*') scope[mAugCpp[1]]=cur*v; else scope[mAugCpp[1]]=cur/v; pushStep(idx,`${mAugCpp[1]} ${op}= ${v}`); idx++; continue; }
+            // x++, x--
+            let mInc = trimmed.match(/^(\w+)\+\+;/); if (mInc) { scope[mInc[1]]++; pushStep(idx, `${mInc[1]}++`); idx++; continue; }
+            let mDec = trimmed.match(/^(\w+)--;/); if (mDec) { scope[mDec[1]]--; pushStep(idx, `${mDec[1]}--`); idx++; continue; }
+
+            // For loop
+            let mFor = trimmed.match(/^for\s*\((.+?);(.+?);(.+?)\)\s*\{?/);
+            if (mFor) {
+                let initPart = mFor[1].trim(), condPart = mFor[2].trim(), incPart = mFor[3].trim();
+                let mInit = initPart.match(/(?:int\s+)?(\w+)\s*=\s*(.*)/);
+                if (mInit) scope[mInit[1]] = cppResolve(mInit[2], scope);
+                let bStart = idx + 1, bEnd = idx, bc = trimmed.includes('{') ? 1 : 0;
+                if (bc === 0 && lines[idx+1] && lines[idx+1].trim() === '{') { bStart++; bc = 1; }
+                while (bc > 0 && bEnd < endIdx) { bEnd++; bc += (lines[bEnd].match(/\{/g)||[]).length - (lines[bEnd].match(/\}/g)||[]).length; }
+                let lc = 0;
+                while (lc < 150 && steps.length < 800) {
+                    if (!evalExpr(condPart, scope)) break;
+                    pushStep(idx, `For: ${condPart}`);
+                    let r = executeBlock(bStart, bEnd - 1);
+                    if (r && r.action === 'return') return r;
+                    // increment
+                    let iM = incPart.match(/(\w+)\+\+/); if (iM) scope[iM[1]]++;
+                    let dM = incPart.match(/(\w+)--/); if (dM) scope[dM[1]]--;
+                    let aM = incPart.match(/(\w+)\s*(\+|-)=\s*(.*)/); if (aM) { let v = cppResolve(aM[3], scope); if (aM[2]==='+') scope[aM[1]]+=v; else scope[aM[1]]-=v; }
+                    lc++;
+                }
+                idx = bEnd + 1; continue;
+            }
+
+            // If
+            let mIf = trimmed.match(/^if\s*\((.+)\)\s*\{?/);
+            if (mIf) {
+                let condVal = evalExpr(mIf[1], scope);
+                pushStep(idx, `Condition: ${!!condVal}`);
+                let bStart = idx + 1, bEnd = idx, bc = trimmed.includes('{') ? 1 : 0;
+                if (bc === 0 && lines[idx+1] && lines[idx+1].trim() === '{') { bStart++; bEnd++; bc = 1; }
+                while (bc > 0 && bEnd < endIdx) { bEnd++; bc += (lines[bEnd].match(/\{/g)||[]).length - (lines[bEnd].match(/\}/g)||[]).length; }
+                if (condVal) { let r = executeBlock(bStart, bEnd - 1); if (r && r.action === 'return') return r; }
+                idx = bEnd + 1;
+                // Skip else
+                if (idx <= endIdx && lines[idx] && lines[idx].trim().startsWith('else')) {
+                    let eStart = idx + 1, eEnd = idx, ebc = lines[idx].trim().includes('{') ? 1 : 0;
+                    if (ebc === 0 && lines[idx+1] && lines[idx+1].trim() === '{') { eStart++; eEnd++; ebc = 1; }
+                    while (ebc > 0 && eEnd < endIdx) { eEnd++; ebc += (lines[eEnd].match(/\{/g)||[]).length - (lines[eEnd].match(/\}/g)||[]).length; }
+                    if (!condVal) { pushStep(idx, 'Else branch'); let r = executeBlock(eStart, eEnd - 1); if (r && r.action === 'return') return r; }
+                    idx = eEnd + 1;
+                }
+                continue;
+            }
+            // While
+            let mWhile = trimmed.match(/^while\s*\((.+)\)\s*\{?/);
+            if (mWhile) {
+                let bStart = idx + 1, bEnd = idx, bc = trimmed.includes('{') ? 1 : 0;
+                if (bc === 0 && lines[idx+1] && lines[idx+1].trim() === '{') { bStart++; bEnd++; bc = 1; }
+                while (bc > 0 && bEnd < endIdx) { bEnd++; bc += (lines[bEnd].match(/\{/g)||[]).length - (lines[bEnd].match(/\}/g)||[]).length; }
+                let lc = 0;
+                while (lc < 150 && steps.length < 800 && evalExpr(mWhile[1], scope)) {
+                    pushStep(idx, `While: True`);
+                    let r = executeBlock(bStart, bEnd - 1);
+                    if (r && r.action === 'return') return r;
+                    lc++;
+                }
+                idx = bEnd + 1; continue;
+            }
+
+            // Standalone function call
+            let mFC = trimmed.match(/^(\w+)\((.*)?\);?$/);
+            if (mFC && funcs[mFC[1]]) { pushStep(idx, `Call ${mFC[1]}()`); callFunctionCpp(mFC[1], mFC[2]||'', scope); idx++; continue; }
+
+            idx++;
+        }
+        return { action: 'done' };
+    }
+
+    function cppResolve(expr, scope) {
+        if (!expr) return undefined;
+        expr = expr.trim();
+        // Array index
+        let mIdx = expr.match(/^(\w+)\[(.+)\]$/);
+        if (mIdx && scope[mIdx[1]]) { let ki = cppResolve(mIdx[2], scope); return scope[mIdx[1]][ki]; }
+        let resolved = expr;
+        let funcCallRe = /([a-zA-Z_]\w*)\(([^()]*(?:\([^()]*\)[^()]*)*)\)/;
+        let safety = 0;
+        while (safety < 20) {
+            let match = resolved.match(funcCallRe);
+            if (!match) break;
+            if (funcs[match[1]]) { let ret = callFunctionCpp(match[1], match[2], scope); resolved = resolved.replace(match[0], JSON.stringify(ret)); }
+            else break;
+            safety++;
         }
         return evalExpr(resolved, scope);
     }
 
-    function callFunction(funcName, argStr, callerScope, lineIdx) {
+    function callFunctionCpp(funcName, argStr, callerScope) {
         let fDef = funcs[funcName];
-        let argVals = argStr ? argStr.split(',').map(s=>evalExpr(s.trim(), callerScope)) : [];
+        let argVals = argStr.trim() ? argStr.split(',').map(s => evalExpr(s.trim(), callerScope)) : [];
         let locals = {};
         fDef.params.forEach((p, i) => { locals[p] = argVals[i]; });
-        
-        callStack.push({name: `${funcName}()`, locals: locals, line: fDef.start});
+        callStack.push({name: `${funcName}()`, locals, line: fDef.start});
         let res = executeBlock(fDef.start, fDef.end);
         callStack.pop();
         return res && res.action === 'return' ? res.value : undefined;
     }
 
-    // Start at main
     if (funcs['main']) {
         callStack.push({name: "main()", locals: {}, line: funcs['main'].start});
         executeBlock(funcs['main'].start, funcs['main'].end);
     }
-    
     return steps;
 }
 
-// Java Tracer - Normalizes Java syntax to C++ and uses C++ tracer
+/* ============================================================
+   JAVA TRACER
+   ============================================================ */
 function traceJava(code) {
     let normalized = code
-        .replace(/public\s+class\s+\w+\s*\{/g, '') // remove class wrap
+        .replace(/public\s+class\s+\w+\s*\{/g, '')
         .replace(/public\s+static\s+void\s+main\(String\[\]\s+args\)/g, 'int main()')
         .replace(/public\s+static\s+/g, '')
         .replace(/System\.out\.println\((.*)\)/g, 'cout << $1 << endl')
         .replace(/System\.out\.print\((.*)\)/g, 'cout << $1')
-        .replace(/boolean\b/g, 'bool')
-        .replace(/String\b/g, 'string')
+        .replace(/boolean\b/g, 'bool').replace(/String\b/g, 'string')
         .replace(/Integer\.parseInt\((.*)\)/g, 'Number($1)')
-        .replace(/Double\.parseDouble\((.*)\)/g, 'Number($1)')
-        .replace(/Float\.parseFloat\((.*)\)/g, 'Number($1)');
-    // removing last closing brace of class
-    let lines = normalized.split('\n');
-    for (let i = lines.length - 1; i >= 0; i--) {
-        if (lines[i].trim() === '}') { lines[i] = ''; break; }
+        .replace(/Double\.parseDouble\((.*)\)/g, 'Number($1)');
+    let jlines = normalized.split('\n');
+    for (let ji = jlines.length - 1; ji >= 0; ji--) {
+        if (jlines[ji].trim() === '}') { jlines[ji] = ''; break; }
     }
-    return traceCpp(lines.join('\n'));
+    return traceCpp(jlines.join('\n'));
+}
+
+/* ============================================================
+   SVG RENDERERS
+   ============================================================ */
+
+// --- Linked List SVG ---
+function renderLinkedListSVG(headObj) {
+    let nodes = [];
+    let current = headObj;
+    let seen = new Set();
+    while (current && typeof current === 'object' && current.__type && !seen.has(current.__id)) {
+        seen.add(current.__id);
+        nodes.push(current);
+        current = current.next;
+    }
+    if (nodes.length === 0) return '';
+    
+    const nodeW = 72, nodeH = 40, gap = 36, padX = 16, padY = 20;
+    const totalW = nodes.length * nodeW + (nodes.length - 1) * gap + padX * 2;
+    const totalH = nodeH + padY * 2 + 16;
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    const nodeFill = isDark ? '#111827' : '#f0f4ff';
+    const nodeStroke = isDark ? '#00f0ff' : '#0ea5e9';
+    const textFill = isDark ? '#e2e8f0' : '#0f172a';
+    const arrowFill = isDark ? '#00f0ff' : '#0ea5e9';
+    const nullFill = isDark ? '#64748b' : '#94a3b8';
+
+    let svg = `<svg width="${totalW}" height="${totalH}" viewBox="0 0 ${totalW} ${totalH}" xmlns="http://www.w3.org/2000/svg">`;
+    svg += `<defs><marker id="llArrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="${arrowFill}"/></marker></defs>`;
+
+    nodes.forEach((node, i) => {
+        let x = padX + i * (nodeW + gap);
+        let y = padY;
+        // Node box
+        svg += `<rect x="${x}" y="${y}" width="${nodeW}" height="${nodeH}" rx="8" fill="${nodeFill}" stroke="${nodeStroke}" stroke-width="1.5"/>`;
+        // Divider
+        svg += `<line x1="${x + nodeW * 0.6}" y1="${y}" x2="${x + nodeW * 0.6}" y2="${y + nodeH}" stroke="${nodeStroke}" stroke-width="0.5" opacity="0.4"/>`;
+        // Value
+        svg += `<text x="${x + nodeW * 0.3}" y="${y + nodeH/2}" fill="${textFill}" font-size="14" font-weight="600" text-anchor="middle" dominant-baseline="central">${node.val !== undefined ? node.val : '?'}</text>`;
+        // Pointer indicator
+        if (i < nodes.length - 1) {
+            svg += `<text x="${x + nodeW * 0.8}" y="${y + nodeH/2}" fill="${arrowFill}" font-size="11" text-anchor="middle" dominant-baseline="central">→</text>`;
+            // Arrow line
+            svg += `<line x1="${x + nodeW}" y1="${y + nodeH/2}" x2="${x + nodeW + gap}" y2="${y + nodeH/2}" stroke="${arrowFill}" stroke-width="1.5" marker-end="url(#llArrow)"/>`;
+        } else {
+            // null pointer
+            svg += `<text x="${x + nodeW * 0.8}" y="${y + nodeH/2}" fill="${nullFill}" font-size="10" text-anchor="middle" dominant-baseline="central">∅</text>`;
+        }
+    });
+    svg += `</svg>`;
+    return svg;
+}
+
+// --- Binary Tree SVG ---
+function renderTreeSVG(rootObj) {
+    if (!rootObj || typeof rootObj !== 'object') return '';
+    
+    // Calculate tree layout
+    let positions = [];
+    let maxDepth = 0;
+    
+    function layoutNode(node, depth, x, spread, parent) {
+        if (!node || typeof node !== 'object' || !node.__type) return;
+        if (depth > 6) return; // Safety limit
+        maxDepth = Math.max(maxDepth, depth);
+        let pos = { node, x, y: depth, parent };
+        positions.push(pos);
+        if (node.left) layoutNode(node.left, depth + 1, x - spread, spread / 2, pos);
+        if (node.right) layoutNode(node.right, depth + 1, x + spread, spread / 2, pos);
+    }
+    
+    layoutNode(rootObj, 0, 0, 3, null);
+    if (positions.length === 0) return '';
+    
+    // Normalize positions
+    let minX = Math.min(...positions.map(p => p.x));
+    let maxX = Math.max(...positions.map(p => p.x));
+    
+    const nodeR = 20, padX = 40, padY = 30, levelH = 65;
+    const rangeX = maxX - minX || 1;
+    const width = Math.max(rangeX * 55 + padX * 2, 200);
+    const height = (maxDepth + 1) * levelH + padY * 2;
+    
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    const nodeFill = isDark ? '#111827' : '#f0f4ff';
+    const nodeStroke = isDark ? '#9d4edd' : '#7e22ce';
+    const textFill = isDark ? '#e2e8f0' : '#0f172a';
+    const edgeColor = isDark ? 'rgba(157,78,221,0.5)' : 'rgba(126,34,206,0.4)';
+    
+    let svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">`;
+    
+    // Draw edges first
+    positions.forEach(pos => {
+        if (pos.parent) {
+            let px = padX + ((pos.parent.x - minX) / rangeX) * (width - padX * 2);
+            let py = padY + pos.parent.y * levelH + nodeR;
+            let cx = padX + ((pos.x - minX) / rangeX) * (width - padX * 2);
+            let cy = padY + pos.y * levelH - nodeR;
+            if (rangeX === 0) { px = width / 2; cx = width / 2; }
+            svg += `<line x1="${px}" y1="${py}" x2="${cx}" y2="${cy}" stroke="${edgeColor}" stroke-width="2"/>`;
+        }
+    });
+    
+    // Draw nodes
+    positions.forEach(pos => {
+        let cx = padX + ((pos.x - minX) / rangeX) * (width - padX * 2);
+        if (rangeX === 0) cx = width / 2;
+        let cy = padY + pos.y * levelH;
+        svg += `<circle cx="${cx}" cy="${cy}" r="${nodeR}" fill="${nodeFill}" stroke="${nodeStroke}" stroke-width="2" class="node-circle"/>`;
+        svg += `<text x="${cx}" y="${cy}" fill="${textFill}" font-size="13" font-weight="600" text-anchor="middle" dominant-baseline="central">${pos.node.val !== undefined ? pos.node.val : '?'}</text>`;
+    });
+    
+    svg += `</svg>`;
+    return svg;
+}
+
+// --- Graph SVG (Adjacency List) ---
+function renderGraphSVG(adjList) {
+    let nodeKeys = Object.keys(adjList).filter(k => !k.startsWith('__'));
+    if (nodeKeys.length === 0) return '';
+    
+    const n = nodeKeys.length;
+    const padX = 40, padY = 40, nodeR = 22;
+    const radius = Math.max(60, n * 22);
+    const width = radius * 2 + padX * 2;
+    const height = radius * 2 + padY * 2;
+    const cx = width / 2, cy = height / 2;
+    
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    const nodeFill = isDark ? '#111827' : '#f0f4ff';
+    const nodeStroke = isDark ? '#00bfa5' : '#0d9488';
+    const textFill = isDark ? '#e2e8f0' : '#0f172a';
+    const edgeColor = isDark ? 'rgba(0,191,165,0.4)' : 'rgba(13,148,136,0.35)';
+    
+    // Position nodes in a circle
+    let positions = {};
+    nodeKeys.forEach((key, i) => {
+        let angle = (2 * Math.PI * i) / n - Math.PI / 2;
+        positions[key] = { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) };
+    });
+    
+    let svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">`;
+    svg += `<defs><marker id="gArrow" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><polygon points="0 0, 7 2.5, 0 5" fill="${edgeColor}"/></marker></defs>`;
+    
+    // Draw edges
+    let drawnEdges = new Set();
+    nodeKeys.forEach(key => {
+        let neighbors = adjList[key];
+        if (!Array.isArray(neighbors)) return;
+        neighbors.forEach(nb => {
+            let nbKey = String(nb);
+            let edgeId = [key, nbKey].sort().join('-');
+            if (drawnEdges.has(edgeId) || !positions[nbKey]) return;
+            drawnEdges.add(edgeId);
+            let p1 = positions[key], p2 = positions[nbKey];
+            // Shorten line to not overlap circles
+            let dx = p2.x - p1.x, dy = p2.y - p1.y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            let sx = p1.x + (dx/dist) * nodeR, sy = p1.y + (dy/dist) * nodeR;
+            let ex = p2.x - (dx/dist) * nodeR, ey = p2.y - (dy/dist) * nodeR;
+            svg += `<line x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" stroke="${edgeColor}" stroke-width="2"/>`;
+        });
+    });
+    
+    // Draw nodes
+    nodeKeys.forEach(key => {
+        let p = positions[key];
+        svg += `<circle cx="${p.x}" cy="${p.y}" r="${nodeR}" fill="${nodeFill}" stroke="${nodeStroke}" stroke-width="2"/>`;
+        svg += `<text x="${p.x}" y="${p.y}" fill="${textFill}" font-size="13" font-weight="600" text-anchor="middle" dominant-baseline="central">${key}</text>`;
+    });
+    
+    svg += `</svg>`;
+    return svg;
 }
 
 /* ============================================================
    ANIMATION & STATE LOGIC
    ============================================================ */
-let currentSteps = [];
-let animTimer = null;
-let currentStepIdx = 0;
-let speed = 420;
-let accumulatedOutput = '';
+let currentSteps = [], animTimer = null, currentStepIdx = 0, speed = 420, accumulatedOutput = '';
 
 const runBtn = document.getElementById('btn-run');
 const speedSlider = document.getElementById('speed-slider');
 const speedLabel = document.getElementById('speed-label');
 const btnReset = document.getElementById('btn-reset');
-const callStackBar = document.getElementById('call-stack');
 const progressBar = document.getElementById('progress-bar');
 const statusDot = document.getElementById('status-dot');
 const statusText = document.getElementById('status-text');
 const btnPrev = document.getElementById('btn-prev');
 const btnNext = document.getElementById('btn-next');
 const btnRunBp = document.getElementById('btn-run-bp');
+const dashboardLayout = document.getElementById('dashboard-layout');
+const welcomeMsg = document.getElementById('welcome-message');
+const stepCounter = document.getElementById('step-counter');
+const stepAction = document.getElementById('step-action');
+const stepNote = document.getElementById('step-note');
+const dashboardBody = document.getElementById('dashboard-body');
+const callStackBar = document.getElementById('call-stack');
+const timelineSlider = document.getElementById('timeline-slider');
 
 const speedMap = { 0: 900, 1: 420, 2: 130, 3: 0 };
 const speedLabels = { 0: 'Slow', 1: 'Normal', 2: 'Fast', 3: 'Instant' };
 
 speedSlider.addEventListener('input', (e) => {
     let val = parseInt(e.target.value);
-    speed = speedMap[val];
-    speedLabel.textContent = speedLabels[val];
-    if (animTimer && speed > 0) {
-        clearInterval(animTimer);
-        animTimer = setInterval(stepForward, speed);
-    }
+    speed = speedMap[val]; speedLabel.textContent = speedLabels[val];
+    if (animTimer && speed > 0) { clearInterval(animTimer); animTimer = setInterval(stepForward, speed); }
 });
 
-btnReset.addEventListener('click', () => {
-    if (currentSteps.length > 0) {
-        stopAnimation();
-        currentStepIdx = 0;
-        renderStep(0);
-    }
-});
-
-function setStatus(state, msg) {
-    statusDot.className = 'status-dot ' + state;
-    statusText.textContent = msg;
-}
-
-runBtn.addEventListener('click', startTrace);
-document.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.key === 'Enter') startTrace();
-});
+function setStatus(state, msg) { statusDot.className = 'status-dot ' + state; statusText.textContent = msg; }
 
 function resetDashboard() {
-    const dashboardLayout = document.getElementById('dashboard-layout');
-    const welcomeMsg = document.getElementById('welcome-message');
-    const memoryContent = document.getElementById('memory-content');
-    const consoleOutput = document.getElementById('console-output');
-    const callStackEl = document.getElementById('call-stack');
-    
-    dashboardLayout.style.display = 'none';
-    welcomeMsg.style.display = 'flex';
-    memoryContent.innerHTML = '';
-    consoleOutput.textContent = '';
-    callStackEl.innerHTML = '<span class="call-stack-label">Call Stack</span>';
-    accumulatedOutput = '';
-    currentSteps = [];
-    currentStepIdx = 0;
-    progressBar.style.width = '0%';
-    highlightLine(0);
+    dashboardLayout.style.display = 'none'; welcomeMsg.style.display = 'flex';
+    dashboardBody.innerHTML = ''; callStackBar.innerHTML = '<span class="call-stack-label">Call Stack</span>';
+    accumulatedOutput = ''; currentSteps = []; currentStepIdx = 0;
+    progressBar.style.width = '0%'; highlightLine(0);
+    runBtn.innerHTML = '<span>▶ Run Trace</span><kbd style="font-size: 0.55rem; opacity: 0.7; font-family: var(--font-mono); font-weight: normal; background: rgba(0,0,0,0.2); padding: 0.1rem 0.2rem; border-radius: 3px;">Ctrl+Enter</kbd>';
 }
+
+runBtn.addEventListener('click', () => {
+    if (animTimer) {
+        // Currently running -> Pause
+        stopAnimation();
+        runBtn.innerHTML = '<span>▶ Resume Trace</span>';
+        setStatus('idle', 'Paused');
+    } else if (currentSteps.length > 0 && currentStepIdx > 0 && currentStepIdx < currentSteps.length - 1) {
+        // Paused -> Resume
+        if (speed > 0) {
+            animTimer = setInterval(stepForward, speed);
+            runBtn.innerHTML = '<span>⏸ Pause Trace</span>';
+            setStatus('running', 'Executing...');
+        }
+    } else {
+        // Idle -> Start new trace
+        startTrace();
+    }
+});
+document.addEventListener('keydown', (e) => { if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); startTrace(); } });
 
 function startTrace() {
     const code = editor.value;
     if (!code.trim()) return;
-    
-    prepareStdin();
-    stopAnimation();
-    accumulatedOutput = '';
-    setStatus('running', 'Parsing and analyzing code...');
-    
+    prepareStdin(); stopAnimation(); accumulatedOutput = '';
+    setStatus('running', 'Parsing...');
     try {
         if (currentLang === 'python') currentSteps = tracePython(code);
         else if (currentLang === 'cpp') currentSteps = traceCpp(code);
         else if (currentLang === 'java') currentSteps = traceJava(code);
-        
-        if (currentSteps.length === 0) {
-            setStatus('error', 'Execution yielded no steps. Check syntax.');
-            return;
-        }
-        
+        if (currentSteps.length === 0) { setStatus('error', 'No steps generated. Check syntax.'); return; }
         currentStepIdx = 0;
-        
-        // Update timeline slider max
-        const timelineSlider = document.getElementById('timeline-slider');
-        timelineSlider.max = currentSteps.length - 1;
-        timelineSlider.value = 0;
-        timelineSlider.disabled = false;
-        
-        setStatus('running', 'Executing trace...');
-        
-        if (speed === 0) {
-            // Instant
-            while (currentStepIdx < currentSteps.length) renderStep(currentStepIdx++);
-            finishTrace();
-        } else {
-            btnRunBp.disabled = false;
-            animTimer = setInterval(stepForward, speed);
+        timelineSlider.max = currentSteps.length - 1; timelineSlider.value = 0; timelineSlider.disabled = false;
+        setStatus('running', 'Executing...');
+        if (speed === 0) { while (currentStepIdx < currentSteps.length) renderStep(currentStepIdx++); finishTrace(); }
+        else { 
+            btnRunBp.disabled = false; 
+            animTimer = setInterval(stepForward, speed); 
+            runBtn.innerHTML = '<span>⏸ Pause Trace</span>';
         }
-    } catch (e) {
-        setStatus('error', 'Error parsing code: ' + e.message);
-        console.error(e);
-    }
+    } catch (e) { setStatus('error', 'Error: ' + e.message); console.error(e); }
 }
 
 function stopAnimation() {
-    if (animTimer) clearInterval(animTimer);
-    animTimer = null;
-    btnPrev.disabled = currentStepIdx === 0;
-    btnReset.disabled = currentStepIdx === 0;
+    if (animTimer) clearInterval(animTimer); animTimer = null;
+    btnPrev.disabled = currentStepIdx === 0; btnReset.disabled = currentStepIdx === 0;
     btnRunBp.disabled = currentStepIdx >= currentSteps.length - 1;
     btnNext.disabled = currentStepIdx >= currentSteps.length - 1;
 }
 
 function finishTrace() {
-    stopAnimation();
-    setStatus('', 'Execution completed.');
-    btnPrev.disabled = false;
-    btnReset.disabled = false;
-    btnNext.disabled = true;
-    btnRunBp.disabled = false;
+    stopAnimation(); setStatus('', 'Completed.');
+    btnPrev.disabled = false; btnReset.disabled = false; btnNext.disabled = true;
+    runBtn.innerHTML = '<span>▶ Run Trace</span><kbd style="font-size: 0.55rem; opacity: 0.7; font-family: var(--font-mono); font-weight: normal; background: rgba(0,0,0,0.2); padding: 0.1rem 0.2rem; border-radius: 3px;">Ctrl+Enter</kbd>';
     highlightLine(0);
 }
 
 function stepForward() {
-    if (currentStepIdx >= currentSteps.length) {
-        finishTrace();
-        return;
-    }
-    renderStep(currentStepIdx);
-    currentStepIdx++;
+    if (currentStepIdx >= currentSteps.length) { finishTrace(); return; }
+    renderStep(currentStepIdx); currentStepIdx++;
     progressBar.style.width = `${(currentStepIdx / currentSteps.length) * 100}%`;
 }
 
-const dashboardLayout = document.getElementById('dashboard-layout');
-const welcomeMsg = document.getElementById('welcome-message');
-const stepCounter = document.getElementById('step-counter');
-const stepAction = document.getElementById('step-action');
-const stepNote = document.getElementById('step-note');
-const memoryContent = document.getElementById('memory-content');
-const consoleOutput = document.getElementById('console-output');
-const timelineSlider = document.getElementById('timeline-slider');
+btnReset.addEventListener('click', () => { if (currentSteps.length > 0) { stopAnimation(); currentStepIdx = 0; accumulatedOutput = ''; renderStep(0); } });
 
 timelineSlider.addEventListener('input', (e) => {
     let val = parseInt(e.target.value);
-    if (val < currentSteps.length) {
-        currentStepIdx = val;
-        renderStep(currentStepIdx);
-    }
+    if (val < currentSteps.length) { stopAnimation(); currentStepIdx = val; renderStep(currentStepIdx); }
 });
 
-document.getElementById('delta-changes-toggle').addEventListener('change', () => {
-    if (currentSteps.length > 0) {
-        renderStep(currentStepIdx);
-    }
-});
+document.getElementById('delta-changes-toggle').addEventListener('change', () => { if (currentSteps.length > 0) renderStep(currentStepIdx); });
 
+/* ============================================================
+   RENDER STEP — with data structure detection
+   ============================================================ */
 function renderStep(idx) {
     const step = currentSteps[idx];
-    
     welcomeMsg.style.display = 'none';
-    dashboardLayout.style.display = 'grid';
+    dashboardLayout.style.display = 'flex';
     
     stepCounter.textContent = `Step ${idx + 1} / ${currentSteps.length}`;
-    stepAction.textContent = `Line ${step.line}: ${step.desc}`;
+    stepAction.textContent = `L${step.line}: ${step.desc}`;
     stepNote.textContent = step.note || '';
     
-    // Process Variables
-    let primitivesHtml = `<div class="node-container">`;
-    let arraysHtml = '';
+    const deltaOnly = document.getElementById('delta-changes-toggle').checked;
     
-    let hasPrimitives = false;
-    const deltaToggle = document.getElementById('delta-changes-toggle').checked;
+    // Classify variables
+    let primitives = [], arrays = [], dicts = [], sets = [], linkedLists = [], trees = [], graphs = [], strings = [];
     
     step.vars.forEach(v => {
-        if (deltaToggle && !v.changed) return;
+        if (deltaOnly && !v.changed) return;
+        let raw = v.rawValue;
+        if (raw === null || raw === undefined) { primitives.push(v); return; }
         
-        if (v.rawValue !== null && typeof v.rawValue === 'object' && Array.isArray(v.rawValue)) {
-            // It's an Array
-            // Compare with previous step to find changed indices
-            let prevArray = null;
-            if (idx > 0) {
-                const prevVar = currentSteps[idx - 1].vars.find(p => p.name === v.name);
-                if (prevVar && Array.isArray(prevVar.rawValue)) {
-                    prevArray = prevVar.rawValue;
-                }
+        if (typeof raw === 'object' && !Array.isArray(raw)) {
+            // Linked list node
+            if (raw.__type && 'val' in raw && 'next' in raw && !('left' in raw)) {
+                linkedLists.push(v); return;
             }
-            
-            arraysHtml += `<details class="array-container" open>
-                <summary class="array-title" style="cursor:pointer; outline:none; user-select:none;">
-                    ${v.name} ${v.changed ? '<span style="color:var(--accent-green)">•</span>' : ''}
-                </summary>
-                <div style="padding-top: 0.5rem;">`;
-            
-            if (v.rawValue.length > 0 && Array.isArray(v.rawValue[0])) {
-                // 2D Array
-                v.rawValue.forEach((row, rowIdx) => {
-                    arraysHtml += `<div class="array-2d-row">
-                        <div class="array-2d-row-label">${rowIdx}</div>`;
-                    row.forEach((cell, colIdx) => {
-                        let isAccessed = false;
-                        if (prevArray && prevArray[rowIdx] && prevArray[rowIdx][colIdx] !== cell) isAccessed = true;
-                        arraysHtml += `<div class="array-block ${isAccessed ? 'changed' : ''}">
-                            <div class="array-val">${cell}</div>
-                        </div>`;
-                    });
-                    arraysHtml += `</div>`;
-                });
-            } else {
-                // 1D Array
-                arraysHtml += `<div class="array-blocks">`;
-                v.rawValue.forEach((cell, i) => {
-                    let isAccessed = false;
-                    if (prevArray && prevArray[i] !== cell) isAccessed = true;
-                    arraysHtml += `<div class="array-block ${isAccessed ? 'changed' : ''}">
-                        <div class="array-val">${cell}</div>
-                        <div class="array-idx">${i}</div>
-                    </div>`;
-                });
-                arraysHtml += `</div>`;
+            // Tree node
+            if (raw.__type && 'val' in raw && 'left' in raw && 'right' in raw) {
+                trees.push(v); return;
             }
-            arraysHtml += `</div></details>`;
-        } else {
-            // Primitive
-            hasPrimitives = true;
+            // Set
+            if (raw.__isSet) { sets.push(v); return; }
+            // Dict
+            if (raw.__isDict || (typeof raw === 'object' && !raw.__type)) {
+                // Check if it's a graph (dict of arrays)
+                let keys = Object.keys(raw).filter(k => !k.startsWith('__'));
+                let isGraph = keys.length > 0 && keys.every(k => Array.isArray(raw[k]));
+                if (isGraph && keys.length >= 2) { graphs.push(v); }
+                else { dicts.push(v); }
+                return;
+            }
+        }
+        
+        if (Array.isArray(raw)) { arrays.push(v); return; }
+        if (typeof raw === 'string' && raw.length > 1 && v.name !== 'self') { strings.push(v); return; }
+        primitives.push(v);
+    });
+    
+    let html = '';
+    
+    // === Data Structures Canvas (Linked Lists, Trees, Graphs) ===
+    if (linkedLists.length > 0 || trees.length > 0 || graphs.length > 0) {
+        html += `<div class="viz-section" id="viz-ds">
+            <div class="viz-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                <span>📊 Data Structures <span class="viz-section-badge">${linkedLists.length + trees.length + graphs.length}</span></span>
+                <span class="chevron">▼</span>
+            </div>
+            <div class="viz-section-content">`;
+        
+        linkedLists.forEach(v => {
+            html += `<div class="array-title">${v.name} <span class="arr-len" style="color:var(--accent-cyan)">Linked List</span></div>`;
+            html += `<div class="ds-canvas-container">${renderLinkedListSVG(v.rawValue)}</div>`;
+        });
+        trees.forEach(v => {
+            html += `<div class="array-title">${v.name} <span class="arr-len" style="color:var(--accent-purple)">Tree</span></div>`;
+            html += `<div class="ds-canvas-container">${renderTreeSVG(v.rawValue)}</div>`;
+        });
+        graphs.forEach(v => {
+            html += `<div class="array-title">${v.name} <span class="arr-len" style="color:var(--accent-teal)">Graph</span></div>`;
+            html += `<div class="ds-canvas-container">${renderGraphSVG(v.rawValue)}</div>`;
+        });
+        html += `</div></div>`;
+    }
+    
+    // === Variables ===
+    if (primitives.length > 0) {
+        html += `<div class="viz-section" id="viz-vars">
+            <div class="viz-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                <span>🔢 Variables <span class="viz-section-badge">${primitives.length}</span></span>
+                <span class="chevron">▼</span>
+            </div>
+            <div class="viz-section-content"><div class="node-container">`;
+        
+        primitives.forEach(v => {
             let typeName = typeof v.rawValue;
-            if (typeName === 'number') typeName = Number.isInteger(v.rawValue) ? 'int' : 'float';
+            if (v.rawValue === null || v.rawValue === undefined) typeName = 'null';
+            else if (typeName === 'number') typeName = Number.isInteger(v.rawValue) ? 'int' : 'float';
             else if (typeName === 'string') typeName = 'str';
             else if (typeName === 'boolean') typeName = 'bool';
             
-            let typeColor = 'var(--text-tertiary)';
-            if (typeName === 'int' || typeName === 'float') typeColor = 'var(--accent-cyan)';
-            else if (typeName === 'str') typeColor = 'var(--accent-green)';
-            else if (typeName === 'bool') typeColor = 'var(--accent-purple)';
+            let badgeColor = 'var(--text-tertiary)';
+            let badgeBg = 'rgba(100,116,139,0.15)';
+            if (typeName === 'int' || typeName === 'float') { badgeColor = 'var(--accent-cyan)'; badgeBg = 'rgba(0,240,255,0.1)'; }
+            else if (typeName === 'str') { badgeColor = 'var(--accent-green)'; badgeBg = 'rgba(57,255,20,0.1)'; }
+            else if (typeName === 'bool') { badgeColor = 'var(--accent-purple)'; badgeBg = 'rgba(157,78,221,0.1)'; }
             
-            primitivesHtml += `<div class="node-card ${v.changed ? 'changed' : ''}">
-                <div class="node-name">${v.name} <span class="node-type" style="color: ${typeColor}">${typeName}</span></div>
-                <div class="node-val">${v.stringValue}</div>
+            let displayVal = v.rawValue === null ? 'None' : v.rawValue === undefined ? 'undef' : v.stringValue;
+            if (typeof v.rawValue === 'boolean') displayVal = v.rawValue ? 'True' : 'False';
+            
+            html += `<div class="node-card ${v.changed ? 'changed' : ''}">
+                <div class="node-name">${escHtml(v.name)} <span class="node-type-badge" style="color:${badgeColor}; background:${badgeBg}">${typeName}</span></div>
+                <div class="node-val">${escHtml(displayVal)}</div>
             </div>`;
-        }
-    });
-    
-    primitivesHtml += `</div>`;
-    if (!hasPrimitives) primitivesHtml = '';
-    
-    memoryContent.innerHTML = primitivesHtml + (arraysHtml ? '<div style="height:1rem"></div>' + arraysHtml : '');
-    
-    // Accumulate console output from all steps up to current
-    accumulatedOutput = '';
-    for (let si = 0; si <= idx; si++) {
-        if (currentSteps[si].output) {
-            accumulatedOutput += currentSteps[si].output + '\n';
-        }
+        });
+        html += `</div></div></div>`;
     }
     
-    // Basic ANSI color support for output
-    let parsedOutput = accumulatedOutput
-        .replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/\x1b\[31m/g, '<span style="color: var(--accent-red)">')
-        .replace(/\x1b\[32m/g, '<span style="color: var(--accent-green)">')
-        .replace(/\x1b\[0m/g, '</span>');
+    // === Arrays ===
+    if (arrays.length > 0) {
+        html += `<div class="viz-section" id="viz-arrays">
+            <div class="viz-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                <span>📦 Arrays <span class="viz-section-badge">${arrays.length}</span></span>
+                <span class="chevron">▼</span>
+            </div>
+            <div class="viz-section-content">`;
         
-    consoleOutput.innerHTML = parsedOutput || ' ';
+        arrays.forEach(v => {
+            let prevArray = null;
+            if (idx > 0) {
+                let pv = currentSteps[idx - 1].vars.find(p => p.name === v.name);
+                if (pv && Array.isArray(pv.rawValue)) prevArray = pv.rawValue;
+            }
+            
+            html += `<div class="array-container">
+                <div class="array-title">${escHtml(v.name)} <span class="arr-len">len=${v.rawValue.length}</span>
+                ${v.changed ? '<span style="color:var(--accent-green)">●</span>' : ''}</div>`;
+            
+            if (v.rawValue.length > 0 && Array.isArray(v.rawValue[0])) {
+                // 2D Array
+                v.rawValue.forEach((row, ri) => {
+                    html += `<div class="array-2d-row"><div class="array-2d-row-label">${ri}</div>`;
+                    row.forEach((cell, ci) => {
+                        let ch = prevArray && prevArray[ri] && prevArray[ri][ci] !== cell;
+                        html += `<div class="array-block ${ch ? 'changed' : ''}"><div class="array-val">${cell}</div></div>`;
+                    });
+                    html += `</div>`;
+                });
+            } else {
+                // 1D Array
+                html += `<div class="array-blocks">`;
+                v.rawValue.forEach((cell, i) => {
+                    let ch = prevArray && prevArray[i] !== cell;
+                    let displayCell = cell;
+                    if (cell && typeof cell === 'object') {
+                        try { displayCell = JSON.stringify(cell); } catch(e) { displayCell = String(cell); }
+                    }
+                    html += `<div class="array-block ${ch ? 'changed' : ''}">
+                        <div class="array-val">${escHtml(String(displayCell))}</div>
+                        <div class="array-idx">${i}</div>
+                    </div>`;
+                });
+                
+                // Find pointer variables (i, j, low, high, mid, left, right, etc.)
+                let pointerNames = ['i', 'j', 'k', 'l', 'low', 'high', 'mid', 'left', 'right', 'start', 'end', 'ptr', 'idx', 'top', 'front', 'rear'];
+                step.vars.forEach(pv => {
+                    let cleanName = pv.name.includes('::') ? pv.name.split('::').pop() : pv.name;
+                    if (pointerNames.includes(cleanName) && typeof pv.rawValue === 'number' && Number.isInteger(pv.rawValue) && pv.rawValue >= 0 && pv.rawValue < v.rawValue.length) {
+                        // Already shown in variables section, but add pointer under array
+                        let ptrColors = { i: 'var(--accent-cyan)', j: 'var(--accent-pink)', k: 'var(--accent-yellow)', low: 'var(--accent-green)', high: 'var(--accent-red)', mid: 'var(--accent-orange)', left: 'var(--accent-green)', right: 'var(--accent-red)' };
+                        let color = ptrColors[cleanName] || 'var(--accent-purple)';
+                        // Position pointer
+                        let ptrLeft = pv.rawValue * (2.8 * 16 + 3); // approximate
+                        html += `<div class="array-pointer" style="left: ${pv.rawValue * 48 + 12}px; color: ${color};">▲${cleanName}</div>`;
+                    }
+                });
+                
+                html += `</div>`;
+            }
+            html += `</div>`;
+        });
+        html += `</div></div>`;
+    }
+    
+    // === Strings ===
+    if (strings.length > 0) {
+        html += `<div class="viz-section" id="viz-strings">
+            <div class="viz-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                <span>🔤 Strings <span class="viz-section-badge">${strings.length}</span></span>
+                <span class="chevron">▼</span>
+            </div>
+            <div class="viz-section-content">`;
+        strings.forEach(v => {
+            html += `<div class="array-title">${escHtml(v.name)} <span class="arr-len">len=${v.rawValue.length}</span></div>`;
+            html += `<div class="string-blocks">`;
+            for (let ci = 0; ci < v.rawValue.length; ci++) {
+                html += `<div class="string-block">${escHtml(v.rawValue[ci])}<div class="char-idx">${ci}</div></div>`;
+            }
+            html += `</div>`;
+        });
+        html += `</div></div>`;
+    }
+    
+    // === Dictionaries ===
+    if (dicts.length > 0) {
+        html += `<div class="viz-section" id="viz-dicts">
+            <div class="viz-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                <span>🗂️ Dictionaries <span class="viz-section-badge">${dicts.length}</span></span>
+                <span class="chevron">▼</span>
+            </div>
+            <div class="viz-section-content">`;
+        dicts.forEach(v => {
+            let keys = Object.keys(v.rawValue).filter(k => !k.startsWith('__'));
+            let prevDict = null;
+            if (idx > 0) {
+                let pv = currentSteps[idx - 1].vars.find(p => p.name === v.name);
+                if (pv && pv.rawValue && typeof pv.rawValue === 'object') prevDict = pv.rawValue;
+            }
+            html += `<div class="dict-container">
+                <div class="array-title">${escHtml(v.name)} <span class="arr-len">size=${keys.length}</span>
+                ${v.changed ? '<span style="color:var(--accent-green)">●</span>' : ''}</div>
+                <table class="dict-table"><tr><th>Key</th><th>Value</th></tr>`;
+            keys.forEach(k => {
+                let valStr = formatVal(v.rawValue[k]);
+                let ch = prevDict ? (prevDict[k] === undefined || JSON.stringify(prevDict[k]) !== JSON.stringify(v.rawValue[k])) : true;
+                html += `<tr class="${ch ? 'changed' : ''}"><td class="dict-key">${escHtml(String(k))}</td><td class="dict-val">${escHtml(valStr)}</td></tr>`;
+            });
+            html += `</table></div>`;
+        });
+        html += `</div></div>`;
+    }
+    
+    // === Sets ===
+    if (sets.length > 0) {
+        html += `<div class="viz-section" id="viz-sets">
+            <div class="viz-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                <span>🔵 Sets <span class="viz-section-badge">${sets.length}</span></span>
+                <span class="chevron">▼</span>
+            </div>
+            <div class="viz-section-content">`;
+        sets.forEach(v => {
+            let vals = v.rawValue.__values || [];
+            let prevSet = null;
+            if (idx > 0) {
+                let pv = currentSteps[idx - 1].vars.find(p => p.name === v.name);
+                if (pv && pv.rawValue && pv.rawValue.__isSet) prevSet = pv.rawValue.__values || [];
+            }
+            html += `<div class="array-title">${escHtml(v.name)} <span class="arr-len">size=${vals.length}</span></div>
+                <div class="set-container">`;
+            vals.forEach(sv => {
+                let isNew = prevSet ? !prevSet.includes(sv) : true;
+                html += `<div class="set-tag ${isNew ? 'new-item' : ''}">${escHtml(String(sv))}</div>`;
+            });
+            html += `</div>`;
+        });
+        html += `</div></div>`;
+    }
+    
+    // === Console Output ===
+    accumulatedOutput = '';
+    for (let si = 0; si <= idx; si++) {
+        if (currentSteps[si].output) accumulatedOutput += currentSteps[si].output + '\n';
+    }
+    
+    html += `<div class="viz-section" id="viz-console">
+        <div class="viz-section-header" onclick="this.parentElement.classList.toggle('collapsed')">
+            <span>💻 Console Output</span>
+            <span class="chevron">▼</span>
+        </div>
+        <div class="viz-section-content">
+            <div class="console-output">${escHtml(accumulatedOutput) || '<span style="opacity:0.4">No output yet</span>'}</div>
+        </div>
+    </div>`;
+    
+    dashboardBody.innerHTML = html;
     
     highlightLine(step.line);
     
-    // Call Stack logic (Show function + line)
-    callStackBar.innerHTML = '<span class="call-stack-label">Call Stack</span>' + 
-        step.stack.map(frame => {
-            const parts = frame.split(':');
-            let name = parts[0];
-            let ln = parts.length > 1 ? ` <span style="opacity: 0.5">L${parts[1]}</span>` : '';
-            return `<div class="stack-frame">${name}${ln}</div>`;
-        }).join('<span style="color: var(--border-primary); margin: 0 4px;">→</span>');
-        
-    // Update slider
-    const timelineSlider = document.getElementById('timeline-slider');
+    // Call stack
+    callStackBar.innerHTML = '<span class="call-stack-label">Stack</span>' +
+        step.stack.map(frame => `<div class="stack-frame">${escHtml(frame)}</div>`)
+        .join('<span style="color: var(--border-primary); margin: 0 3px;">→</span>');
+    
     timelineSlider.value = idx;
     progressBar.style.width = `${((idx + 1) / currentSteps.length) * 100}%`;
 }
 
+function escHtml(s) {
+    if (typeof s !== 'string') s = String(s);
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/* ============================================================
+   STEP NAVIGATION
+   ============================================================ */
 btnPrev.addEventListener('click', () => {
     stopAnimation();
-    if (currentStepIdx > 0) {
-        currentStepIdx--;
-        renderStep(currentStepIdx);
-        progressBar.style.width = `${((currentStepIdx + 1) / currentSteps.length) * 100}%`;
-    }
+    if (currentStepIdx > 0) { currentStepIdx--; renderStep(currentStepIdx); }
     btnNext.disabled = currentStepIdx >= currentSteps.length - 1;
     btnPrev.disabled = currentStepIdx <= 0;
 });
 
 btnNext.addEventListener('click', () => {
     stopAnimation();
-    if (currentStepIdx < currentSteps.length - 1) {
-        currentStepIdx++;
-        renderStep(currentStepIdx);
-        progressBar.style.width = `${((currentStepIdx + 1) / currentSteps.length) * 100}%`;
-    }
+    if (currentStepIdx < currentSteps.length - 1) { currentStepIdx++; renderStep(currentStepIdx); }
     btnPrev.disabled = false;
     if (currentStepIdx >= currentSteps.length - 1) btnNext.disabled = true;
 });
 
-
-/* Font Size Adjustment */
+/* ============================================================
+   FONT SIZE
+   ============================================================ */
 let currentFontSize = 14;
 document.getElementById('btn-font-inc').addEventListener('click', () => {
-    if (currentFontSize < 20) {
-        currentFontSize += 2;
-        document.querySelector('.CodeMirror').style.fontSize = currentFontSize + 'px';
-        cmEditor.refresh();
-    }
+    if (currentFontSize < 22) { currentFontSize += 2; document.querySelector('.CodeMirror').style.fontSize = currentFontSize + 'px'; cmEditor.refresh(); }
 });
 document.getElementById('btn-font-dec').addEventListener('click', () => {
-    if (currentFontSize > 12) {
-        currentFontSize -= 2;
-        document.querySelector('.CodeMirror').style.fontSize = currentFontSize + 'px';
-        cmEditor.refresh();
-    }
+    if (currentFontSize > 10) { currentFontSize -= 2; document.querySelector('.CodeMirror').style.fontSize = currentFontSize + 'px'; cmEditor.refresh(); }
 });
 
-/* Keyboard Shortcuts */
-document.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.key === 'Enter') {
-        e.preventDefault();
-        document.getElementById('btn-run').click();
-    }
-});
-
-/* Breakpoints */
+/* ============================================================
+   BREAKPOINTS
+   ============================================================ */
 const activeBreakpoints = new Set();
 
 function makeMarker() {
-    const marker = document.createElement("div");
-    marker.style.color = "var(--accent-red)";
-    marker.style.fontWeight = "bold";
-    marker.innerHTML = "●";
-    return marker;
+    const m = document.createElement("div");
+    m.style.color = "var(--accent-red)"; m.style.fontWeight = "bold"; m.innerHTML = "●";
+    return m;
 }
 
 cmEditor.on("gutterClick", (cm, n) => {
-    const info = cm.lineInfo(n);
     const lineNum = n + 1;
-    if (activeBreakpoints.has(lineNum)) {
-        activeBreakpoints.delete(lineNum);
-        cm.setGutterMarker(n, "breakpoints", null);
-    } else {
-        activeBreakpoints.add(lineNum);
-        cm.setGutterMarker(n, "breakpoints", makeMarker());
-    }
-    
-    // Update badge on button
-    if (activeBreakpoints.size > 0) {
-        btnRunBp.innerHTML = `⏭ Breakpoint <span style="background: var(--accent-red); color: white; padding: 2px 6px; border-radius: 12px; font-size: 0.7rem; margin-left: 4px;">${activeBreakpoints.size}</span>`;
-    } else {
-        btnRunBp.innerHTML = `⏭ Breakpoint`;
-    }
+    if (activeBreakpoints.has(lineNum)) { activeBreakpoints.delete(lineNum); cm.setGutterMarker(n, "breakpoints", null); }
+    else { activeBreakpoints.add(lineNum); cm.setGutterMarker(n, "breakpoints", makeMarker()); }
+    btnRunBp.innerHTML = activeBreakpoints.size > 0
+        ? `⏭ BP <span style="background:var(--accent-red);color:#fff;padding:1px 5px;border-radius:10px;font-size:0.65rem;">${activeBreakpoints.size}</span>`
+        : `⏭ BP`;
 });
 
-/* Copy, Download & Share */
+btnRunBp.addEventListener('click', () => {
+    if (currentSteps.length === 0) return;
+    let target = currentStepIdx + 1;
+    while (target < currentSteps.length) {
+        if (activeBreakpoints.has(currentSteps[target].line)) { currentStepIdx = target; renderStep(currentStepIdx); return; }
+        target++;
+    }
+    currentStepIdx = currentSteps.length - 1; renderStep(currentStepIdx);
+});
+
+/* ============================================================
+   COPY, DOWNLOAD, SHARE
+   ============================================================ */
 document.getElementById('btn-share').addEventListener('click', () => {
-    const data = JSON.stringify({
-        lang: currentLang,
-        code: editor.value,
-        input: document.getElementById('stdin-input').value
-    });
+    const data = JSON.stringify({ lang: currentLang, code: editor.value, input: document.getElementById('stdin-input').value });
     const hash = btoa(unescape(encodeURIComponent(data)));
-    const url = new URL(window.location);
-    url.hash = hash;
+    const url = new URL(window.location); url.hash = hash;
     navigator.clipboard.writeText(url.toString());
-    setStatus('running', 'Share URL copied to clipboard!');
-    setTimeout(() => setStatus('idle', 'Idle'), 2000);
+    setStatus('running', 'Share URL copied!'); setTimeout(() => setStatus('idle', 'Idle'), 2000);
 });
 
 document.getElementById('btn-copy').addEventListener('click', () => {
     navigator.clipboard.writeText(editor.value);
-    setStatus('running', 'Code copied to clipboard!');
-    setTimeout(() => setStatus('idle', 'Idle'), 2000);
+    setStatus('running', 'Copied!'); setTimeout(() => setStatus('idle', 'Idle'), 2000);
 });
 
 document.getElementById('btn-download').addEventListener('click', () => {
     const ext = currentLang === 'python' ? 'py' : (currentLang === 'cpp' ? 'cpp' : 'java');
     const blob = new Blob([editor.value], {type: 'text/plain'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `solution.${ext}`;
-    a.click();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `solution.${ext}`; a.click();
 });
 
-document.getElementById('btn-tour').addEventListener('click', () => {
-    alert("Welcome to the Code Visualizer!\n\n1. Select your Language (Python, C++, Java).\n2. Write your code and provide standard input if needed.\n3. Click 'Run Trace' (or Ctrl+Enter) to execute the code.\n4. Use the timeline slider, Next/Prev buttons, or Speed controls to step through your program.\n5. View variables, arrays, and console output on the right.\n6. Click line numbers to set breakpoints, then use the 'Breakpoint' button to jump to them.\n7. Use the 'Share' button to get a shareable URL of your code.\n\nHappy Coding!");
-});
-
-/* Run to Breakpoint Logic */
-// btnRunBp is declared above with other DOM references
-btnRunBp.addEventListener('click', () => {
-    if (currentSteps.length === 0) return;
-    let targetIdx = currentStepIdx + 1;
-    while (targetIdx < currentSteps.length) {
-        if (activeBreakpoints.has(currentSteps[targetIdx].line)) {
-            currentStepIdx = targetIdx;
-            renderStep(currentStepIdx);
-            return;
-        }
-        targetIdx++;
-    }
-    // If no more breakpoints, go to end
-    currentStepIdx = currentSteps.length - 1;
-    renderStep(currentStepIdx);
-});
-
-// Init
+/* ============================================================
+   INIT
+   ============================================================ */
 populateExamples();
 const firstExample = Object.keys(EXAMPLES['python'])[0];
 editor.value = EXAMPLES['python'][firstExample].code;
@@ -1652,20 +2481,14 @@ if (window.location.hash) {
         if (data.lang && data.code !== undefined) {
             currentLang = data.lang;
             const tab = Array.from(langTabs).find(t => t.dataset.lang === data.lang);
-            if (tab) {
-                langTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-            }
+            if (tab) { langTabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); }
             if (currentLang === 'python') cmEditor.setOption("mode", "python");
             else if (currentLang === 'cpp') cmEditor.setOption("mode", "text/x-c++src");
             else if (currentLang === 'java') cmEditor.setOption("mode", "text/x-java");
-            populateExamples();
-            editor.value = data.code;
+            populateExamples(); editor.value = data.code;
             document.getElementById('stdin-input').value = data.input || '';
         }
-    } catch(e) {
-        console.error("Invalid share link", e);
-    }
+    } catch(e) { console.error("Invalid share link", e); }
 }
 
 setTimeout(() => cmEditor.refresh(), 100);
