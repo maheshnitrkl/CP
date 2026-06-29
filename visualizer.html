@@ -337,6 +337,11 @@
                     <textarea id="code-input" spellcheck="false"></textarea>
                 </div>
             </div>
+            
+            <div class="input-wrapper" style="height: 120px; border-top: 1px solid var(--border-primary); display: flex; flex-direction: column;">
+                <div class="section-title" style="border-bottom: 1px solid var(--border-primary);">Standard Input</div>
+                <textarea id="stdin-input" placeholder="Provide input for your program here..." spellcheck="false" style="flex: 1; background: var(--bg-base); color: var(--text-primary); border: none; padding: 0.5rem 1rem; font-family: var(--font-mono); font-size: 14px; outline: none; resize: none;"></textarea>
+            </div>
 
             <div class="controls">
                 <button class="btn btn-primary" id="btn-run">▶ Run Trace</button>
@@ -411,42 +416,18 @@
    EXAMPLES
    ============================================================ */
 const EXAMPLES = {
-    python: `def factorial(n):
-    if n <= 1:
-        return 1
-    return n * factorial(n - 1)
-
-print("Starting calculation...")
-result = factorial(4)
-print("Result is:", result)
-`,
-    cpp: `int factorial(int n) {
-    if (n <= 1) {
-        return 1;
+    python: {
+        code: `def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint("Starting calculation...")\nx = int(input())\nresult = factorial(x)\nprint("Result is:", result)\n`,
+        input: `4`
+    },
+    cpp: {
+        code: `int factorial(int n) {\n    if (n <= 1) {\n        return 1;\n    }\n    return n * factorial(n - 1);\n}\n\nint main() {\n    cout << "Starting calculation..." << endl;\n    int x;\n    cin >> x;\n    int result = factorial(x);\n    cout << "Result is: " << result << endl;\n    return 0;\n}`,
+        input: `4`
+    },
+    java: {
+        code: `public class Main {\n    public static int factorial(int n) {\n        if (n <= 1) {\n            return 1;\n        }\n        return n * factorial(n - 1);\n    }\n\n    public static void main(String[] args) {\n        System.out.println("Starting calculation...");\n        Scanner scanner = new Scanner(System.in);\n        int x = scanner.nextInt();\n        int result = factorial(x);\n        System.out.println("Result is: " + result);\n    }\n}`,
+        input: `4`
     }
-    return n * factorial(n - 1);
-}
-
-int main() {
-    cout << "Starting calculation..." << endl;
-    int result = factorial(4);
-    cout << "Result is: " << result << endl;
-    return 0;
-}`,
-    java: `public class Main {
-    public static int factorial(int n) {
-        if (n <= 1) {
-            return 1;
-        }
-        return n * factorial(n - 1);
-    }
-
-    public static void main(String[] args) {
-        System.out.println("Starting calculation...");
-        int result = factorial(4);
-        System.out.println("Result is: " + result);
-    }
-}`
 };
 
 /* ============================================================
@@ -496,7 +477,8 @@ langTabs.forEach(tab => {
         langTabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         currentLang = tab.dataset.lang;
-        editor.value = EXAMPLES[currentLang];
+        editor.value = EXAMPLES[currentLang].code;
+        document.getElementById('stdin-input').value = EXAMPLES[currentLang].input;
         updateLineNumbers();
         stopAnimation();
         resetDashboard();
@@ -505,7 +487,8 @@ langTabs.forEach(tab => {
 });
 
 document.getElementById('btn-example').addEventListener('click', () => {
-    editor.value = EXAMPLES[currentLang];
+    editor.value = EXAMPLES[currentLang].code;
+    document.getElementById('stdin-input').value = EXAMPLES[currentLang].input;
     updateLineNumbers();
 });
 
@@ -517,8 +500,27 @@ document.getElementById('btn-clear').addEventListener('click', () => {
 });
 
 /* ============================================================
-   EVALUATOR UTILITY
+   EVALUATOR UTILITY & STDIN
    ============================================================ */
+
+let stdinLines = [];
+let stdinTokens = [];
+
+function prepareStdin() {
+    const raw = document.getElementById('stdin-input').value;
+    stdinLines = raw ? raw.split('\n') : [];
+    stdinTokens = raw.trim().split(/\s+/).filter(s => s);
+}
+
+function consumeInputLine() {
+    if (stdinLines.length > 0) return stdinLines.shift();
+    throw new Error("Program expected input, but Standard Input is empty. Please provide input before running.");
+}
+
+function consumeInputToken() {
+    if (stdinTokens.length > 0) return stdinTokens.shift();
+    throw new Error("Program expected input, but Standard Input is empty. Please provide input before running.");
+}
 
 function deepClone(obj) {
     if (obj === null || typeof obj !== 'object') return obj;
@@ -530,6 +532,23 @@ function deepClone(obj) {
 
 function evalExpr(expr, scopeVars) {
     if (!expr) return undefined;
+    
+    // Handle inline inputs for Python/Java
+    if (expr.includes('input(')) {
+        expr = expr.replace(/input\([^)]*\)/g, () => JSON.stringify(consumeInputLine()));
+    }
+    if (expr.includes('.nextInt()') || expr.includes('.nextDouble()') || expr.includes('.nextFloat()')) {
+        expr = expr.replace(/[a-zA-Z_]\w*\.next(?:Int|Double|Float)\(\)/g, () => {
+            let val = consumeInputToken();
+            return (!val || isNaN(val)) ? 0 : Number(val);
+        });
+    }
+    if (expr.includes('.nextLine()')) {
+        expr = expr.replace(/[a-zA-Z_]\w*\.nextLine\(\)/g, () => JSON.stringify(consumeInputLine()));
+    }
+    if (expr.includes('.next()')) {
+        expr = expr.replace(/[a-zA-Z_]\w*\.next\(\)/g, () => JSON.stringify(consumeInputToken()));
+    }
     let scopeStr = "";
     for (let k in scopeVars) {
         scopeStr += `let ${k} = ${JSON.stringify(scopeVars[k])};\n`;
@@ -539,7 +558,9 @@ function evalExpr(expr, scopeVars) {
                         .replace(/\bnot\b/g, '!')
                         .replace(/\bTrue\b/g, 'true')
                         .replace(/\bFalse\b/g, 'false')
-                        .replace(/\bNone\b/g, 'null');
+                        .replace(/\bNone\b/g, 'null')
+                        .replace(/\bint\(/g, 'Number(')
+                        .replace(/\bfloat\(/g, 'Number(');
     try {
         let func = new Function(scopeStr + "return (" + cleanExpr + ");");
         return func();
@@ -960,6 +981,31 @@ function traceCpp(code) {
                 idx++; continue;
             }
             
+            // cin
+            if (trimmed.startsWith('cin')) {
+                let vars = trimmed.replace('cin', '').replace(/;/g, '').split('>>')
+                    .map(s => s.trim())
+                    .filter(s => s);
+                let outStr = "Read: ";
+                for (let v of vars) {
+                    let val = consumeInputToken();
+                    if (!isNaN(val) && val !== "") val = Number(val);
+                    scope[v] = val;
+                    outStr += `${v}=${val} `;
+                }
+                pushStep(idx, `Input stream`, outStr);
+                idx++; continue;
+            }
+            
+            // Uninitialized Declaration (int x;)
+            let mDeclNoInit = trimmed.match(/^(?:int|double|float|bool|string|auto)\s+([a-zA-Z_]\w*)\s*;/);
+            if (mDeclNoInit) {
+                let varName = mDeclNoInit[1];
+                scope[varName] = undefined;
+                pushStep(idx, `Declare ${varName}`);
+                idx++; continue;
+            }
+            
             // Declaration & Assignment (int x = 5;)
             let mDecl = trimmed.match(/^(?:int|double|float|bool|string|auto)\s+([a-zA-Z_]\w*)\s*=\s*(.*);/);
             if (mDecl) {
@@ -1067,7 +1113,10 @@ function traceJava(code) {
         .replace(/System\.out\.println\((.*)\)/g, 'cout << $1 << endl')
         .replace(/System\.out\.print\((.*)\)/g, 'cout << $1')
         .replace(/boolean\b/g, 'bool')
-        .replace(/String\b/g, 'string');
+        .replace(/String\b/g, 'string')
+        .replace(/Integer\.parseInt\((.*)\)/g, 'Number($1)')
+        .replace(/Double\.parseDouble\((.*)\)/g, 'Number($1)')
+        .replace(/Float\.parseFloat\((.*)\)/g, 'Number($1)');
     // removing last closing brace of class
     let lines = normalized.split('\n');
     for (let i = lines.length - 1; i >= 0; i--) {
@@ -1130,6 +1179,7 @@ function startTrace() {
     const code = editor.value;
     if (!code.trim()) return;
     
+    prepareStdin();
     stopAnimation();
     accumulatedOutput = '';
     setStatus('running', 'Parsing and analyzing code...');
@@ -1404,7 +1454,8 @@ btnRunBp.addEventListener('click', () => {
 });
 
 // Init
-editor.value = EXAMPLES['python'];
+editor.value = EXAMPLES['python'].code;
+document.getElementById('stdin-input').value = EXAMPLES['python'].input;
 updateLineNumbers();
 highlightLine(0);
 
