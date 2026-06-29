@@ -7,6 +7,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CodeMirror 5 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/matchbrackets.min.js"></script>
+    
     <style>
         :root {
             --bg-base: #06090e;
@@ -26,6 +35,23 @@
             --font-mono: 'Fira Code', 'Consolas', 'Monaco', monospace;
             --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
             --glass-blur: blur(12px);
+        }
+
+        [data-theme="light"] {
+            --bg-base: #f1f5f9;
+            --bg-surface: rgba(255, 255, 255, 0.75);
+            --bg-elevated: rgba(255, 255, 255, 0.85);
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-tertiary: #64748b;
+            --accent-cyan: #0ea5e9;
+            --accent-green: #16a34a;
+            --accent-purple: #7e22ce;
+            --accent-pink: #be185d;
+            --accent-yellow: #ca8a04;
+            --accent-red: #dc2626;
+            --border-primary: rgba(0, 0, 0, 0.15);
+            --border-active: rgba(14, 165, 233, 0.4);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -52,9 +78,11 @@
             z-index: 100;
         }
         .navbar__brand { color: var(--text-primary); text-decoration: none; font-weight: 700; font-size: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
-        .navbar__nav { display: flex; gap: 1.5rem; }
+        .navbar__nav { display: flex; gap: 1.5rem; align-items: center; }
         .navbar__link { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
         .navbar__link:hover, .navbar__link.active { color: var(--accent-cyan); }
+        .theme-toggle { background: transparent; border: none; cursor: pointer; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; transition: all 0.2s; }
+        .theme-toggle:hover { background: var(--bg-elevated); color: var(--text-primary); }
 
         /* Main Layout */
         .visualizer-container {
@@ -109,65 +137,15 @@
             position: relative;
         }
 
-        .line-numbers {
-            padding: 1rem 0.5rem;
-            background: var(--bg-surface);
-            color: var(--text-tertiary);
-            font-family: var(--font-mono);
-            font-size: 14px;
-            line-height: 1.6;
-            text-align: right;
-            user-select: none;
-            border-right: 1px solid var(--border-primary);
-        }
-        .line-number {
-            display: block;
-            height: 1.6em;
-        }
-        .line-number.active {
-            color: var(--accent-cyan);
-            background: rgba(0, 229, 255, 0.1);
-            border-left: 2px solid var(--accent-cyan);
-            margin-left: -0.5rem;
-            padding-left: calc(0.5rem - 2px);
-        }
-
-        
-        /* Editor Overlays & Breakpoints */
-        .line-number { cursor: pointer; position: relative; }
-        .line-number:hover { color: var(--accent-cyan); background: rgba(0, 229, 255, 0.05); }
-        .line-number.breakpoint { color: var(--accent-red); font-weight: bold; }
-        .line-number.breakpoint::before { content: '●'; position: absolute; left: -2px; color: var(--accent-red); font-size: 0.75rem; }
-        
-        .editor-container { position: relative; flex: 1; overflow: hidden; background: transparent; }
-        #code-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 1rem; margin: 0; border: none; outline: none; background: transparent; color: transparent; caret-color: var(--text-primary); font-family: var(--font-mono); font-size: 14px; line-height: 1.6; resize: none; white-space: pre; overflow: auto; z-index: 2; }
-        .syntax-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 1rem; margin: 0; border: none; background: transparent; color: var(--text-primary); font-family: var(--font-mono); font-size: 14px; line-height: 1.6; white-space: pre; overflow: hidden; pointer-events: none; z-index: 1; }
-        
-        /* Syntax Colors */
-        .syn-keyword { color: #ff79c6; }
-        .syn-string { color: #f1fa8c; }
-        .syn-number { color: #bd93f9; }
-        .syn-comment { color: #6272a4; font-style: italic; }
-        .syn-func { color: #50fa7b; }
-        
-        /* Utility Buttons */
-        .header-actions { display: flex; gap: 0.5rem; }
-        .btn-mini { padding: 0.2rem 0.5rem; font-size: 0.7rem; background: var(--bg-elevated); border: 1px solid var(--border-primary); color: var(--text-secondary); border-radius: 4px; cursor: pointer; }
-        .btn-mini:hover { color: var(--text-primary); background: #3a3a4d; }
-    
-        /* Code Active Line Highlight (Overlay) */
-        .editor-highlight {
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 1.6em;
-            background: linear-gradient(90deg, rgba(0, 240, 255, 0.15) 0%, rgba(0, 240, 255, 0.05) 100%);
-            border-left: 2px solid var(--accent-cyan);
-            pointer-events: none;
-            display: none;
-            z-index: 0;
-            transition: top 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
+        /* CodeMirror Overrides */
+        .CodeMirror { height: 100%; font-family: var(--font-mono); font-size: 14px; background: transparent !important; color: var(--text-primary) !important; }
+        .CodeMirror-gutters { background: transparent !important; border-right: 1px solid var(--border-primary) !important; }
+        .CodeMirror-linenumber { color: var(--text-tertiary) !important; }
+        .CodeMirror-activeline-background { background: rgba(0, 240, 255, 0.1) !important; }
+        .CodeMirror-activeline-gutter { background: rgba(0, 240, 255, 0.1) !important; color: var(--accent-cyan) !important; font-weight: bold; }
+        .cm-s-dracula .CodeMirror-cursor { border-left: 2px solid var(--text-primary) !important; }
+        .CodeMirror-selected { background: rgba(255, 255, 255, 0.15) !important; }
+        .CodeMirror-focused .CodeMirror-selected { background: rgba(255, 255, 255, 0.2) !important; }
 
         .controls {
             padding: 1rem;
@@ -238,13 +216,15 @@
             min-width: 80px;
             transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        .node-card.changed {
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-            transform: scale(1.05);
-            background: rgba(0, 240, 255, 0.1);
+        @keyframes yellowFlash {
+            0% { background-color: rgba(202, 138, 4, 0.4); border-color: var(--accent-yellow); box-shadow: 0 0 20px var(--accent-yellow); transform: scale(1.08); }
+            100% { background-color: rgba(0, 240, 255, 0.1); border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); transform: scale(1.05); }
         }
-        .node-name { font-size: 0.7rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+        .node-card.changed {
+            animation: yellowFlash 0.8s ease forwards;
+        }
+        .node-name { font-size: 0.7rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; display: flex; justify-content: space-between; }
+        .node-type { font-size: 0.6rem; opacity: 0.8; text-transform: lowercase; }
         .node-val { font-family: var(--font-mono); font-size: 1rem; color: var(--text-primary); }
         .node-card.changed .node-val { color: var(--accent-cyan); text-shadow: 0 0 8px rgba(0, 240, 255, 0.5); }
         
@@ -350,6 +330,11 @@
         <div class="navbar__nav">
             <a href="index.html" class="navbar__link">Home</a>
             <a href="#" class="navbar__link active">🔍 Visualizer</a>
+            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                <svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
         </div>
     </nav>
 
@@ -365,18 +350,17 @@
                     <div class="lang-tab" data-lang="java">Java</div>
                 </div>
                 <div class="header-actions">
-                    <button class="btn-mini" id="btn-copy">Copy</button>
-                    <button class="btn-mini" id="btn-download">Download</button>
+                    <button class="btn-mini" id="btn-font-dec" aria-label="Decrease Font Size">A-</button>
+                    <button class="btn-mini" id="btn-font-inc" aria-label="Increase Font Size">A+</button>
+                    <button class="btn-mini" id="btn-share" title="Copy Shareable Link" aria-label="Share Code">Share</button>
+                    <button class="btn-mini" id="btn-copy" aria-label="Copy Code">Copy</button>
+                    <button class="btn-mini" id="btn-download" aria-label="Download Code">Download</button>
+                    <button class="btn-mini" id="btn-tour" aria-label="Take UI Tour">Tour</button>
                 </div>
             </div>
             
-            <div class="editor-wrapper">
-                <div class="line-numbers" id="line-numbers"></div>
-                <div class="editor-highlight" id="editor-highlight"></div>
-                <div class="editor-container">
-                    <div class="syntax-overlay" id="syntax-overlay"></div>
-                    <textarea id="code-input" spellcheck="false"></textarea>
-                </div>
+            <div class="editor-wrapper" id="editor-wrapper">
+                <textarea id="code-input"></textarea>
             </div>
             
             <div class="input-wrapper" style="height: 120px; border-top: 1px solid var(--border-primary); display: flex; flex-direction: column; background: rgba(0, 0, 0, 0.2);">
@@ -385,22 +369,24 @@
             </div>
 
             <div class="controls">
-                <button class="btn btn-primary" id="btn-run">▶ Run Trace</button>
+                <button class="btn btn-primary" id="btn-run" style="line-height: 1.2; padding: 0.4rem 1rem;">
+                    <div>▶ Run Trace</div>
+                    <kbd style="font-size: 0.6rem; opacity: 0.8; font-family: var(--font-mono); font-weight: normal;">Ctrl+Enter</kbd>
+                </button>
                 <button class="btn btn-secondary" id="btn-run-bp" title="Run to next breakpoint" disabled>⏭ Breakpoint</button>
-                <button class="btn btn-secondary" id="btn-example">Example</button>
+                <select class="btn btn-secondary" id="example-select">
+                    <!-- Populated by JS -->
+                </select>
                 <button class="btn btn-secondary" id="btn-clear">Clear</button>
                 
-                <div style="flex: 1"></div>
+                <div class="speed-slider-container" style="display: flex; flex-direction: column; align-items: center; gap: 4px; width: 120px;">
+                    <div style="font-size: 0.65rem; color: var(--text-tertiary); text-transform: uppercase;">Speed: <span id="speed-label" style="color: var(--text-primary); font-weight: bold;">Normal</span></div>
+                    <input type="range" id="speed-slider" class="timeline-slider" min="0" max="3" step="1" value="1" style="width: 100%;">
+                </div>
                 
-                <select class="btn btn-secondary" id="speed-select">
-                    <option value="900">Slow</option>
-                    <option value="420" selected>Normal</option>
-                    <option value="130">Fast</option>
-                    <option value="0">Instant</option>
-                </select>
-                
-                <button class="btn-icon" id="btn-prev" disabled>‹</button>
-                <button class="btn-icon" id="btn-next" disabled>›</button>
+                <button class="btn-icon" id="btn-reset" title="Reset Trace" disabled>⏮</button>
+                <button class="btn-icon" id="btn-prev" title="Previous Step" disabled>‹</button>
+                <button class="btn-icon" id="btn-next" title="Next Step" disabled>›</button>
             </div>
         </div>
 
@@ -421,7 +407,12 @@
                 
                 <div class="dashboard-body">
                     <div class="dashboard-section">
-                        <div class="section-title">Memory & Variables</div>
+                        <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>Memory & Variables</span>
+                            <label style="display: flex; align-items: center; gap: 4px; text-transform: none; cursor: pointer;">
+                                <input type="checkbox" id="delta-changes-toggle"> Δ Changes Only
+                            </label>
+                        </div>
                         <div class="section-content" id="memory-content">
                             <!-- Memory Table & Arrays -->
                         </div>
@@ -454,62 +445,127 @@
 
 <script>
 /* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+const themeToggleBtn = document.getElementById('theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
+
+function updateThemeIcon(theme) {
+    if (theme === 'light') {
+        themeIcon.innerHTML = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+    } else {
+        themeIcon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+    }
+}
+
+const savedTheme = localStorage.getItem('theme') || 'dark';
+document.documentElement.setAttribute('data-theme', savedTheme);
+updateThemeIcon(savedTheme);
+
+themeToggleBtn.addEventListener('click', () => {
+    let current = document.documentElement.getAttribute('data-theme');
+    let nextTheme = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', nextTheme);
+    localStorage.setItem('theme', nextTheme);
+    updateThemeIcon(nextTheme);
+    
+    // Dispatch custom event if CodeMirror needs to update its theme later
+    window.dispatchEvent(new Event('themeChanged'));
+});
+
+/* ============================================================
    EXAMPLES
    ============================================================ */
 const EXAMPLES = {
     python: {
-        code: `def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint("Starting calculation...")\nx = int(input())\nresult = factorial(x)\nprint("Result is:", result)\n`,
-        input: `4`
+        "Factorial (Recursion)": {
+            code: `def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint("Starting calculation...")\nx = int(input())\nresult = factorial(x)\nprint("Result is:", result)\n`,
+            input: `4`
+        },
+        "Two Sum (Dictionary)": {
+            code: `def two_sum(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        diff = target - num\n        if diff in seen:\n            return [seen[diff], i]\n        seen[num] = i\n    return []\n\nprint(two_sum([2, 7, 11, 15], 9))`,
+            input: ``
+        }
     },
     cpp: {
-        code: `int factorial(int n) {\n    if (n <= 1) {\n        return 1;\n    }\n    return n * factorial(n - 1);\n}\n\nint main() {\n    cout << "Starting calculation..." << endl;\n    int x;\n    cin >> x;\n    int result = factorial(x);\n    cout << "Result is: " << result << endl;\n    return 0;\n}`,
-        input: `4`
+        "Factorial (Recursion)": {
+            code: `int factorial(int n) {\n    if (n <= 1) {\n        return 1;\n    }\n    return n * factorial(n - 1);\n}\n\nint main() {\n    cout << "Starting calculation..." << endl;\n    int x;\n    cin >> x;\n    int result = factorial(x);\n    cout << "Result is: " << result << endl;\n    return 0;\n}`,
+            input: `4`
+        }
     },
     java: {
-        code: `public class Main {\n    public static int factorial(int n) {\n        if (n <= 1) {\n            return 1;\n        }\n        return n * factorial(n - 1);\n    }\n\n    public static void main(String[] args) {\n        System.out.println("Starting calculation...");\n        Scanner scanner = new Scanner(System.in);\n        int x = scanner.nextInt();\n        int result = factorial(x);\n        System.out.println("Result is: " + result);\n    }\n}`,
-        input: `4`
+        "Factorial (Recursion)": {
+            code: `public class Main {\n    public static int factorial(int n) {\n        if (n <= 1) {\n            return 1;\n        }\n        return n * factorial(n - 1);\n    }\n\n    public static void main(String[] args) {\n        System.out.println("Starting calculation...");\n        Scanner scanner = new Scanner(System.in);\n        int x = scanner.nextInt();\n        int result = factorial(x);\n        System.out.println("Result is: " + result);\n    }\n}`,
+            input: `4`
+        }
     }
 };
 
 /* ============================================================
    UI & EDITOR LOGIC
    ============================================================ */
-const editor = document.getElementById('code-input');
-const lineNumbers = document.getElementById('line-numbers');
-const editorHighlight = document.getElementById('editor-highlight');
-const langTabs = document.querySelectorAll('.lang-tab');
 let currentLang = 'python';
+let cmTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dracula';
+const cmEditor = CodeMirror.fromTextArea(document.getElementById('code-input'), {
+    mode: 'python',
+    theme: cmTheme,
+    lineNumbers: true,
+    styleActiveLine: false, // We handle active line manually for the trace
+    matchBrackets: true,
+    gutters: ["CodeMirror-linenumbers", "breakpoints"],
+    indentUnit: 4,
+    viewportMargin: Infinity
+});
 
-function updateLineNumbers() {
-    const lines = editor.value.split('\n').length;
-    lineNumbers.innerHTML = Array.from({length: lines}, (_, i) => {
-        const ln = i + 1;
-        const bpClass = activeBreakpoints.has(ln) ? ' breakpoint' : '';
-        return `<div class="line-number${bpClass}" id="ln-${ln}">${ln}</div>`;
-    }).join('');
-    highlightSyntax();
+window.addEventListener('themeChanged', () => {
+    let t = document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dracula';
+    cmEditor.setOption("theme", t);
+});
+
+// Proxy to keep compatibility with existing `editor.value` usage
+const editor = {
+    get value() { return cmEditor.getValue(); },
+    set value(v) { cmEditor.setValue(v); }
+};
+
+const langTabs = document.querySelectorAll('.lang-tab');
+const exampleSelect = document.getElementById('example-select');
+
+function populateExamples() {
+    exampleSelect.innerHTML = '';
+    const examples = EXAMPLES[currentLang];
+    for (let title in examples) {
+        const option = document.createElement('option');
+        option.value = title;
+        option.textContent = title;
+        exampleSelect.appendChild(option);
+    }
 }
 
-editor.addEventListener('input', updateLineNumbers);
-editor.addEventListener('scroll', () => {
-    lineNumbers.scrollTop = editor.scrollTop;
-    editorHighlight.style.top = `calc(${editorHighlight.dataset.top || 0}px - ${editor.scrollTop}px)`;
+exampleSelect.addEventListener('change', (e) => {
+    const title = e.target.value;
+    const example = EXAMPLES[currentLang][title];
+    if (example) {
+        editor.value = example.code;
+        document.getElementById('stdin-input').value = example.input;
+    }
 });
 
 function highlightLine(lineNum) {
-    document.querySelectorAll('.line-number').forEach(el => el.classList.remove('active'));
+    // Clear previous active lines
+    cmEditor.eachLine(line => {
+        cmEditor.removeLineClass(line, "background", "CodeMirror-activeline-background");
+        cmEditor.removeLineClass(line, "gutter", "CodeMirror-activeline-gutter");
+    });
+    
     if (lineNum > 0) {
-        const el = document.getElementById(`ln-${lineNum}`);
-        if (el) el.classList.add('active');
+        // CodeMirror lines are 0-indexed
+        cmEditor.addLineClass(lineNum - 1, "background", "CodeMirror-activeline-background");
+        cmEditor.addLineClass(lineNum - 1, "gutter", "CodeMirror-activeline-gutter");
         
-        // Calculate offset for highlight overlay (1rem padding top + line height)
-        const lineHeight = 1.6 * 14; // 1.6 line-height * 14px font-size
-        const topPx = 16 + ((lineNum - 1) * lineHeight);
-        editorHighlight.dataset.top = topPx;
-        editorHighlight.style.top = `calc(${topPx}px - ${editor.scrollTop}px)`;
-        editorHighlight.style.display = 'block';
-    } else {
-        editorHighlight.style.display = 'none';
+        // Scroll into view (center)
+        const top = cmEditor.charCoords({line: lineNum - 1, ch: 0}, "local").top;
+        cmEditor.scrollTo(null, top - 60);
     }
 }
 
@@ -517,25 +573,22 @@ langTabs.forEach(tab => {
     tab.addEventListener('click', () => {
         langTabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
-        currentLang = tab.dataset.lang;
-        editor.value = EXAMPLES[currentLang].code;
-        document.getElementById('stdin-input').value = EXAMPLES[currentLang].input;
-        updateLineNumbers();
+        if (currentLang === 'python') cmEditor.setOption("mode", "python");
+        else if (currentLang === 'cpp') cmEditor.setOption("mode", "text/x-c++src");
+        else if (currentLang === 'java') cmEditor.setOption("mode", "text/x-java");
+        
+        populateExamples();
+        const firstExample = Object.keys(EXAMPLES[currentLang])[0];
+        editor.value = EXAMPLES[currentLang][firstExample].code;
+        document.getElementById('stdin-input').value = EXAMPLES[currentLang][firstExample].input;
         stopAnimation();
         resetDashboard();
         setStatus('idle', 'Idle');
     });
 });
 
-document.getElementById('btn-example').addEventListener('click', () => {
-    editor.value = EXAMPLES[currentLang].code;
-    document.getElementById('stdin-input').value = EXAMPLES[currentLang].input;
-    updateLineNumbers();
-});
-
 document.getElementById('btn-clear').addEventListener('click', () => {
     editor.value = '';
-    updateLineNumbers();
     stopAnimation();
     resetDashboard();
 });
@@ -1176,7 +1229,9 @@ let speed = 420;
 let accumulatedOutput = '';
 
 const runBtn = document.getElementById('btn-run');
-const speedSelect = document.getElementById('speed-select');
+const speedSlider = document.getElementById('speed-slider');
+const speedLabel = document.getElementById('speed-label');
+const btnReset = document.getElementById('btn-reset');
 const callStackBar = document.getElementById('call-stack');
 const progressBar = document.getElementById('progress-bar');
 const statusDot = document.getElementById('status-dot');
@@ -1185,7 +1240,26 @@ const btnPrev = document.getElementById('btn-prev');
 const btnNext = document.getElementById('btn-next');
 const btnRunBp = document.getElementById('btn-run-bp');
 
-speedSelect.addEventListener('change', (e) => speed = parseInt(e.target.value));
+const speedMap = { 0: 900, 1: 420, 2: 130, 3: 0 };
+const speedLabels = { 0: 'Slow', 1: 'Normal', 2: 'Fast', 3: 'Instant' };
+
+speedSlider.addEventListener('input', (e) => {
+    let val = parseInt(e.target.value);
+    speed = speedMap[val];
+    speedLabel.textContent = speedLabels[val];
+    if (animTimer && speed > 0) {
+        clearInterval(animTimer);
+        animTimer = setInterval(stepForward, speed);
+    }
+});
+
+btnReset.addEventListener('click', () => {
+    if (currentSteps.length > 0) {
+        stopAnimation();
+        currentStepIdx = 0;
+        renderStep(0);
+    }
+});
 
 function setStatus(state, msg) {
     statusDot.className = 'status-dot ' + state;
@@ -1263,6 +1337,7 @@ function stopAnimation() {
     if (animTimer) clearInterval(animTimer);
     animTimer = null;
     btnPrev.disabled = currentStepIdx === 0;
+    btnReset.disabled = currentStepIdx === 0;
     btnRunBp.disabled = currentStepIdx >= currentSteps.length - 1;
     btnNext.disabled = currentStepIdx >= currentSteps.length - 1;
 }
@@ -1271,6 +1346,7 @@ function finishTrace() {
     stopAnimation();
     setStatus('', 'Execution completed.');
     btnPrev.disabled = false;
+    btnReset.disabled = false;
     btnNext.disabled = true;
     btnRunBp.disabled = false;
     highlightLine(0);
@@ -1303,6 +1379,12 @@ timelineSlider.addEventListener('input', (e) => {
     }
 });
 
+document.getElementById('delta-changes-toggle').addEventListener('change', () => {
+    if (currentSteps.length > 0) {
+        renderStep(currentStepIdx);
+    }
+});
+
 function renderStep(idx) {
     const step = currentSteps[idx];
     
@@ -1318,12 +1400,27 @@ function renderStep(idx) {
     let arraysHtml = '';
     
     let hasPrimitives = false;
+    const deltaToggle = document.getElementById('delta-changes-toggle').checked;
     
     step.vars.forEach(v => {
+        if (deltaToggle && !v.changed) return;
+        
         if (v.rawValue !== null && typeof v.rawValue === 'object' && Array.isArray(v.rawValue)) {
             // It's an Array
-            arraysHtml += `<div class="array-container">
-                <div class="array-title">${v.name} ${v.changed ? '<span style="color:var(--accent-green)">•</span>' : ''}</div>`;
+            // Compare with previous step to find changed indices
+            let prevArray = null;
+            if (idx > 0) {
+                const prevVar = currentSteps[idx - 1].vars.find(p => p.name === v.name);
+                if (prevVar && Array.isArray(prevVar.rawValue)) {
+                    prevArray = prevVar.rawValue;
+                }
+            }
+            
+            arraysHtml += `<details class="array-container" open>
+                <summary class="array-title" style="cursor:pointer; outline:none; user-select:none;">
+                    ${v.name} ${v.changed ? '<span style="color:var(--accent-green)">•</span>' : ''}
+                </summary>
+                <div style="padding-top: 0.5rem;">`;
             
             if (v.rawValue.length > 0 && Array.isArray(v.rawValue[0])) {
                 // 2D Array
@@ -1331,8 +1428,9 @@ function renderStep(idx) {
                     arraysHtml += `<div class="array-2d-row">
                         <div class="array-2d-row-label">${rowIdx}</div>`;
                     row.forEach((cell, colIdx) => {
-                        // Rough logic to check if a specific cell changed (we just mark the whole array if changed for now, or we could diff deeply)
-                        arraysHtml += `<div class="array-block ${v.changed ? 'changed' : ''}">
+                        let isAccessed = false;
+                        if (prevArray && prevArray[rowIdx] && prevArray[rowIdx][colIdx] !== cell) isAccessed = true;
+                        arraysHtml += `<div class="array-block ${isAccessed ? 'changed' : ''}">
                             <div class="array-val">${cell}</div>
                         </div>`;
                     });
@@ -1342,19 +1440,31 @@ function renderStep(idx) {
                 // 1D Array
                 arraysHtml += `<div class="array-blocks">`;
                 v.rawValue.forEach((cell, i) => {
-                    arraysHtml += `<div class="array-block ${v.changed ? 'changed' : ''}">
+                    let isAccessed = false;
+                    if (prevArray && prevArray[i] !== cell) isAccessed = true;
+                    arraysHtml += `<div class="array-block ${isAccessed ? 'changed' : ''}">
                         <div class="array-val">${cell}</div>
                         <div class="array-idx">${i}</div>
                     </div>`;
                 });
                 arraysHtml += `</div>`;
             }
-            arraysHtml += `</div>`;
+            arraysHtml += `</div></details>`;
         } else {
             // Primitive
             hasPrimitives = true;
+            let typeName = typeof v.rawValue;
+            if (typeName === 'number') typeName = Number.isInteger(v.rawValue) ? 'int' : 'float';
+            else if (typeName === 'string') typeName = 'str';
+            else if (typeName === 'boolean') typeName = 'bool';
+            
+            let typeColor = 'var(--text-tertiary)';
+            if (typeName === 'int' || typeName === 'float') typeColor = 'var(--accent-cyan)';
+            else if (typeName === 'str') typeColor = 'var(--accent-green)';
+            else if (typeName === 'bool') typeColor = 'var(--accent-purple)';
+            
             primitivesHtml += `<div class="node-card ${v.changed ? 'changed' : ''}">
-                <div class="node-name">${v.name}</div>
+                <div class="node-name">${v.name} <span class="node-type" style="color: ${typeColor}">${typeName}</span></div>
                 <div class="node-val">${v.stringValue}</div>
             </div>`;
         }
@@ -1372,12 +1482,26 @@ function renderStep(idx) {
             accumulatedOutput += currentSteps[si].output + '\n';
         }
     }
-    consoleOutput.textContent = accumulatedOutput || ' ';
+    
+    // Basic ANSI color support for output
+    let parsedOutput = accumulatedOutput
+        .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\x1b\[31m/g, '<span style="color: var(--accent-red)">')
+        .replace(/\x1b\[32m/g, '<span style="color: var(--accent-green)">')
+        .replace(/\x1b\[0m/g, '</span>');
+        
+    consoleOutput.innerHTML = parsedOutput || ' ';
     
     highlightLine(step.line);
     
+    // Call Stack logic (Show function + line)
     callStackBar.innerHTML = '<span class="call-stack-label">Call Stack</span>' + 
-        step.stack.map(frame => `<div class="stack-frame">${frame}</div>`).join(' → ');
+        step.stack.map(frame => {
+            const parts = frame.split(':');
+            let name = parts[0];
+            let ln = parts.length > 1 ? ` <span style="opacity: 0.5">L${parts[1]}</span>` : '';
+            return `<div class="stack-frame">${name}${ln}</div>`;
+        }).join('<span style="color: var(--border-primary); margin: 0 4px;">→</span>');
         
     // Update slider
     const timelineSlider = document.getElementById('timeline-slider');
@@ -1408,59 +1532,77 @@ btnNext.addEventListener('click', () => {
 });
 
 
-/* Syntax Highlighting */
-const syntaxOverlay = document.getElementById('syntax-overlay');
-function highlightSyntax() {
-    let text = editor.value;
-    text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    
-    // Single pass robust Regex Highlighter
-    const keywords = ['def', 'if', 'else', 'elif', 'return', 'while', 'for', 'class', 'public', 'static', 'void', 'int', 'bool', 'string', 'double', 'float', 'auto', 'True', 'False', 'None', 'true', 'false'];
-    const kwPattern = `\\b(?:${keywords.join('|')})\\b`;
-    
-    const tokenRegex = new RegExp(
-        `(#.*?$)|` +                           // p1: Python comments
-        `(\\/\\/.*?$)|` +                      // p2: C++ comments
-        `((?:['"]).*?(?:['"]))|` +             // p3: Strings
-        `(\\b[a-zA-Z_]\\w*(?=\\s*\\())|` +     // p4: Functions
-        `(${kwPattern})|` +                    // p5: Keywords
-        `(\\b\\d+\\b)`,                        // p6: Numbers
-        'gm'
-    );
-    
-    text = text.replace(tokenRegex, (match, p1, p2, p3, p4, p5, p6) => {
-        if (p1 || p2) return `<span class="syn-comment">${match}</span>`;
-        if (p3) return `<span class="syn-string">${match}</span>`;
-        if (p4) return `<span class="syn-func">${match}</span>`;
-        if (p5) return `<span class="syn-keyword">${match}</span>`;
-        if (p6) return `<span class="syn-number">${match}</span>`;
-        return match;
-    });
-    
-    syntaxOverlay.innerHTML = text + '<br>';
-}
-editor.addEventListener('input', highlightSyntax);
-editor.addEventListener('scroll', () => {
-    syntaxOverlay.scrollTop = editor.scrollTop;
-    syntaxOverlay.scrollLeft = editor.scrollLeft;
+/* Font Size Adjustment */
+let currentFontSize = 14;
+document.getElementById('btn-font-inc').addEventListener('click', () => {
+    if (currentFontSize < 20) {
+        currentFontSize += 2;
+        document.querySelector('.CodeMirror').style.fontSize = currentFontSize + 'px';
+        cmEditor.refresh();
+    }
+});
+document.getElementById('btn-font-dec').addEventListener('click', () => {
+    if (currentFontSize > 12) {
+        currentFontSize -= 2;
+        document.querySelector('.CodeMirror').style.fontSize = currentFontSize + 'px';
+        cmEditor.refresh();
+    }
+});
+
+/* Keyboard Shortcuts */
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('btn-run').click();
+    }
 });
 
 /* Breakpoints */
 const activeBreakpoints = new Set();
-lineNumbers.addEventListener('click', (e) => {
-    if (e.target.classList.contains('line-number')) {
-        const ln = parseInt(e.target.textContent);
-        if (activeBreakpoints.has(ln)) {
-            activeBreakpoints.delete(ln);
-            e.target.classList.remove('breakpoint');
-        } else {
-            activeBreakpoints.add(ln);
-            e.target.classList.add('breakpoint');
-        }
+const btnRunBp = document.getElementById('btn-run-bp');
+
+function makeMarker() {
+    const marker = document.createElement("div");
+    marker.style.color = "var(--accent-red)";
+    marker.style.fontWeight = "bold";
+    marker.innerHTML = "●";
+    return marker;
+}
+
+cmEditor.on("gutterClick", (cm, n) => {
+    const info = cm.lineInfo(n);
+    const lineNum = n + 1;
+    if (activeBreakpoints.has(lineNum)) {
+        activeBreakpoints.delete(lineNum);
+        cm.setGutterMarker(n, "breakpoints", null);
+    } else {
+        activeBreakpoints.add(lineNum);
+        cm.setGutterMarker(n, "breakpoints", makeMarker());
+    }
+    
+    // Update badge on button
+    if (activeBreakpoints.size > 0) {
+        btnRunBp.innerHTML = `⏭ Breakpoint <span style="background: var(--accent-red); color: white; padding: 2px 6px; border-radius: 12px; font-size: 0.7rem; margin-left: 4px;">${activeBreakpoints.size}</span>`;
+    } else {
+        btnRunBp.innerHTML = `⏭ Breakpoint`;
     }
 });
 
-/* Copy & Download */
+/* Copy, Download & Share */
+document.getElementById('btn-share').addEventListener('click', () => {
+    const data = JSON.stringify({
+        lang: currentLang,
+        code: editor.value,
+        input: document.getElementById('stdin-input').value
+    });
+    const hash = btoa(unescape(encodeURIComponent(data)));
+    const url = new URL(window.location);
+    url.hash = hash;
+    navigator.clipboard.writeText(url.toString());
+    setStatus('running', 'Share URL copied to clipboard!');
+    setTimeout(() => setStatus('idle', 'Idle'), 2000);
+});
+
 document.getElementById('btn-copy').addEventListener('click', () => {
     navigator.clipboard.writeText(editor.value);
     setStatus('running', 'Code copied to clipboard!');
@@ -1474,6 +1616,10 @@ document.getElementById('btn-download').addEventListener('click', () => {
     a.href = URL.createObjectURL(blob);
     a.download = `solution.${ext}`;
     a.click();
+});
+
+document.getElementById('btn-tour').addEventListener('click', () => {
+    alert("Welcome to the Code Visualizer!\n\n1. Select your Language (Python, C++, Java).\n2. Write your code and provide standard input if needed.\n3. Click 'Run Trace' (or Ctrl+Enter) to execute the code.\n4. Use the timeline slider, Next/Prev buttons, or Speed controls to step through your program.\n5. View variables, arrays, and console output on the right.\n6. Click line numbers to set breakpoints, then use the 'Breakpoint' button to jump to them.\n7. Use the 'Share' button to get a shareable URL of your code.\n\nHappy Coding!");
 });
 
 /* Run to Breakpoint Logic */
@@ -1495,9 +1641,35 @@ btnRunBp.addEventListener('click', () => {
 });
 
 // Init
-editor.value = EXAMPLES['python'].code;
-document.getElementById('stdin-input').value = EXAMPLES['python'].input;
-updateLineNumbers();
+populateExamples();
+const firstExample = Object.keys(EXAMPLES['python'])[0];
+editor.value = EXAMPLES['python'][firstExample].code;
+document.getElementById('stdin-input').value = EXAMPLES['python'][firstExample].input;
+
+if (window.location.hash) {
+    try {
+        const hash = window.location.hash.substring(1);
+        const data = JSON.parse(decodeURIComponent(escape(atob(hash))));
+        if (data.lang && data.code !== undefined) {
+            currentLang = data.lang;
+            const tab = Array.from(langTabs).find(t => t.dataset.lang === data.lang);
+            if (tab) {
+                langTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            }
+            if (currentLang === 'python') cmEditor.setOption("mode", "python");
+            else if (currentLang === 'cpp') cmEditor.setOption("mode", "text/x-c++src");
+            else if (currentLang === 'java') cmEditor.setOption("mode", "text/x-java");
+            populateExamples();
+            editor.value = data.code;
+            document.getElementById('stdin-input').value = data.input || '';
+        }
+    } catch(e) {
+        console.error("Invalid share link", e);
+    }
+}
+
+setTimeout(() => cmEditor.refresh(), 100);
 highlightLine(0);
 
 </script>
