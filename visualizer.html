@@ -1323,17 +1323,28 @@ function highlightSyntax() {
     let text = editor.value;
     text = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     
-    // Simple Regex Highlighter
-    text = text.replace(/#.*$/gm, '<span class="syn-comment">$&</span>'); // Python comments
-    text = text.replace(/\/\/.*$/gm, '<span class="syn-comment">$&</span>'); // C++/Java comments
-    text = text.replace(/(['"].*?['"])/g, '<span class="syn-string">$1</span>'); // Strings
-    text = text.replace(/\b(\d+)\b/g, '<span class="syn-number">$1</span>'); // Numbers
-    
+    // Single pass robust Regex Highlighter
     const keywords = ['def', 'if', 'else', 'elif', 'return', 'while', 'for', 'class', 'public', 'static', 'void', 'int', 'bool', 'string', 'double', 'float', 'auto', 'True', 'False', 'None', 'true', 'false'];
-    const kwRegex = new RegExp(`\\b(${keywords.join('|')})\\b`, 'g');
-    text = text.replace(kwRegex, '<span class="syn-keyword">$1</span>');
+    const kwPattern = `\\b(?:${keywords.join('|')})\\b`;
     
-    text = text.replace(/\b([a-zA-Z_]\w*)\s*(?=\()/g, '<span class="syn-func">$1</span>'); // Functions
+    const tokenRegex = new RegExp(
+        `(#.*?$)|` +                           // p1: Python comments
+        `(\\/\\/.*?$)|` +                      // p2: C++ comments
+        `((?:['"]).*?(?:['"]))|` +             // p3: Strings
+        `(\\b[a-zA-Z_]\\w*(?=\\s*\\())|` +     // p4: Functions
+        `(${kwPattern})|` +                    // p5: Keywords
+        `(\\b\\d+\\b)`,                        // p6: Numbers
+        'gm'
+    );
+    
+    text = text.replace(tokenRegex, (match, p1, p2, p3, p4, p5, p6) => {
+        if (p1 || p2) return `<span class="syn-comment">${match}</span>`;
+        if (p3) return `<span class="syn-string">${match}</span>`;
+        if (p4) return `<span class="syn-func">${match}</span>`;
+        if (p5) return `<span class="syn-keyword">${match}</span>`;
+        if (p6) return `<span class="syn-number">${match}</span>`;
+        return match;
+    });
     
     syntaxOverlay.innerHTML = text + '<br>';
 }
