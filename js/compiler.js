@@ -30,7 +30,7 @@ function initCompilerTabs() {
   // Check URL parameters for pre-selected language
   const urlParams = new URLSearchParams(window.location.search);
   const langParam = urlParams.get('lang');
-  if (langParam === 'python' || langParam === 'cpp') {
+  if (langParam === 'python' || langParam === 'cpp' || langParam === 'java') {
     const tabToClick = document.querySelector(`.compiler-tab[data-lang="${langParam}"]`);
     if (tabToClick) {
       tabToClick.click();
