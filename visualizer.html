@@ -676,6 +676,10 @@ const EXAMPLES = {
         "Stack Operations": {
             code: `#include <iostream>\n#include <vector>\nusing namespace std;\nint main() {\n    vector<int> stack;\n    stack.push_back(10);\n    stack.push_back(20);\n    stack.push_back(30);\n    \n    int top = stack.back();\n    stack.pop_back();\n    cout << "Popped: " << top << endl;\n    \n    stack.push_back(40);\n    return 0;\n}`,
             input: ``
+        },
+        "Sieve of Eratosthenes": {
+            code: `#include<iostream>\n#include<vector>\nusing namespace std;\n\nint main(){\n    int n;\n    cin>>n;\n    vector<bool> arr(n+1,true);\n\n    arr[0]=false;\n    arr[1]=false;\n\n    for(int i=2;i*i<=n;i++){\n        if(arr[i]==true){\n            for(int j=i*i; j<=n; j+=i){\n                arr[j]=false;\n            }\n        }\n    }\n    for(int k=2;k<=n;k++){\n        if(arr[k]==true){\n            cout<<k<<" ";\n        }\n    }\n    return 0;\n}`,
+            input: `30`
         }
     },
     java: {
@@ -868,6 +872,7 @@ function evalExpr(expr, scopeVars) {
     let clean = expr
         .replace(/\band\b/g, '&&').replace(/\bor\b/g, '||').replace(/\bnot\b/g, '!')
         .replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null')
+        .replace(/\bnullptr\b/g, 'null').replace(/\bNULL\b/g, 'null')
         .replace(/\bint\(/g, 'Math.trunc(Number(').replace(/\bfloat\(/g, 'Number(')
         .replace(/\bis\s+not\b/g, '!==').replace(/\bis\b/g, '===')
         .replace(/\/\//g, '/__INTDIV__');
@@ -1608,9 +1613,321 @@ function traceCpp(code) {
     let steps = [], funcs = {}, callStack = [];
     let currentFunc = null, braceCount = 0;
     
+    let varTypes = {};
+    let structs = {};
+    let nextObjId = 1;
+
+    // Helper: Split by comma at top-level depth of (), {}, []
+    function splitByTopLevelComma(str) {
+        let parts = [];
+        let current = '';
+        let depth = 0;
+        for (let i = 0; i < str.length; i++) {
+            let char = str[i];
+            if (char === '(' || char === '{' || char === '[') depth++;
+            else if (char === ')' || char === '}' || char === ']') depth--;
+            
+            if (char === ',' && depth === 0) {
+                parts.push(current.trim());
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        if (current.trim()) parts.push(current.trim());
+        return parts;
+    }
+
+    // Helper: Split by assignment operators (=, +=, -=, *=, /=) at top-level depth
+    function splitByTopLevelEqual(str) {
+        let depth = 0;
+        for (let i = 0; i < str.length; i++) {
+            let char = str[i];
+            if (char === '(' || char === '{' || char === '[') depth++;
+            else if (char === ')' || char === '}' || char === ']') depth--;
+            
+            if (depth === 0) {
+                if (char === '=' && str[i-1] !== '=' && str[i-1] !== '<' && str[i-1] !== '>' && str[i-1] !== '!' && str[i+1] !== '=') {
+                    let op = '=';
+                    let left = str.slice(0, i).trim();
+                    let right = str.slice(i + 1).trim();
+                    if (left.endsWith('+') || left.endsWith('-') || left.endsWith('*') || left.endsWith('/')) {
+                        op = left.slice(-1) + '=';
+                        left = left.slice(0, -1).trim();
+                    }
+                    if (right.endsWith(';')) right = right.slice(0, -1).trim();
+                    return { left, op, right };
+                }
+            }
+        }
+        return null;
+    }
+
+    // Helper: Resolve deep path like dp[i][j] or head.next.val
+    function resolveDeepPath(expr, scope) {
+        expr = expr.trim();
+        let mBase = expr.match(/^([a-zA-Z_]\w*)/);
+        if (!mBase) return undefined;
+        let baseName = mBase[1];
+        let val = scope[baseName];
+        if (val === undefined) return undefined;
+        
+        let remaining = expr.slice(baseName.length).trim();
+        while (remaining.length > 0) {
+            if (remaining.startsWith('.')) {
+                remaining = remaining.slice(1).trim();
+                let mProp = remaining.match(/^([a-zA-Z_]\w*)/);
+                if (!mProp) return undefined;
+                let prop = mProp[1];
+                val = val[prop];
+                remaining = remaining.slice(prop.length).trim();
+            } else if (remaining.startsWith('->')) {
+                remaining = remaining.slice(2).trim();
+                let mProp = remaining.match(/^([a-zA-Z_]\w*)/);
+                if (!mProp) return undefined;
+                let prop = mProp[1];
+                val = val[prop];
+                remaining = remaining.slice(prop.length).trim();
+            } else if (remaining.startsWith('[')) {
+                let depth = 1;
+                let inside = '';
+                let i = 1;
+                for (; i < remaining.length; i++) {
+                    if (remaining[i] === '[') depth++;
+                    else if (remaining[i] === ']') {
+                        depth--;
+                        if (depth === 0) break;
+                    }
+                    inside += remaining[i];
+                }
+                let index = cppResolve(inside, scope);
+                val = val ? val[index] : undefined;
+                remaining = remaining.slice(i + 1).trim();
+            } else {
+                break;
+            }
+        }
+        return val;
+    }
+
+    // Helper: Set deep path like dp[i][j] = val
+    function setDeepPath(expr, scope, value) {
+        expr = expr.trim();
+        let mBase = expr.match(/^([a-zA-Z_]\w*)/);
+        if (!mBase) return;
+        let baseName = mBase[1];
+        
+        let remaining = expr.slice(baseName.length).trim();
+        if (remaining.length === 0) {
+            scope[baseName] = value;
+            return;
+        }
+        
+        let parent = scope[baseName];
+        if (parent === undefined) {
+            scope[baseName] = remaining.startsWith('[') ? [] : {};
+            parent = scope[baseName];
+        }
+        
+        while (remaining.length > 0) {
+            let isLast = false;
+            let nextKey = null;
+            
+            if (remaining.startsWith('.')) {
+                remaining = remaining.slice(1).trim();
+                let mProp = remaining.match(/^([a-zA-Z_]\w*)/);
+                if (!mProp) return;
+                nextKey = mProp[1];
+                remaining = remaining.slice(nextKey.length).trim();
+                if (remaining.length === 0) isLast = true;
+            } else if (remaining.startsWith('->')) {
+                remaining = remaining.slice(2).trim();
+                let mProp = remaining.match(/^([a-zA-Z_]\w*)/);
+                if (!mProp) return;
+                nextKey = mProp[1];
+                remaining = remaining.slice(nextKey.length).trim();
+                if (remaining.length === 0) isLast = true;
+            } else if (remaining.startsWith('[')) {
+                let depth = 1;
+                let inside = '';
+                let i = 1;
+                for (; i < remaining.length; i++) {
+                    if (remaining[i] === '[') depth++;
+                    else if (remaining[i] === ']') {
+                        depth--;
+                        if (depth === 0) break;
+                    }
+                    inside += remaining[i];
+                }
+                nextKey = cppResolve(inside, scope);
+                remaining = remaining.slice(i + 1).trim();
+                if (remaining.length === 0) isLast = true;
+            } else {
+                break;
+            }
+            
+            if (isLast) {
+                if (parent !== null && parent !== undefined) {
+                    parent[nextKey] = value;
+                }
+                return;
+            } else {
+                if (parent === null || parent === undefined) return;
+                if (parent[nextKey] === undefined || parent[nextKey] === null) {
+                    parent[nextKey] = remaining.startsWith('[') ? [] : {};
+                }
+                parent = parent[nextKey];
+            }
+        }
+    }
+
+    // Helper: Translate C++ expression patterns to JS
+    function translateCppExprToJs(expr, scope) {
+        if (!expr && expr !== 0 && expr !== false) return '';
+        let s = String(expr).trim();
+        
+        s = s.replace(/\bstd::/g, '');
+        s = s.replace(/->/g, '.');
+        s = s.replace(/\btrue\b/g, 'true');
+        s = s.replace(/\bfalse\b/g, 'false');
+        s = s.replace(/\bnullptr\b/g, 'null');
+        s = s.replace(/\bNULL\b/g, 'null');
+        
+        s = s.replace(/\bmin\(/g, 'Math.min(');
+        s = s.replace(/\bmax\(/g, 'Math.max(');
+        s = s.replace(/\babs\(/g, 'Math.abs(');
+        s = s.replace(/\bsqrt\(/g, 'Math.sqrt(');
+        s = s.replace(/\bpow\(/g, 'Math.pow(');
+        
+        s = s.replace(/\bmake_pair\(/g, '[');
+        s = s.replace(/\.(\bfirst\b)/g, '[0]');
+        s = s.replace(/\.(\bsecond\b)/g, '[1]');
+        
+        s = s.replace(/(\w+)\.size\(\)/g, (m, name) => {
+            let val = resolveDeepPath(name, scope);
+            if (val && val.__isSet) return val.__values.length;
+            if (val && typeof val === 'object' && !Array.isArray(val)) return Object.keys(val).filter(k => !k.startsWith('__')).length;
+            return `${name}.length`;
+        });
+        s = s.replace(/(\w+)\.empty\(\)/g, (m, name) => {
+            let val = resolveDeepPath(name, scope);
+            if (val && val.__isSet) return `${val.__values.length} === 0`;
+            if (val && typeof val === 'object' && !Array.isArray(val)) return `Object.keys(${name}).filter(k => !k.startsWith('__')).length === 0`;
+            return `${name}.length === 0`;
+        });
+        s = s.replace(/(\w+)\.front\(\)/g, '$1[0]');
+        s = s.replace(/(\w+)\.back\(\)/g, '$1[$1.length - 1]');
+        s = s.replace(/(\w+)\.top\(\)/g, '$1[$1.length - 1]');
+        
+        // set/map find and count
+        s = s.replace(/(\w+)\.find\((.+?)\)\s*!=\s*\1\.end\(\)/g, '($1.__isSet ? $1.__values.includes($2) : ($2 in $1))');
+        s = s.replace(/(\w+)\.find\((.+?)\)\s*==\s*\1\.end\(\)/g, '!($1.__isSet ? $1.__values.includes($2) : ($2 in $1))');
+        s = s.replace(/(\w+)\.count\((.+?)\)/g, '($1.__isSet ? ($1.__values.includes($2) ? 1 : 0) : ($2 in $1 ? 1 : 0))');
+        
+        return s;
+    }
+
+    // Helper: Execute STL container methods
+    function executeMethod(path, method, argStr, scope) {
+        let obj = resolveDeepPath(path, scope);
+        if (obj === undefined) return undefined;
+        
+        let args = splitByTopLevelComma(argStr).map(s => cppResolve(s.trim(), scope));
+        
+        let mBase = path.match(/^([a-zA-Z_]\w*)/);
+        let baseName = mBase ? mBase[1] : '';
+        let baseType = varTypes[baseName] || '';
+        
+        if (Array.isArray(obj)) {
+            if (method === 'push_back' || method === 'push') {
+                obj.push(args[0]);
+                if (baseType.includes('priority_queue')) {
+                    obj.sort((a, b) => a - b);
+                }
+                return undefined;
+            }
+            if (method === 'pop_back' || method === 'pop') {
+                if (baseType.includes('queue')) return obj.shift();
+                return obj.pop();
+            }
+            if (method === 'clear') { obj.length = 0; return undefined; }
+            if (method === 'erase') {
+                let idx = args[0];
+                if (typeof idx !== 'number') idx = 0;
+                obj.splice(idx, 1);
+                return undefined;
+            }
+            if (method === 'size') return obj.length;
+            if (method === 'empty') return obj.length === 0;
+            if (method === 'front') return obj[0];
+            if (method === 'back' || method === 'top') return obj[obj.length - 1];
+        }
+        
+        if (obj && obj.__isSet) {
+            if (method === 'insert' || method === 'add') {
+                if (!obj.__values.includes(args[0])) obj.__values.push(args[0]);
+                return undefined;
+            }
+            if (method === 'erase' || method === 'remove') {
+                obj.__values = obj.__values.filter(v => v !== args[0]);
+                return undefined;
+            }
+            if (method === 'size') return obj.__values.length;
+            if (method === 'empty') return obj.__values.length === 0;
+            if (method === 'count') return obj.__values.includes(args[0]) ? 1 : 0;
+            if (method === 'clear') { obj.__values = []; return undefined; }
+        }
+        
+        if (obj && typeof obj === 'object' && !obj.__isSet && !obj.__type) {
+            if (method === 'insert') {
+                if (Array.isArray(args[0]) && args[0].length === 2) {
+                    obj[args[0][0]] = args[0][1];
+                }
+                return undefined;
+            }
+            if (method === 'erase') { delete obj[args[0]]; return undefined; }
+            if (method === 'size') return Object.keys(obj).filter(k => !k.startsWith('__')).length;
+            if (method === 'empty') return Object.keys(obj).filter(k => !k.startsWith('__')).length === 0;
+            if (method === 'count') return (args[0] in obj) ? 1 : 0;
+            if (method === 'clear') {
+                for (let k in obj) { if (!k.startsWith('__')) delete obj[k]; }
+                return undefined;
+            }
+        }
+        
+        return undefined;
+    }
+
+    // Register structs, classes and functions in first pass
     for (let i = 0; i < lines.length; i++) {
         let line = lines[i].trim();
-        let mFunc = line.match(/^(?:int|void|double|float|bool|string|auto|long|long\s+long)\s+([a-zA-Z_]\w*)\s*\((.*)?\)\s*\{?/);
+        line = line.replace(/\/\/.*$/, '').trim();
+        if (!line) continue;
+        
+        let mStruct = line.match(/^(?:struct|class)\s+([a-zA-Z_]\w*)/);
+        if (mStruct && !currentFunc) {
+            let structName = mStruct[1];
+            let fields = [];
+            let j = i + 1;
+            let braceDepth = line.includes('{') ? 1 : 0;
+            if (braceDepth === 0 && lines[j] && lines[j].trim().replace(/\/\/.*$/, '') === '{') { braceDepth = 1; j++; }
+            while (j < lines.length && braceDepth > 0) {
+                let sLine = lines[j].replace(/\/\/.*$/, '').trim();
+                braceDepth += (sLine.match(/\{/g) || []).length;
+                braceDepth -= (sLine.match(/\}/g) || []).length;
+                
+                let mField = sLine.match(/^(?:[a-zA-Z_]\w*(?:\s*<.*?>)?(?:\s*\*+)?)\s+([a-zA-Z_]\w*)\s*;/);
+                if (mField && braceDepth === 1) {
+                    fields.push(mField[1]);
+                }
+                j++;
+            }
+            structs[structName] = fields;
+            i = j - 1;
+            continue;
+        }
+
+        let mFunc = line.match(/^(?:int|void|double|float|bool|string|auto|long|long\s+long|vector\s*<.*?>|pair\s*<.*?>)\s+([a-zA-Z_]\w*)\s*\((.*)?\)\s*\{?/);
         if (mFunc && !currentFunc) {
             let params = mFunc[2] ? mFunc[2].split(',').map(s => s.trim().split(/\s+/).pop()).filter(s => s) : [];
             currentFunc = { name: mFunc[1], params, start: i + 1 };
@@ -1646,66 +1963,89 @@ function traceCpp(code) {
     function executeBlock(startIdx, endIdx) {
         let idx = startIdx;
         while (idx <= endIdx && steps.length < 800) {
-            let line = lines[idx], trimmed = line ? line.trim() : '';
+            let line = lines[idx];
+            let trimmed = line ? line.replace(/\/\/.*$/, '').trim() : '';
             if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('using') || trimmed.startsWith('#')) { idx++; continue; }
             if (trimmed === '{' || trimmed === '}') { idx++; continue; }
             let scope = getScope();
+
+            // break / continue
+            if (trimmed === 'break;') { pushStep(idx, 'Break'); return { action: 'break' }; }
+            if (trimmed === 'continue;') { pushStep(idx, 'Continue'); return { action: 'continue' }; }
 
             let mRet = trimmed.match(/^return\s+(.*);/);
             if (mRet) { let val = cppResolve(mRet[1], scope); pushStep(idx, `Return ${val}`); return { action: 'return', value: val }; }
             if (trimmed === 'return 0;' || trimmed === 'return;') { pushStep(idx, `Return`); return { action: 'return', value: 0 }; }
 
-            if (trimmed.startsWith('cout')) {
-                let out = trimmed.replace('cout', '').replace(/;/g, '').split('<<').map(s => s.trim()).filter(s => s && s !== 'endl')
-                    .map(s => { if (s.startsWith('"') && s.endsWith('"')) return s.slice(1, -1); return evalExpr(s, scope); }).join('');
+            if (trimmed.startsWith('cout') || trimmed.startsWith('std::cout')) {
+                let cleanLine = trimmed.replace(/^(?:std::)?cout\s*/, '');
+                let parts = cleanLine.replace(/;/g, '').split('<<').map(s => s.trim()).filter(s => s && s !== 'endl' && s !== 'std::endl');
+                let out = parts.map(s => {
+                    if (s.startsWith('"') && s.endsWith('"')) return s.slice(1, -1);
+                    if (s.startsWith("'") && s.endsWith("'")) return s.slice(1, -1);
+                    return evalExpr(translateCppExprToJs(s, scope), scope);
+                }).join('');
                 pushStep(idx, `Output`, out); idx++; continue;
             }
-            if (trimmed.startsWith('cin')) {
-                let vars = trimmed.replace('cin', '').replace(/;/g, '').split('>>').map(s => s.trim()).filter(s => s);
+            if (trimmed.startsWith('cin') || trimmed.startsWith('std::cin')) {
+                let vars = trimmed.replace(/^(?:std::)?cin\s*/, '').replace(/;/g, '').split('>>').map(s => s.trim()).filter(s => s);
                 for (let v of vars) { let val = consumeInputToken(); scope[v] = !isNaN(val) && val !== "" ? Number(val) : val; }
                 pushStep(idx, `Input`); idx++; continue;
             }
 
-            // Array declaration: int arr[] = {1,2,3};
-            let mArrDecl = trimmed.match(/^(?:int|double|float)\s+(\w+)\[\]\s*=\s*\{(.*)\};/);
-            if (mArrDecl) { scope[mArrDecl[1]] = mArrDecl[2].split(',').map(s => Number(s.trim())); pushStep(idx, `Declare ${mArrDecl[1]}[]`); idx++; continue; }
-
-            let mDeclNoInit = trimmed.match(/^(?:int|double|float|bool|string|auto|long)\s+(\w+)\s*;/);
-            if (mDeclNoInit) { scope[mDeclNoInit[1]] = undefined; pushStep(idx, `Declare ${mDeclNoInit[1]}`); idx++; continue; }
-            let mDecl = trimmed.match(/^(?:int|double|float|bool|string|auto|long)\s+(\w+)\s*=\s*(.*);/);
-            if (mDecl) { let val = cppResolve(mDecl[2], scope); scope[mDecl[1]] = val; pushStep(idx, `${mDecl[1]} = ${val}`); idx++; continue; }
-
-            // arr[i] = val
-            let mIdxA = trimmed.match(/^(\w+)\[(.+)\]\s*=\s*(.*);/);
-            if (mIdxA) { let arr = scope[mIdxA[1]], ki = cppResolve(mIdxA[2], scope), val = cppResolve(mIdxA[3], scope); if (arr) arr[ki] = val; pushStep(idx, `${mIdxA[1]}[${ki}] = ${val}`); idx++; continue; }
-
-            let mAssign = trimmed.match(/^(\w+)\s*=\s*(.*);/);
-            if (mAssign && !trimmed.startsWith('if') && !trimmed.startsWith('for') && !trimmed.startsWith('while')) {
-                let val = cppResolve(mAssign[2], scope); scope[mAssign[1]] = val; pushStep(idx, `${mAssign[1]} = ${val}`); idx++; continue;
+            // Range-based for loop
+            let mRangeFor = trimmed.match(/^for\s*\(([^:]+?)\s*:\s*(.+?)\)\s*\{?/);
+            if (mRangeFor) {
+                let declPart = mRangeFor[1].trim();
+                let containerPart = mRangeFor[2].trim();
+                
+                let mVar = declPart.match(/(?:const\s+)?(?:auto|int|double|float|bool|char|string|long|long\s+long|[a-zA-Z_]\w*(?:\s*<.*?>)?)(?:\s*&)?\s+(\w+)/);
+                let varName = mVar ? mVar[1] : 'x';
+                
+                let container = cppResolve(containerPart, scope);
+                let items = [];
+                if (container && container.__isSet) {
+                    items = container.__values || [];
+                } else if (container && typeof container === 'object' && !Array.isArray(container)) {
+                    let keys = Object.keys(container).filter(k => !k.startsWith('__')).sort();
+                    items = keys.map(k => [k, container[k]]);
+                } else if (Array.isArray(container)) {
+                    items = container;
+                }
+                
+                let bStart = idx + 1, bEnd = idx, bc = trimmed.includes('{') ? 1 : 0;
+                if (bc === 0 && lines[idx+1] && lines[idx+1].trim().replace(/\/\/.*$/, '') === '{') { bStart++; bc = 1; }
+                while (bc > 0 && bEnd < endIdx) { bEnd++; bc += (lines[bEnd].replace(/\/\/.*$/, '').match(/\{/g)||[]).length - (lines[bEnd].replace(/\/\/.*$/, '').match(/\}/g)||[]).length; }
+                
+                for (let item of items) {
+                    if (steps.length >= 800) break;
+                    scope[varName] = item;
+                    varTypes[varName] = (container && container.__isSet) ? 'set_item' : 'auto';
+                    pushStep(idx, `For ${varName} = ${formatVal(item)}`);
+                    let r = executeBlock(bStart, bEnd - 1);
+                    if (r && r.action === 'return') return r;
+                    if (r && r.action === 'break') break;
+                }
+                idx = bEnd + 1; continue;
             }
-            // Augmented
-            let mAugCpp = trimmed.match(/^(\w+)\s*(\+|-|\*|\/)=\s*(.*);/);
-            if (mAugCpp) { let v = cppResolve(mAugCpp[3], scope); let op = mAugCpp[2]; let cur = scope[mAugCpp[1]]; if (op==='+') scope[mAugCpp[1]]=cur+v; else if(op==='-') scope[mAugCpp[1]]=cur-v; else if(op==='*') scope[mAugCpp[1]]=cur*v; else scope[mAugCpp[1]]=cur/v; pushStep(idx,`${mAugCpp[1]} ${op}= ${v}`); idx++; continue; }
-            // x++, x--
-            let mInc = trimmed.match(/^(\w+)\+\+;/); if (mInc) { scope[mInc[1]]++; pushStep(idx, `${mInc[1]}++`); idx++; continue; }
-            let mDec = trimmed.match(/^(\w+)--;/); if (mDec) { scope[mDec[1]]--; pushStep(idx, `${mDec[1]}--`); idx++; continue; }
 
-            // For loop
+            // Classic For loop
             let mFor = trimmed.match(/^for\s*\((.+?);(.+?);(.+?)\)\s*\{?/);
             if (mFor) {
                 let initPart = mFor[1].trim(), condPart = mFor[2].trim(), incPart = mFor[3].trim();
-                let mInit = initPart.match(/(?:int\s+)?(\w+)\s*=\s*(.*)/);
+                let mInit = initPart.match(/(?:(?:const\s+)?(?:int|long|size_t|auto|[a-zA-Z_]\w*)\s+)?(\w+)\s*=\s*(.*)/);
                 if (mInit) scope[mInit[1]] = cppResolve(mInit[2], scope);
                 let bStart = idx + 1, bEnd = idx, bc = trimmed.includes('{') ? 1 : 0;
-                if (bc === 0 && lines[idx+1] && lines[idx+1].trim() === '{') { bStart++; bc = 1; }
-                while (bc > 0 && bEnd < endIdx) { bEnd++; bc += (lines[bEnd].match(/\{/g)||[]).length - (lines[bEnd].match(/\}/g)||[]).length; }
+                if (bc === 0 && lines[idx+1] && lines[idx+1].trim().replace(/\/\/.*$/, '') === '{') { bStart++; bc = 1; }
+                while (bc > 0 && bEnd < endIdx) { bEnd++; bc += (lines[bEnd].replace(/\/\/.*$/, '').match(/\{/g)||[]).length - (lines[bEnd].replace(/\/\/.*$/, '').match(/\}/g)||[]).length; }
                 let lc = 0;
                 while (lc < 150 && steps.length < 800) {
-                    if (!evalExpr(condPart, scope)) break;
+                    if (!evalExpr(translateCppExprToJs(condPart, scope), scope)) break;
                     pushStep(idx, `For: ${condPart}`);
                     let r = executeBlock(bStart, bEnd - 1);
                     if (r && r.action === 'return') return r;
-                    // increment
+                    if (r && r.action === 'break') break;
+                    
                     let iM = incPart.match(/(\w+)\+\+/); if (iM) scope[iM[1]]++;
                     let dM = incPart.match(/(\w+)--/); if (dM) scope[dM[1]]--;
                     let aM = incPart.match(/(\w+)\s*(\+|-)=\s*(.*)/); if (aM) { let v = cppResolve(aM[3], scope); if (aM[2]==='+') scope[aM[1]]+=v; else scope[aM[1]]-=v; }
@@ -1714,43 +2054,155 @@ function traceCpp(code) {
                 idx = bEnd + 1; continue;
             }
 
-            // If
+            // If / else if / else chain
             let mIf = trimmed.match(/^if\s*\((.+)\)\s*\{?/);
             if (mIf) {
-                let condVal = evalExpr(mIf[1], scope);
+                let handled = false;
+                let condVal = evalExpr(translateCppExprToJs(mIf[1], scope), scope);
                 pushStep(idx, `Condition: ${!!condVal}`);
                 let bStart = idx + 1, bEnd = idx, bc = trimmed.includes('{') ? 1 : 0;
-                if (bc === 0 && lines[idx+1] && lines[idx+1].trim() === '{') { bStart++; bEnd++; bc = 1; }
-                while (bc > 0 && bEnd < endIdx) { bEnd++; bc += (lines[bEnd].match(/\{/g)||[]).length - (lines[bEnd].match(/\}/g)||[]).length; }
-                if (condVal) { let r = executeBlock(bStart, bEnd - 1); if (r && r.action === 'return') return r; }
+                if (bc === 0 && lines[idx+1] && lines[idx+1].trim().replace(/\/\/.*$/, '') === '{') { bStart++; bEnd++; bc = 1; }
+                while (bc > 0 && bEnd < endIdx) { bEnd++; bc += (lines[bEnd].replace(/\/\/.*$/, '').match(/\{/g)||[]).length - (lines[bEnd].replace(/\/\/.*$/, '').match(/\}/g)||[]).length; }
+                if (condVal) { let r = executeBlock(bStart, bEnd - 1); if (r && (r.action === 'return' || r.action === 'break' || r.action === 'continue')) return r; handled = true; }
                 idx = bEnd + 1;
-                // Skip else
-                if (idx <= endIdx && lines[idx] && lines[idx].trim().startsWith('else')) {
-                    let eStart = idx + 1, eEnd = idx, ebc = lines[idx].trim().includes('{') ? 1 : 0;
-                    if (ebc === 0 && lines[idx+1] && lines[idx+1].trim() === '{') { eStart++; eEnd++; ebc = 1; }
-                    while (ebc > 0 && eEnd < endIdx) { eEnd++; ebc += (lines[eEnd].match(/\{/g)||[]).length - (lines[eEnd].match(/\}/g)||[]).length; }
-                    if (!condVal) { pushStep(idx, 'Else branch'); let r = executeBlock(eStart, eEnd - 1); if (r && r.action === 'return') return r; }
-                    idx = eEnd + 1;
+                while (idx <= endIdx && lines[idx] && lines[idx].replace(/\/\/.*$/, '').trim().match(/^else\b/)) {
+                    let eLine = lines[idx].replace(/\/\/.*$/, '').trim();
+                    let mElseIf = eLine.match(/^else\s+if\s*\((.+)\)\s*\{?/);
+                    if (mElseIf) {
+                        let eiCond = !handled ? evalExpr(translateCppExprToJs(mElseIf[1], scope), scope) : false;
+                        pushStep(idx, !handled ? `Else if: ${!!eiCond}` : `Else if: skipped`);
+                        let eStart = idx + 1, eEnd = idx, ebc = eLine.includes('{') ? 1 : 0;
+                        if (ebc === 0 && lines[idx+1] && lines[idx+1].trim().replace(/\/\/.*$/, '') === '{') { eStart++; eEnd++; ebc = 1; }
+                        while (ebc > 0 && eEnd < endIdx) { eEnd++; ebc += (lines[eEnd].replace(/\/\/.*$/, '').match(/\{/g)||[]).length - (lines[eEnd].replace(/\/\/.*$/, '').match(/\}/g)||[]).length; }
+                        if (!handled && eiCond) { let r = executeBlock(eStart, eEnd - 1); if (r && (r.action === 'return' || r.action === 'break' || r.action === 'continue')) return r; handled = true; }
+                        idx = eEnd + 1;
+                    } else {
+                        let eStart = idx + 1, eEnd = idx, ebc = eLine.includes('{') ? 1 : 0;
+                        if (ebc === 0 && lines[idx+1] && lines[idx+1].trim().replace(/\/\/.*$/, '') === '{') { eStart++; eEnd++; ebc = 1; }
+                        while (ebc > 0 && eEnd < endIdx) { eEnd++; ebc += (lines[eEnd].replace(/\/\/.*$/, '').match(/\{/g)||[]).length - (lines[eEnd].replace(/\/\/.*$/, '').match(/\}/g)||[]).length; }
+                        if (!handled) { pushStep(idx, 'Else branch'); let r = executeBlock(eStart, eEnd - 1); if (r && (r.action === 'return' || r.action === 'break' || r.action === 'continue')) return r; }
+                        idx = eEnd + 1;
+                        break;
+                    }
                 }
                 continue;
             }
+            
             // While
             let mWhile = trimmed.match(/^while\s*\((.+)\)\s*\{?/);
             if (mWhile) {
                 let bStart = idx + 1, bEnd = idx, bc = trimmed.includes('{') ? 1 : 0;
-                if (bc === 0 && lines[idx+1] && lines[idx+1].trim() === '{') { bStart++; bEnd++; bc = 1; }
-                while (bc > 0 && bEnd < endIdx) { bEnd++; bc += (lines[bEnd].match(/\{/g)||[]).length - (lines[bEnd].match(/\}/g)||[]).length; }
+                if (bc === 0 && lines[idx+1] && lines[idx+1].trim().replace(/\/\/.*$/, '') === '{') { bStart++; bEnd++; bc = 1; }
+                while (bc > 0 && bEnd < endIdx) { bEnd++; bc += (lines[bEnd].replace(/\/\/.*$/, '').match(/\{/g)||[]).length - (lines[bEnd].replace(/\/\/.*$/, '').match(/\}/g)||[]).length; }
                 let lc = 0;
-                while (lc < 150 && steps.length < 800 && evalExpr(mWhile[1], scope)) {
+                while (lc < 150 && steps.length < 800 && evalExpr(translateCppExprToJs(mWhile[1], scope), scope)) {
                     pushStep(idx, `While: True`);
                     let r = executeBlock(bStart, bEnd - 1);
                     if (r && r.action === 'return') return r;
+                    if (r && r.action === 'break') break;
                     lc++;
                 }
                 idx = bEnd + 1; continue;
             }
 
-            // Standalone function call
+            // Standalone Method Calls (e.g. v.push_back(5); st.pop();)
+            let mMethodCall = trimmed.match(/^([a-zA-Z_]\w*(?:\[.+?\]|\..+?|->.+?)*)\.(\w+)\((.*)\)\s*;$/);
+            if (mMethodCall) {
+                executeMethod(mMethodCall[1], mMethodCall[2], mMethodCall[3], scope);
+                pushStep(idx, `${mMethodCall[1]}.${mMethodCall[2]}()`);
+                idx++; continue;
+            }
+
+            // Unified Variable Declarations (single or multiple)
+            let mDecl = trimmed.match(/^(?:const\s+)?([a-zA-Z_]\w*(?:\s+[a-zA-Z_]\w*)*(?:\s*<.*?>)?(?:\s*\*+)?)\s+([a-zA-Z_]\w*.*);$/);
+            if (mDecl) {
+                let typeName = mDecl[1].trim();
+                let rest = mDecl[2].trim();
+                let declarations = splitByTopLevelComma(rest);
+                
+                for (let decl of declarations) {
+                    let varName = '', initVal = undefined;
+                    
+                    let mInitEq = decl.match(/^([a-zA-Z_]\w*)\s*=\s*(.+)$/);
+                    let mInitConstructor = decl.match(/^([a-zA-Z_]\w*)\s*\((.+?)\)$/);
+                    
+                    if (mInitEq) {
+                        varName = mInitEq[1];
+                        let expr = mInitEq[2].trim();
+                        if (structs[typeName] && expr.startsWith('{') && expr.endsWith('}')) {
+                            let elements = splitByTopLevelComma(expr.slice(1, -1)).map(s => cppResolve(s.trim(), scope));
+                            initVal = { __type: typeName };
+                            structs[typeName].forEach((f, index) => {
+                                initVal[f] = elements[index] !== undefined ? elements[index] : null;
+                            });
+                        } else if (expr.startsWith('new ')) {
+                            let className = expr.replace('new ', '').replace(/\(.*?\)/, '').trim();
+                            if (structs[className]) {
+                                initVal = { __type: className, __id: nextObjId++ };
+                                structs[className].forEach(f => { initVal[f] = null; });
+                            }
+                        } else {
+                            initVal = cppResolve(expr, scope);
+                        }
+                    } else if (mInitConstructor) {
+                        varName = mInitConstructor[1];
+                        let argStr = mInitConstructor[2].trim();
+                        let args = splitByTopLevelComma(argStr).map(s => cppResolve(s.trim(), scope));
+                        
+                        if (typeName.startsWith('vector')) {
+                            if (args.length === 1) {
+                                initVal = Array(args[0]).fill(0);
+                            } else if (args.length === 2) {
+                                initVal = Array(args[0]).fill(args[1]);
+                            }
+                        } else if (typeName.startsWith('pair')) {
+                            initVal = [args[0], args[1]];
+                        }
+                    } else {
+                        varName = decl.trim();
+                        if (typeName.startsWith('vector')) initVal = [];
+                        else if (typeName.startsWith('map') || typeName.startsWith('unordered_map')) initVal = {};
+                        else if (typeName.startsWith('set') || typeName.startsWith('unordered_set')) initVal = { __isSet: true, __values: [] };
+                        else if (typeName.startsWith('stack') || typeName.startsWith('queue') || typeName.startsWith('priority_queue') || typeName.startsWith('deque')) initVal = [];
+                        else if (typeName === 'string') initVal = '';
+                        else if (typeName === 'bool') initVal = false;
+                        else if (['int', 'double', 'float', 'long', 'long long', 'size_t'].includes(typeName)) initVal = 0;
+                        else if (structs[typeName]) {
+                            initVal = { __type: typeName };
+                            structs[typeName].forEach(f => { initVal[f] = null; });
+                        }
+                        else initVal = null;
+                    }
+                    
+                    scope[varName] = initVal;
+                    varTypes[varName] = typeName;
+                }
+                pushStep(idx, `Declare ${rest}`);
+                idx++; continue;
+            }
+
+            // Unified Assignments (using splitByTopLevelEqual)
+            let assignData = splitByTopLevelEqual(trimmed);
+            if (assignData) {
+                let left = assignData.left;
+                let op = assignData.op;
+                let right = assignData.right;
+                let val = cppResolve(right, scope);
+                
+                if (op === '=') {
+                    setDeepPath(left, scope, val);
+                } else {
+                    let cur = resolveDeepPath(left, scope);
+                    let newVal = op === '+=' ? cur + val : op === '-=' ? cur - val : op === '*=' ? cur * val : cur / val;
+                    setDeepPath(left, scope, newVal);
+                }
+                pushStep(idx, `${left} ${op} ${formatVal(val)}`);
+                idx++; continue;
+            }
+
+            let mInc = trimmed.match(/^(\w+)\+\+;/); if (mInc) { scope[mInc[1]]++; pushStep(idx, `${mInc[1]}++`); idx++; continue; }
+            let mDec = trimmed.match(/^(\w+)--;/); if (mDec) { scope[mDec[1]]--; pushStep(idx, `${mDec[1]}--`); idx++; continue; }
+
             let mFC = trimmed.match(/^(\w+)\((.*)?\);?$/);
             if (mFC && funcs[mFC[1]]) { pushStep(idx, `Call ${mFC[1]}()`); callFunctionCpp(mFC[1], mFC[2]||'', scope); idx++; continue; }
 
@@ -1762,25 +2214,62 @@ function traceCpp(code) {
     function cppResolve(expr, scope) {
         if (!expr) return undefined;
         expr = expr.trim();
-        // Array index
-        let mIdx = expr.match(/^(\w+)\[(.+)\]$/);
-        if (mIdx && scope[mIdx[1]]) { let ki = cppResolve(mIdx[2], scope); return scope[mIdx[1]][ki]; }
-        let resolved = expr;
+
+        if (expr === 'true') return true;
+        if (expr === 'false') return false;
+        if (expr === 'nullptr' || expr === 'NULL') return null;
+
+        // new expression instantiation
+        if (expr.startsWith('new ')) {
+            let className = expr.replace('new ', '').replace(/\(.*?\)/, '').trim();
+            if (structs[className]) {
+                let obj = { __type: className, __id: nextObjId++ };
+                structs[className].forEach(f => { obj[f] = null; });
+                return obj;
+            }
+        }
+
+        if (expr.startsWith('(') && expr.endsWith(')')) {
+            let depth = 0; let match = true;
+            for (let i = 0; i < expr.length - 1; i++) {
+                if (expr[i] === '(') depth++;
+                else if (expr[i] === ')') depth--;
+                if (depth === 0 && i > 0) { match = false; break; }
+            }
+            if (match) return cppResolve(expr.slice(1, -1), scope);
+        }
+
+        if (expr.startsWith('{') && expr.endsWith('}')) {
+            return splitByTopLevelComma(expr.slice(1, -1)).map(s => cppResolve(s.trim(), scope));
+        }
+
+        let mPath = expr.match(/^[a-zA-Z_]\w*(?:\s*\[.+?\]|\s*\..+?|\s*->.+?)*$/);
+        if (mPath) {
+            let val = resolveDeepPath(expr, scope);
+            if (val !== undefined) return val;
+        }
+
         let funcCallRe = /([a-zA-Z_]\w*)\(([^()]*(?:\([^()]*\)[^()]*)*)\)/;
         let safety = 0;
+        let resolved = expr;
         while (safety < 20) {
             let match = resolved.match(funcCallRe);
             if (!match) break;
-            if (funcs[match[1]]) { let ret = callFunctionCpp(match[1], match[2], scope); resolved = resolved.replace(match[0], JSON.stringify(ret)); }
-            else break;
+            if (funcs[match[1]]) {
+                let ret = callFunctionCpp(match[1], match[2], scope);
+                resolved = resolved.replace(match[0], JSON.stringify(ret));
+            } else {
+                break;
+            }
             safety++;
         }
-        return evalExpr(resolved, scope);
+
+        return evalExpr(translateCppExprToJs(resolved, scope), scope);
     }
 
     function callFunctionCpp(funcName, argStr, callerScope) {
         let fDef = funcs[funcName];
-        let argVals = argStr.trim() ? argStr.split(',').map(s => evalExpr(s.trim(), callerScope)) : [];
+        let argVals = argStr.trim() ? argStr.split(',').map(s => evalExpr(translateCppExprToJs(s.trim(), callerScope), callerScope)) : [];
         let locals = {};
         fDef.params.forEach((p, i) => { locals[p] = argVals[i]; });
         callStack.push({name: `${funcName}()`, locals, line: fDef.start});
@@ -1808,7 +2297,15 @@ function traceJava(code) {
         .replace(/System\.out\.print\((.*)\)/g, 'cout << $1')
         .replace(/boolean\b/g, 'bool').replace(/String\b/g, 'string')
         .replace(/Integer\.parseInt\((.*)\)/g, 'Number($1)')
-        .replace(/Double\.parseDouble\((.*)\)/g, 'Number($1)');
+        .replace(/Double\.parseDouble\((.*)\)/g, 'Number($1)')
+        // ArrayList -> vector normalization
+        .replace(/ArrayList\s*<\s*(\w+)\s*>/g, 'vector<$1>')
+        .replace(/new\s+ArrayList\s*<[^>]*>\s*\(\)/g, '')
+        .replace(/(\w+)\.add\(/g, '$1.push_back(')
+        .replace(/(\w+)\.get\((\d+)\)/g, '$1[$2]')
+        .replace(/(\w+)\.remove\((\d+)\)/g, '$1.erase($2)')
+        .replace(/(\w+)\.contains\((.+?)\)/g, '(function(){for(let __i=0;__i<$1.length;__i++)if($1[__i]===$2)return true;return false;})()')
+        .replace(/\bnull\b/g, 'nullptr');
     let jlines = normalized.split('\n');
     for (let ji = jlines.length - 1; ji >= 0; ji--) {
         if (jlines[ji].trim() === '}') { jlines[ji] = ''; break; }
