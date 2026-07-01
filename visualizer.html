@@ -291,10 +291,16 @@
             margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem;
         }
         .array-title .arr-len { font-size: 0.65rem; color: var(--text-tertiary); }
-        .array-blocks { display: flex; flex-wrap: wrap; gap: 3px; position: relative; padding-bottom: 1.4rem; }
+        .array-blocks { display: flex; flex-wrap: wrap; gap: 14px 4px; position: relative; }
+        .array-block-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 2.8rem;
+        }
         .array-block {
             background: var(--bg-card); border: 1px solid var(--border-primary);
-            min-width: 2.8rem; height: 2.8rem;
+            width: 100%; height: 2.8rem;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             position: relative; border-radius: var(--radius-sm);
             transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -305,25 +311,40 @@
         }
         .array-block.changed .array-val { color: var(--accent-green); }
         .array-val { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
-        .array-idx { position: absolute; bottom: -1.3rem; font-size: 0.6rem; color: var(--text-tertiary); font-family: var(--font-mono); }
-        .array-pointer {
-            position: absolute; bottom: -1.3rem; font-size: 0.6rem; font-weight: 700;
-            font-family: var(--font-mono); text-align: center;
+        .array-idx { font-size: 0.6rem; color: var(--text-tertiary); font-family: var(--font-mono); margin-top: 0.2rem; }
+        .cell-pointers {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2px;
+        }
+        .cell-pointer {
+            font-size: 0.55rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            line-height: 1.1;
+            margin-top: 1px;
         }
         .array-2d-row { display: flex; gap: 3px; margin-bottom: 3px; align-items: center; }
         .array-2d-row-label { font-size: 0.6rem; color: var(--text-tertiary); font-family: var(--font-mono); width: 1.2rem; text-align: right; margin-right: 0.3rem; flex-shrink: 0; }
 
         /* ---- String Character Blocks ---- */
-        .string-blocks { display: flex; flex-wrap: wrap; gap: 2px; padding-bottom: 1.3rem; }
+        .string-blocks { display: flex; flex-wrap: wrap; gap: 10px 2px; }
+        .string-block-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 2rem;
+        }
         .string-block {
             background: var(--bg-card); border: 1px solid rgba(157,78,221,0.25);
-            min-width: 2rem; height: 2.2rem;
+            width: 100%; height: 2.2rem;
             display: flex; align-items: center; justify-content: center;
-            position: relative; border-radius: 4px;
+            border-radius: 4px;
             font-family: var(--font-mono); font-size: 0.9rem; font-weight: 600;
             color: var(--accent-purple);
         }
-        .string-block .char-idx { position: absolute; bottom: -1.2rem; font-size: 0.55rem; color: var(--text-tertiary); }
+        .char-idx { font-size: 0.55rem; color: var(--text-tertiary); font-family: var(--font-mono); margin-top: 0.2rem; }
 
         /* ---- Dictionary / HashMap Visualization ---- */
         .dict-container { margin-bottom: 1rem; }
@@ -803,7 +824,7 @@ langTabs.forEach(tab => {
         langTabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         currentLang = tab.getAttribute('data-lang');
-        cmEditor.setOption("mode", currentLang === 'python' ? 'python' : 'clike');
+        cmEditor.setOption("mode", currentLang === 'python' ? 'python' : (currentLang === 'cpp' ? 'text/x-c++src' : 'text/x-java'));
         populateExamples();
         if (exampleSelect.options.length > 0) {
             exampleSelect.selectedIndex = 0;
@@ -889,12 +910,9 @@ function evalExpr(expr, scopeVars) {
             clean = clean.slice(0, end) + ')' + clean.slice(end);
         }
     }
-    clean = clean.replace(/\/__INTDIV__/g, '/');
-    // Handle Python floor division
-    clean = clean.replace(/(\w+)\s*\/\s*(\w+)/g, (m, a, b) => {
-        if (expr.includes('//')) return `Math.floor(${a}/${b})`;
-        return m;
-    });
+    // Handle Python floor division: only replace /__INTDIV__ markers with Math.floor
+    clean = clean.replace(/(\w+)\s*\/__INTDIV__\s*(\w+)/g, (m, a, b) => `Math.floor(${a}/${b})`);
+    clean = clean.replace(/__INTDIV__/g, '/');
     
     try {
         return new Function(scopeStr + "return (" + clean + ");")();
@@ -992,8 +1010,15 @@ function tracePython(code) {
         if (mFunc) {
             let funcName = mFunc[1];
             let params = mFunc[2].split(',').map(s => s.trim()).filter(s => s);
+            let funcIndent = line.length - line.trimStart().length;
             let start = i + 1, end = start;
-            while (end < lines.length && (lines[end].trim() === '' || /^\s/.test(lines[end]))) end++;
+            while (end < lines.length) {
+                let nl = lines[end];
+                if (nl.trim() === '') { end++; continue; }
+                let ni = nl.length - nl.trimStart().length;
+                if (ni <= funcIndent) break;
+                end++;
+            }
             funcs[funcName] = { params, bodyRange: [start, end - 1] };
             i = end;
             continue;
@@ -2742,30 +2767,40 @@ function renderStep(idx) {
             } else {
                 // 1D Array
                 html += `<div class="array-blocks">`;
+                let pointerNames = ['i', 'j', 'k', 'l', 'low', 'high', 'mid', 'left', 'right', 'start', 'end', 'ptr', 'idx', 'top', 'front', 'rear'];
+                let ptrColors = { i: 'var(--accent-cyan)', j: 'var(--accent-pink)', k: 'var(--accent-yellow)', low: 'var(--accent-green)', high: 'var(--accent-red)', mid: 'var(--accent-orange)', left: 'var(--accent-green)', right: 'var(--accent-red)' };
+
                 v.rawValue.forEach((cell, i) => {
                     let ch = prevArray && prevArray[i] !== cell;
                     let displayCell = cell;
                     if (cell && typeof cell === 'object') {
                         try { displayCell = JSON.stringify(cell); } catch(e) { displayCell = String(cell); }
                     }
-                    html += `<div class="array-block ${ch ? 'changed' : ''}">
-                        <div class="array-val">${escHtml(String(displayCell))}</div>
-                        <div class="array-idx">${i}</div>
-                    </div>`;
-                });
-                
-                // Find pointer variables (i, j, low, high, mid, left, right, etc.)
-                let pointerNames = ['i', 'j', 'k', 'l', 'low', 'high', 'mid', 'left', 'right', 'start', 'end', 'ptr', 'idx', 'top', 'front', 'rear'];
-                step.vars.forEach(pv => {
-                    let cleanName = pv.name.includes('::') ? pv.name.split('::').pop() : pv.name;
-                    if (pointerNames.includes(cleanName) && typeof pv.rawValue === 'number' && Number.isInteger(pv.rawValue) && pv.rawValue >= 0 && pv.rawValue < v.rawValue.length) {
-                        // Already shown in variables section, but add pointer under array
-                        let ptrColors = { i: 'var(--accent-cyan)', j: 'var(--accent-pink)', k: 'var(--accent-yellow)', low: 'var(--accent-green)', high: 'var(--accent-red)', mid: 'var(--accent-orange)', left: 'var(--accent-green)', right: 'var(--accent-red)' };
-                        let color = ptrColors[cleanName] || 'var(--accent-purple)';
-                        // Position pointer
-                        let ptrLeft = pv.rawValue * (2.8 * 16 + 3); // approximate
-                        html += `<div class="array-pointer" style="left: ${pv.rawValue * 48 + 12}px; color: ${color};">▲${cleanName}</div>`;
+                    
+                    // Find pointers pointing to this index
+                    let cellPointers = [];
+                    step.vars.forEach(pv => {
+                        let cleanName = pv.name.includes('::') ? pv.name.split('::').pop() : pv.name;
+                        if (pointerNames.includes(cleanName) && pv.rawValue === i) {
+                            let color = ptrColors[cleanName] || 'var(--accent-purple)';
+                            cellPointers.push({ name: cleanName, color });
+                        }
+                    });
+
+                    html += `<div class="array-block-wrapper">
+                        <div class="array-block ${ch ? 'changed' : ''}">
+                            <div class="array-val">${escHtml(String(displayCell))}</div>
+                        </div>
+                        <div class="array-idx">${i}</div>`;
+                    
+                    if (cellPointers.length > 0) {
+                        html += `<div class="cell-pointers">`;
+                        cellPointers.forEach(p => {
+                            html += `<div class="cell-pointer" style="color: ${p.color}">▲${p.name}</div>`;
+                        });
+                        html += `</div>`;
                     }
+                    html += `</div>`;
                 });
                 
                 html += `</div>`;
@@ -2787,7 +2822,10 @@ function renderStep(idx) {
             html += `<div class="array-title">${escHtml(v.name)} <span class="arr-len">len=${v.rawValue.length}</span></div>`;
             html += `<div class="string-blocks">`;
             for (let ci = 0; ci < v.rawValue.length; ci++) {
-                html += `<div class="string-block">${escHtml(v.rawValue[ci])}<div class="char-idx">${ci}</div></div>`;
+                html += `<div class="string-block-wrapper">
+                    <div class="string-block">${escHtml(v.rawValue[ci])}</div>
+                    <div class="char-idx">${ci}</div>
+                </div>`;
             }
             html += `</div>`;
         });
@@ -2903,7 +2941,7 @@ btnNext.addEventListener('click', () => {
 /* ============================================================
    FONT SIZE
    ============================================================ */
-let currentFontSize = 14;
+let currentFontSize = 13;
 document.getElementById('btn-font-inc').addEventListener('click', () => {
     if (currentFontSize < 22) { currentFontSize += 2; document.querySelector('.CodeMirror').style.fontSize = currentFontSize + 'px'; cmEditor.refresh(); }
 });
